@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:bailleur_app/app/app.dart';
+import 'package:bailleur_app/app/design/design.dart';
+import 'package:bailleur_app/app/shell.dart';
 import 'package:bailleur_app/app/etat_app.dart';
 import 'package:bailleur_app/core/format/formats.dart';
 import 'package:bailleur_app/data/local/database.dart';
@@ -38,9 +40,30 @@ void main() {
     await tester.pumpWidget(app(onboardingTermine: true));
     await tester.pumpAndSettle();
 
-    for (final onglet in ['Accueil', 'Biens', 'Artisans', 'Paramètres']) {
+    for (final onglet in ['Accueil', 'Biens', 'Artisans', 'Réglages']) {
       expect(find.text(onglet), findsOneWidget);
     }
+    expect(
+      find.bySemanticsLabel('Ajouter une échéance ou un bien'),
+      findsOneWidget,
+    );
+
+    // La barre garde sa hauteur de 84 (elle ne doit pas envahir l'écran).
+    expect(
+      tester.getSize(find.byType(BarreNavigation)).height,
+      AppSizes.barreNavigation,
+    );
+
+    // Le « + » répond aussi dans sa partie surélevée, au-dessus de la barre.
+    final bouton = tester.getRect(find.byType(BoutonCentral));
+    expect(
+      bouton.top,
+      lessThan(tester.getRect(find.byType(BarreNavigation)).top),
+    );
+    await tester.tapAt(bouton.topCenter + const Offset(0, 4));
+    await tester.pumpAndSettle();
+    expect(find.text('Ajouter une échéance'), findsOneWidget);
+    expect(find.text('Ajouter un bien'), findsOneWidget);
     await fermer(tester);
   });
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bailleur_app/app/app.dart';
+import 'package:bailleur_app/app/design/design.dart';
 import 'package:bailleur_app/app/etat_app.dart';
 import 'package:bailleur_app/core/config/cles_reglages.dart';
 import 'package:bailleur_app/core/format/formats.dart';
@@ -94,7 +95,7 @@ void main() {
     await tester.tap(find.text('Longue durée'));
     await tester.pumpAndSettle();
     // Coches visibles : « Longue durée » et « Location meublée ».
-    expect(find.byIcon(Icons.check_circle), findsNWidgets(2));
+    expect(find.byIcon(AppIcons.selectionne), findsNWidgets(2));
     await fermer(tester);
   });
 }

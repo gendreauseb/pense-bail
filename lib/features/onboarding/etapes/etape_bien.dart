@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/design/design.dart';
 import '../../../core/config/config_app.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/utils/dates.dart';
 import '../../../core/validation/validateurs.dart';
 import '../../../core/widgets/choix_cartes.dart';
-import '../../../core/widgets/icones.dart';
 import '../../../domain/entities/entities.dart';
 import '../brouillon_onboarding.dart';
 import '../onboarding_controller.dart';
@@ -96,6 +96,9 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
       fieldLabelText: 'Date (JJ/MM/AAAA)',
       errorFormatText: 'Format attendu : JJ/MM/AAAA',
       errorInvalidText: 'Date trop éloignée dans le futur',
+      // Jamais « OK » seul (UI.md §8).
+      confirmText: 'Choisir cette date',
+      cancelText: 'Annuler',
     );
     if (date == null) return;
     _dateDebut.text = _texteDate(date);
@@ -134,22 +137,23 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
               ),
               majuscules: TextCapitalization.sentences,
             ),
+            const SizedBox(height: AppSpacing.bloc),
             const TitreSection('Type de logement'),
             ChampChoix<TypeLogement>(
               options: TypeLogement.values,
               valeurInitiale: bien.typeLogement,
               libelle: (t) => t.libelle,
-              icone: (t) => t.icone,
+              icone: AppIcons.typeLogement,
               messageObligatoire: 'Choisissez le type de logement.',
               onChanged: (t) => _enregistrer(typeLogement: t),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.sectionLarge),
             const TitreSection('Type de location'),
             ChampChoix<TypeLocation>(
               options: TypeLocation.values,
               valeurInitiale: bien.typeLocation,
               libelle: (t) => t.libelle,
-              icone: (t) => t.icone,
+              icone: AppIcons.typeLocation,
               precision: (t) => t.precision,
               messageObligatoire: 'Choisissez le type de location.',
               colonnesMax: 1,
@@ -171,7 +175,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
                     )
                   : const SizedBox(width: double.infinity),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.sectionLarge),
             const TitreSection('Loyer'),
             _texte(
               _loyer,
@@ -200,6 +204,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
                   ? 'Montant incorrect (exemple : 50 ou 49,90).'
                   : null,
             ),
+            const SizedBox(height: AppSpacing.bloc),
             const TitreSection('Adresse du bien'),
             _texte(
               _rue,
@@ -245,13 +250,12 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
     TextCapitalization majuscules = TextCapitalization.none,
     List<TextInputFormatter>? formats,
   }) => Padding(
-    padding: const EdgeInsets.only(bottom: 16),
+    padding: const EdgeInsets.only(bottom: AppSpacing.bloc),
     child: TextFormField(
       controller: controleur,
       decoration: InputDecoration(
         labelText: libelle,
         helperText: aide,
-        helperMaxLines: 3,
         suffixText: suffixe,
       ),
       validator: validator,
@@ -282,11 +286,12 @@ class _BlocBail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.textes;
     return Padding(
-      padding: const EdgeInsets.only(top: 24),
+      padding: const EdgeInsets.only(top: AppSpacing.section),
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.carte),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -295,11 +300,11 @@ class _BlocBail extends StatelessWidget {
                 options: TypeBail.longueDuree,
                 valeurInitiale: bien.typeBail,
                 libelle: (t) => t.libelle,
-                icone: (t) => t.icone,
+                icone: AppIcons.typeBail,
                 messageObligatoire: 'Choisissez le type de bail.',
                 onChanged: onTypeBail,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.section),
               TextFormField(
                 controller: dateDebut,
                 readOnly: true,
@@ -307,7 +312,7 @@ class _BlocBail extends StatelessWidget {
                 decoration: const InputDecoration(
                   labelText: 'Date de début du bail',
                   hintText: 'JJ/MM/AAAA',
-                  suffixIcon: Icon(Icons.calendar_today_outlined),
+                  suffixIcon: Icon(AppIcons.calendrier),
                 ),
                 validator: (_) {
                   final date = bien.dateDebutBail;
@@ -318,13 +323,28 @@ class _BlocBail extends StatelessWidget {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              const Explication(
-                icone: Icons.notifications_active_outlined,
-                texte:
-                    'Pour activer vos premiers rappels automatiquement : '
-                    'révision du loyer, fin du bail et date limite pour '
-                    'donner congé.',
+              const SizedBox(height: AppSpacing.bloc),
+              // Explication en ligne (pas de carte dans la carte).
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    AppIcons.rappel,
+                    size: AppSizes.iconePetite,
+                    color: context.couleurs.primary,
+                  ),
+                  const SizedBox(width: AppSpacing.blocSerre),
+                  Expanded(
+                    child: Text(
+                      'Pour activer vos premiers rappels automatiquement : '
+                      'révision du loyer, fin du bail et date limite pour '
+                      'donner congé.',
+                      style: t.secondary.copyWith(
+                        color: context.couleurs.textMuted,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/design/design.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/widgets/photo_bien.dart';
 import '../brouillon_onboarding.dart';
@@ -44,170 +45,175 @@ class _EtapeRecapitulatifState extends ConsumerState<EtapeRecapitulatif> {
   Widget build(BuildContext context) {
     final b = widget.brouillon;
     final biens = b.biensRetenus;
-    final incomplets = [
-      for (final (i, bien) in biens.indexed)
-        if (!bien.estComplet) i,
-    ];
+    final incomplets = biens.where((x) => !x.estComplet).length;
     final totalLoyers = biens.fold<int>(
       0,
       (s, x) => s + (x.loyerCentimes ?? 0),
     );
-    final theme = Theme.of(context);
+    final id = b.identite;
 
     return GabaritEtape(
       titre: 'Tout est prêt !',
       sousTitre:
-          '${biens.length} ${biens.length > 1 ? 'biens' : 'bien'} · '
-          '${Formats.montant(totalLoyers)} de loyers par mois (hors charges)',
+          '${biens.length} ${biens.length > 1 ? 'biens' : 'bien'}, '
+          '${Formats.parMois(totalLoyers)} de loyers (hors charges).',
       onRetour: _controleur.precedent,
       libelleAction: 'Accéder à mon tableau de bord',
       actionEnCours: _enCours,
-      onAction: incomplets.isEmpty ? _terminer : null,
+      onAction: incomplets == 0 ? _terminer : null,
       contenu: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _CarteIdentite(
-            brouillon: b,
-            onModifier: _enCours ? null : _controleur.modifierIdentite,
-          ),
-          const SizedBox(height: 24),
-          const TitreSection('Vos biens'),
-          for (final (i, bien) in biens.indexed) ...[
-            _CarteBien(
-              bien: bien,
-              onModifier: _enCours ? null : () => _controleur.modifierBien(i),
+          const TitreSection('Vos coordonnées'),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: _Ligne(
+              visuel: const TuileIcone(icone: AppIcons.personne),
+              titre: '${id.prenom.trim()} ${id.nom.trim()}',
+              lignes: [
+                id.rue.trim(),
+                '${id.codePostal.trim()} ${id.ville.trim()}',
+              ],
+              descriptionModifier: 'Modifier vos coordonnées',
+              onModifier: _enCours ? null : _controleur.modifierIdentite,
             ),
-            const SizedBox(height: 12),
-          ],
-          if (incomplets.isNotEmpty)
+          ),
+          const SizedBox(height: AppSpacing.sectionLarge),
+          TitreSection(biens.length > 1 ? 'Vos biens' : 'Votre bien'),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                for (final (i, bien) in biens.indexed) ...[
+                  if (i > 0)
+                    const Divider(
+                      indent: AppSpacing.ligne,
+                      endIndent: AppSpacing.ligne,
+                    ),
+                  _LigneBien(
+                    bien: bien,
+                    onModifier: _enCours
+                        ? null
+                        : () => _controleur.modifierBien(i),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (incomplets > 0) ...[
+            const SizedBox(height: AppSpacing.bloc),
             Text(
               'Complétez les biens signalés pour continuer.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.error,
+              style: context.textes.secondary.copyWith(
+                color: context.couleurs.erreur,
+                fontWeight: FontWeight.w700,
               ),
             ),
+          ],
         ],
       ),
     );
   }
 }
 
-class _CarteIdentite extends StatelessWidget {
-  const _CarteIdentite({required this.brouillon, required this.onModifier});
-  final BrouillonOnboarding brouillon;
-  final VoidCallback? onModifier;
-
-  @override
-  Widget build(BuildContext context) {
-    final id = brouillon.identite;
-    final texte = Theme.of(context).textTheme;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
-        child: Row(
-          children: [
-            const Icon(Icons.person_outline, size: 32),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${id.prenom.trim()} ${id.nom.trim()}',
-                    style: texte.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '${id.rue.trim()}, ${id.codePostal.trim()} ${id.ville.trim()}',
-                    style: texte.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-            TextButton(onPressed: onModifier, child: const Text('Modifier')),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CarteBien extends StatelessWidget {
-  const _CarteBien({required this.bien, required this.onModifier});
+class _LigneBien extends StatelessWidget {
+  const _LigneBien({required this.bien, required this.onModifier});
   final BrouillonBien bien;
   final VoidCallback? onModifier;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final texte = theme.textTheme;
-    final type = [
-      bien.typeLogement?.libelle,
-      bien.typeLocation?.libelle,
-    ].whereType<String>().join(' · ');
     final loyer = bien.loyerCentimes;
     final charges = bien.chargesCentimes ?? 0;
+    final nom = bien.nom.trim().isEmpty ? 'Bien sans nom' : bien.nom.trim();
+    final bail =
+        bien.estLongueDuree &&
+            bien.typeBail != null &&
+            bien.dateDebutBail != null
+        ? '${bien.typeBail!.libelle} depuis le '
+              '${Formats.date(bien.dateDebutBail!)}'
+        : null;
 
-    return Card(
-      shape: bien.estComplet
-          ? null
-          : RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: theme.colorScheme.error, width: 1.5),
-            ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
-        child: Row(
-          children: [
-            SizedBox.square(
-              dimension: 72,
-              child: PhotoBien(
-                chemin: bien.photoChemin,
-                typeLogement: bien.typeLogement,
-                rayon: 12,
-                tailleIcone: 32,
+    return _Ligne(
+      visuel: SizedBox.square(
+        dimension: AppSizes.vignette,
+        child: PhotoBien(
+          chemin: bien.photoChemin,
+          typeLogement: bien.typeLogement,
+          rayon: AppRadius.tuile,
+          tailleIcone: AppSizes.pictogrammePetit,
+        ),
+      ),
+      titre: nom,
+      lignes: [
+        [
+          bien.typeLogement?.libelle,
+          bien.typeLocation?.libelle,
+        ].whereType<String>().join(', '),
+        if (loyer != null)
+          charges > 0
+              ? '${Formats.parMois(loyer)} + ${Formats.montant(charges)} '
+                    'de charges'
+              : Formats.parMois(loyer),
+        ?bail,
+      ],
+      alerte: bien.estComplet ? null : 'Informations à compléter',
+      descriptionModifier: 'Modifier $nom',
+      onModifier: onModifier,
+    );
+  }
+}
+
+/// Ligne de liste entièrement cliquable, avec chevron (UI.md §6).
+class _Ligne extends StatelessWidget {
+  const _Ligne({
+    required this.visuel,
+    required this.titre,
+    required this.lignes,
+    required this.descriptionModifier,
+    required this.onModifier,
+    this.alerte,
+  });
+
+  final Widget visuel;
+  final String titre;
+  final List<String> lignes;
+  final String? alerte;
+  final String descriptionModifier;
+  final VoidCallback? onModifier;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.textes;
+    final c = context.couleurs;
+    final alerte = this.alerte;
+    return Semantics(
+      button: true,
+      hint: descriptionModifier,
+      child: InkWell(
+        onTap: onModifier,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.ligne),
+          child: Row(
+            children: [
+              visuel,
+              const SizedBox(width: AppSpacing.bloc),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(titre, style: t.rowTitle),
+                    for (final ligne in lignes.where((l) => l.isNotEmpty))
+                      Text(ligne, style: t.secondary),
+                    if (alerte != null)
+                      Text(alerte, style: t.caption.copyWith(color: c.erreur)),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    bien.nom.trim().isEmpty ? 'Bien sans nom' : bien.nom.trim(),
-                    style: texte.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  if (type.isNotEmpty) Text(type, style: texte.bodyMedium),
-                  if (loyer != null)
-                    Text(
-                      charges > 0
-                          ? '${Formats.montant(loyer)} + ${Formats.montant(charges)} de charges'
-                          : Formats.montant(loyer),
-                      style: texte.bodyMedium,
-                    ),
-                  if (bien.estLongueDuree &&
-                      bien.typeBail != null &&
-                      bien.dateDebutBail != null)
-                    Text(
-                      '${bien.typeBail!.libelle} depuis le ${Formats.date(bien.dateDebutBail!)}',
-                      style: texte.bodySmall,
-                    ),
-                  if (!bien.estComplet)
-                    Text(
-                      'Informations à compléter',
-                      style: texte.bodySmall?.copyWith(
-                        color: theme.colorScheme.error,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            TextButton(onPressed: onModifier, child: const Text('Modifier')),
-          ],
+              const SizedBox(width: AppSpacing.s),
+              Icon(AppIcons.suivant, color: c.textSecondary),
+            ],
+          ),
         ),
       ),
     );

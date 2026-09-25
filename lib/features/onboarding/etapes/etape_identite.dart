@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/design/design.dart';
 import '../../../core/validation/validateurs.dart';
 import '../brouillon_onboarding.dart';
 import '../onboarding_controller.dart';
@@ -73,7 +74,7 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
     List<TextInputFormatter>? formats,
     String? aide,
   }) => Padding(
-    padding: const EdgeInsets.only(bottom: 16),
+    padding: const EdgeInsets.only(bottom: AppSpacing.bloc),
     child: TextFormField(
       controller: controleur,
       decoration: InputDecoration(labelText: libelle, helperText: aide),
@@ -102,14 +103,14 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Explication(
-                icone: Icons.mail_outline,
+              const Note(
+                icone: AppIcons.courrier,
                 texte:
                     'Ces informations apparaîtront comme expéditeur sur les '
                     'courriers préparés par l\'application (révision de '
                     'loyer…). Elles restent sur votre téléphone.',
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.sectionLarge),
               _champ(
                 _prenom,
                 'Prénom',
@@ -128,6 +129,7 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
                 majuscules: TextCapitalization.words,
                 autofill: const [AutofillHints.familyName],
               ),
+              const SizedBox(height: AppSpacing.bloc),
               const TitreSection('Adresse postale'),
               _champ(
                 _rue,
@@ -160,6 +162,7 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
                 majuscules: TextCapitalization.words,
                 autofill: const [AutofillHints.addressCity],
               ),
+              const SizedBox(height: AppSpacing.bloc),
               const TitreSection('Pour vous joindre'),
               _champ(
                 _telephone,

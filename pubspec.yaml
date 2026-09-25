@@ -1,5 +1,5 @@
 name: bailleur_app
-description: "Boîte à outils pour propriétaires bailleurs particuliers."
+description: "Pense-Bail, boîte à outils pour propriétaires bailleurs particuliers."
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -29,6 +29,9 @@ dependencies:
   # Photos des biens
   image_picker: ^1.2.3
 
+  # Icônes au trait (UI.md §5)
+  lucide_icons_flutter: ^3.1.20
+
   # Ajoutés aux étapes suivantes :
   #   flutter_local_notifications + timezone (rappels)   → étape 3
   #   url_launcher (appeler / écrire)                     → étape 4
@@ -45,3 +48,18 @@ flutter:
   uses-material-design: true
   assets:
     - assets/irl/
+
+  # Polices embarquées (SIL Open Font License, voir assets/fonts/OFL-*.txt)
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-SemiBold.ttf
+          weight: 600
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Manrope-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Manrope-Bold.ttf
+          weight: 700

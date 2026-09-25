@@ -25,6 +25,14 @@ enum TypeLocation {
 
   /// La révision de loyer (IRL) n'est proposée que pour la longue durée.
   bool get revisionDisponible => this == TypeLocation.longueDuree;
+
+  /// Précision affichée sous le libellé pour lever les doutes.
+  String get precision => switch (this) {
+    TypeLocation.longueDuree => 'Résidence principale du locataire',
+    TypeLocation.moyenneDuree => 'Bail mobilité, étudiant…',
+    TypeLocation.courteDuree => 'Saisonnier, tourisme',
+    TypeLocation.professionnelle => 'Bureau, commerce',
+  };
 }
 
 enum TypeBail {

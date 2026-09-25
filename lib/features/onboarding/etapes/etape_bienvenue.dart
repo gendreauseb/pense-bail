@@ -1,33 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/design/design.dart';
+import '../../../core/widgets/composants.dart';
 import '../onboarding_controller.dart';
+import '../widgets/illustrations_bienvenue.dart';
 
 class _Promesse {
-  const _Promesse(this.icone, this.titre, this.texte);
-  final IconData icone;
+  const _Promesse(this.illustration, this.titre, this.texte);
+  final Widget illustration;
   final String titre;
   final String texte;
 }
 
 const _promesses = [
   _Promesse(
-    Icons.notifications_active_outlined,
+    IllustrationEcheances(),
     'Ne ratez plus aucune échéance',
     'Révision du loyer, fin de bail, assurance, taxe foncière : '
-        'l\'application vous prévient à temps.',
+        'Pense-Bail vous prévient à temps.',
   ),
   _Promesse(
-    Icons.apartment,
+    IllustrationBiens(),
     'Tous vos biens au même endroit',
-    'Bail, locataire, rentabilité, artisans : l\'essentiel de chaque bien '
+    'Bail, locataire, rentabilité, artisans : l\'essentiel de chaque bien, '
         'toujours sous la main.',
   ),
   _Promesse(
-    Icons.mail_outline,
+    IllustrationCourrier(),
     'Vos courriers prêts en un clic',
-    'La révision de loyer est calculée pour vous, avec un courrier prêt à '
-        'envoyer.\n\nVos données restent sur votre téléphone.',
+    'La révision du loyer est calculée pour vous, avec un courrier prêt à '
+        'envoyer. Vos données restent sur votre téléphone.',
   ),
 ];
 
@@ -42,6 +45,8 @@ class _EtapeBienvenueState extends ConsumerState<EtapeBienvenue> {
   final _pages = PageController();
   int _page = 0;
 
+  static const _defilement = Duration(milliseconds: 300);
+
   bool get _derniere => _page == _promesses.length - 1;
 
   @override
@@ -53,23 +58,27 @@ class _EtapeBienvenueState extends ConsumerState<EtapeBienvenue> {
   void _commencer() =>
       ref.read(onboardingControllerProvider.notifier).suivant();
 
+  void _suivant() =>
+      _pages.nextPage(duration: _defilement, curve: Curves.easeOut);
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final t = context.textes;
     return Scaffold(
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: _derniere
-                    ? const SizedBox(height: 48)
-                    : TextButton(
-                        onPressed: _commencer,
-                        child: const Text('Passer'),
-                      ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.ecran,
+                AppSpacing.section,
+                AppSpacing.ecran,
+                0,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: LogoPenseBail(),
               ),
             ),
             Expanded(
@@ -79,97 +88,71 @@ class _EtapeBienvenueState extends ConsumerState<EtapeBienvenue> {
                 onPageChanged: (p) => setState(() => _page = p),
                 itemBuilder: (context, i) {
                   final promesse = _promesses[i];
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 32),
-                        Container(
-                          width: 140,
-                          height: 140,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primaryContainer,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            promesse.icone,
-                            size: 64,
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
+                  return LayoutBuilder(
+                    builder: (context, contraintes) => SingleChildScrollView(
+                      padding: AppSpacing.paddingEcran,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: contraintes.maxHeight,
                         ),
-                        const SizedBox(height: 40),
-                        Semantics(
-                          header: true,
-                          child: Text(
-                            promesse.titre,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: AppSpacing.section),
+                            Center(child: promesse.illustration),
+                            const SizedBox(height: AppSpacing.tresGrand),
+                            Semantics(
+                              header: true,
+                              child: Text(
+                                promesse.titre,
+                                style: t.displayLarge,
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: AppSpacing.bloc),
+                            Text(
+                              promesse.texte,
+                              style: t.body.copyWith(
+                                color: context.couleurs.textMuted,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.section),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          promesse.texte,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 },
               ),
             ),
-            _Points(nombre: _promesses.length, actif: _page),
+            Pagination(nombre: _promesses.length, actif: _page),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: _derniere
-                      ? _commencer
-                      : () => _pages.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOut,
-                        ),
-                  child: Text(_derniere ? 'Commencer' : 'Suivant'),
-                ),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.ecran,
+                AppSpacing.section,
+                AppSpacing.ecran,
+                AppSpacing.s,
+              ),
+              child: FilledButton(
+                onPressed: _derniere ? _commencer : _suivant,
+                child: Text(_derniere ? 'Commencer' : 'Suivant'),
               ),
             ),
+            // Même hauteur sur toutes les pages : le bouton ne bouge pas.
+            SizedBox(
+              height: AppSizes.boutonSecondaire,
+              child: _derniere
+                  ? null
+                  : Center(
+                      child: TextButton(
+                        onPressed: _commencer,
+                        child: const Text('Passer l\'introduction'),
+                      ),
+                    ),
+            ),
+            const SizedBox(height: AppSpacing.s),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Points extends StatelessWidget {
-  const _Points({required this.nombre, required this.actif});
-  final int nombre;
-  final int actif;
-
-  @override
-  Widget build(BuildContext context) {
-    final schema = Theme.of(context).colorScheme;
-    return Semantics(
-      label: 'Écran ${actif + 1} sur $nombre',
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (var i = 0; i < nombre; i++)
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: i == actif ? 24 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: i == actif ? schema.primary : schema.outlineVariant,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-        ],
       ),
     );
   }

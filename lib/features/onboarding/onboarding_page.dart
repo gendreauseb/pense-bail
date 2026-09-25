@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/design/design.dart';
 import 'brouillon_onboarding.dart';
 import 'etapes/etape_bien.dart';
 import 'etapes/etape_bienvenue.dart';
@@ -24,7 +25,7 @@ class OnboardingPage extends ConsumerWidget {
       error: (erreur, _) => Scaffold(
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.ecran),
             child: Text(
               'Impossible de charger votre saisie.\n$erreur',
               textAlign: TextAlign.center,
@@ -72,19 +73,16 @@ class ProgressionBien extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Bien $numero sur $total',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
+        Text('Bien $numero sur $total', style: context.textes.label),
+        const SizedBox(height: AppSpacing.s),
         // Le texte ci-dessus est déjà lu par les lecteurs d'écran.
         ExcludeSemantics(
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(value: numero / total, minHeight: 6),
+            borderRadius: AppRadius.arrondi(AppRadius.complet),
+            child: LinearProgressIndicator(
+              value: numero / total,
+              minHeight: AppSpacing.xs,
+            ),
           ),
         ),
       ],

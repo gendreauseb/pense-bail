@@ -1,7 +1,8 @@
-# Bailleur App (nom provisoire)
+# Pense-Bail
 
 Boîte à outils mobile (Flutter, Android et iOS) pour les propriétaires bailleurs
-particuliers. Cahier des charges : [PROMPT.md](PROMPT.md).
+particuliers. Cahier des charges : [PROMPT.md](PROMPT.md). Design system :
+[UI.md](UI.md), qui fait foi pour tout ce qui touche l'interface.
 
 ## Architecture
 
@@ -20,7 +21,8 @@ lib/
     local/                       ← schéma SQLite (drift)
     repositories/                ← implémentation locale des interfaces
     providers.dart               ← injection (Riverpod)
-  app/                           ← thème, navigation (go_router)
+  app/design/                    ← tokens (AppColors, AppTextStyles, AppSpacing, AppRadius) et thème
+  app/                           ← navigation (go_router), coque de l'app
   features/                      ← écrans, un dossier par fonctionnalité
 assets/irl/                      ← table des indices IRL (voir LISEZMOI.md)
 ```

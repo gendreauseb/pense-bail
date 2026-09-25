@@ -6,7 +6,7 @@ import '../features/accueil/accueil_page.dart';
 import '../features/artisans/artisans_page.dart';
 import '../features/biens/biens_page.dart';
 import '../features/onboarding/onboarding_page.dart';
-import '../features/parametres/parametres_page.dart';
+import '../features/reglages/reglages_page.dart';
 import 'etat_app.dart';
 import 'shell.dart';
 
@@ -15,7 +15,7 @@ abstract final class Routes {
   static const accueil = '/accueil';
   static const biens = '/biens';
   static const artisans = '/artisans';
-  static const parametres = '/parametres';
+  static const reglages = '/reglages';
   // Étape 4 : fiche bien ; étape 5 : révision.
 }
 
@@ -69,8 +69,8 @@ final routeurProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: Routes.parametres,
-                builder: (context, state) => const ParametresPage(),
+                path: Routes.reglages,
+                builder: (context, state) => const ReglagesPage(),
               ),
             ],
           ),

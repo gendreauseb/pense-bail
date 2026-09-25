@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../app/design/design.dart';
 import '../../core/widgets/page_a_venir.dart';
 
-class ParametresPage extends StatelessWidget {
-  const ParametresPage({super.key});
+class ReglagesPage extends StatelessWidget {
+  const ReglagesPage({super.key});
 
   @override
   Widget build(BuildContext context) => const PageAVenir(
-    titre: 'Paramètres',
-    icone: Icons.settings,
+    titre: 'Réglages',
+    icone: AppIcons.reglages,
     etape: 'étape 6',
   );
 }

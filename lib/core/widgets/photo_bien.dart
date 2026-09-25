@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/design/design.dart';
 import '../../data/providers.dart';
 import '../../domain/enums.dart';
-import 'icones.dart';
 
-/// Photo d'un bien, ou illustration par défaut selon le type de logement.
+/// Photo d'un bien (recadrée, jamais déformée), ou illustration par défaut.
 class PhotoBien extends ConsumerWidget {
   const PhotoBien({
     super.key,
     required this.chemin,
     required this.typeLogement,
-    this.rayon = 16,
-    this.tailleIcone = 56,
+    this.rayon = AppRadius.carte,
+    this.tailleIcone = AppSizes.pictogramme,
   });
 
   /// Chemin relatif (voir PhotoService). `null` : illustration.
@@ -29,7 +29,7 @@ class PhotoBien extends ConsumerWidget {
     );
     final chemin = this.chemin;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(rayon),
+      borderRadius: AppRadius.arrondi(rayon),
       child: chemin == null
           ? illustration
           : Image.file(
@@ -44,11 +44,13 @@ class PhotoBien extends ConsumerWidget {
   }
 }
 
+/// Grand pictogramme au trait centré sur un fond coloré (UI.md §5) :
+/// maison sur fond sable, les autres types sur fond bleu canard pâle.
 class IllustrationBien extends StatelessWidget {
   const IllustrationBien({
     super.key,
     required this.typeLogement,
-    this.tailleIcone = 56,
+    this.tailleIcone = AppSizes.pictogramme,
   });
 
   final TypeLogement? typeLogement;
@@ -56,25 +58,21 @@ class IllustrationBien extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final schema = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [schema.primaryContainer, schema.secondaryContainer],
-        ),
-      ),
-      child: Center(
-        child: Icon(
-          typeLogement?.icone ?? Icons.home_work_outlined,
-          size: tailleIcone,
-          color: schema.onPrimaryContainer.withValues(alpha: 0.7),
-          semanticLabel: typeLogement == null
-              ? 'Illustration'
-              : 'Illustration : ${typeLogement!.libelle}',
+    final c = context.couleurs;
+    final maison = typeLogement == TypeLogement.maison;
+    final type = typeLogement;
+    return ColoredBox(
+      color: maison ? c.sand : c.primarySoft,
+      child: SizedBox.expand(
+        child: Center(
+          child: Icon(
+            type == null ? AppIcons.biens : AppIcons.typeLogement(type),
+            size: tailleIcone,
+            color: maison ? c.sandIcon : c.primary,
+            semanticLabel: type == null
+                ? 'Illustration'
+                : 'Illustration : ${type.libelle}',
+          ),
         ),
       ),
     );

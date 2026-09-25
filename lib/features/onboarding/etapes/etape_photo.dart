@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/design/design.dart';
 import '../../../core/widgets/photo_bien.dart';
 import '../../../data/photos/photo_service.dart';
 import '../../../data/providers.dart';
@@ -95,43 +96,46 @@ class _EtapePhotoState extends ConsumerState<EtapePhoto> {
                 PhotoBien(
                   chemin: bien.photoChemin,
                   typeLogement: bien.typeLogement,
-                  tailleIcone: 72,
+                  tailleIcone: AppSizes.pictogrammeGrand,
                 ),
                 if (_enCours)
-                  const ColoredBox(
-                    color: Colors.black26,
-                    child: Center(child: CircularProgressIndicator()),
+                  ClipRRect(
+                    borderRadius: AppRadius.arrondi(AppRadius.carte),
+                    child: ColoredBox(
+                      color: context.couleurs.ombre,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
                   ),
               ],
             ),
           ),
           if (!aUnePhoto) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s),
             Text(
               'Sans photo, cette illustration sera affichée.',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: context.textes.secondary,
             ),
           ],
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.sectionLarge),
           OutlinedButton.icon(
             onPressed: _enCours ? null : () => _choisir(SourcePhoto.appareil),
-            icon: const Icon(Icons.photo_camera_outlined),
+            icon: const Icon(AppIcons.appareilPhoto),
             label: Text(
               aUnePhoto ? 'Reprendre une photo' : 'Prendre une photo',
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.bloc),
           OutlinedButton.icon(
             onPressed: _enCours ? null : () => _choisir(SourcePhoto.galerie),
-            icon: const Icon(Icons.photo_library_outlined),
+            icon: const Icon(AppIcons.galerie),
             label: const Text('Choisir dans la galerie'),
           ),
           if (aUnePhoto) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.bloc),
             TextButton.icon(
               onPressed: _enCours ? null : () => _controleur.definirPhoto(null),
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(AppIcons.supprimer),
               label: const Text('Retirer la photo'),
             ),
           ],

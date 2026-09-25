@@ -22,18 +22,40 @@ abstract final class Formats {
   static final _pourcentage = NumberFormat('#,##0.00', locale);
   static final _decimal = NumberFormat('#,##0.00', locale);
 
-  /// 123456 → « 1 234,56 € »
-  static String montant(int centimes) => _euros.format(centimes / 100);
+  /// Écran : centimes affichés seulement s'ils sont non nuls.
+  /// 65000 → « 650 € » ; 66423 → « 664,23 € » ; 115000 → « 1 150 € ».
+  static String montant(int centimes) => centimes % 100 == 0
+      ? _espaces(_eurosSansCentimes.format(centimes ~/ 100))
+      : montantComplet(centimes);
 
-  /// 123456 → « 1 235 € » (arrondi, pour les résumés)
+  /// Courriers et calculs détaillés : toujours avec les centimes.
+  /// 65000 → « 650,00 € »
+  static String montantComplet(int centimes) =>
+      _espaces(_euros.format(centimes / 100));
+
+  /// 123456 → « 1 235 € » (arrondi à l'euro, pour les résumés)
   static String montantArrondi(int centimes) =>
-      _eurosSansCentimes.format((centimes / 100).round());
+      _espaces(_eurosSansCentimes.format((centimes / 100).round()));
+
+  /// 62000 → « 620 € / mois »
+  static String parMois(int centimes) => '${montant(centimes)} / mois';
+
+  /// L'espace fine insécable (U+202F) utilisée par le format français n'existe
+  /// pas dans les polices embarquées : on la remplace par l'espace
+  /// insécable classique (U+00A0), qui empêche aussi les retours à la ligne.
+  static String _espaces(String texte) => texte.replaceAll('\u202F', '\u00A0');
 
   /// → « 25/09/2026 »
   static String date(DateTime date) => _date.format(date);
 
   /// → « 25 septembre 2026 » (courriers)
   static String dateLongue(DateTime date) => _dateLongue.format(date);
+
+  static final _moisAbrege = DateFormat('MMM', locale);
+
+  /// → « SEPT », « DÉC », « MAI » (tuiles de date)
+  static String moisAbrege(DateTime date) =>
+      _moisAbrege.format(date).replaceAll('.', '').toUpperCase();
 
   /// 0.0534 → « 5,34 % »
   static String pourcentage(double ratio) =>
@@ -62,7 +84,7 @@ abstract final class Formats {
   static String? _nettoyerNombre(String saisie) {
     final s = saisie
         .replaceAll('€', '')
-        .replaceAll(RegExp(r'[\s  ]'), '')
+        .replaceAll(RegExp(r'[\s\u00A0\u202F]'), '')
         .replaceAll(',', '.');
     if (s.isEmpty) return null;
     return RegExp(r'^\d+(\.\d+)?$').hasMatch(s) ? s : null;

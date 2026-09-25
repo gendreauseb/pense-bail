@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'design/design.dart';
 import 'router.dart';
-import 'theme.dart';
 
 class BailleurApp extends ConsumerWidget {
   const BailleurApp({super.key});
 
+  static const nom = 'Pense-Bail';
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      title: 'Bailleur App', // nom provisoire
+      title: nom,
       debugShowCheckedModeBanner: false,
-      theme: ThemeApp.clair(),
-      darkTheme: ThemeApp.sombre(),
+      // Mode sombre hors périmètre V1 (UI.md §10).
+      theme: AppTheme.clair(),
+      themeMode: ThemeMode.light,
       routerConfig: ref.watch(routeurProvider),
       locale: const Locale('fr', 'FR'),
       supportedLocales: const [Locale('fr', 'FR')],
