@@ -5,4 +5,7 @@ abstract final class ClesReglages {
 
   /// Brouillon JSON de l'onboarding en cours (supprimé à la fin).
   static const brouillonOnboarding = 'onboarding.brouillon';
+
+  /// 'true' une fois l'autorisation des notifications demandée.
+  static const notificationsDemandees = 'notifications.demandees';
 }

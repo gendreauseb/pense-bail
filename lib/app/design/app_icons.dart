@@ -22,6 +22,9 @@ abstract final class AppIcons {
   static const supprimer = LucideIcons.trash2;
   static const calendrier = LucideIcons.calendar;
   static const notifications = LucideIcons.bell;
+  static const notificationsCoupees = LucideIcons.bellOff;
+  static const modifier = LucideIcons.pencil;
+  static const verrou = LucideIcons.lock;
 
   // Contenus
   static const logo = LucideIcons.calendarCheck;

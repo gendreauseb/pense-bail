@@ -49,6 +49,7 @@ abstract interface class EcheanceRepository {
   /// Échéances non faites, triées par date, tous biens confondus
   /// (ou pour un seul bien si [bienId] est fourni).
   Stream<List<Echeance>> surveillerAFaire({String? bienId});
+  Future<List<Echeance>> aFaire();
 
   /// Toutes les échéances d'un bien (faites comprises).
   Stream<List<Echeance>> surveillerParBien(String bienId);
@@ -62,6 +63,10 @@ abstract interface class EcheanceRepository {
   Future<void> remplacerAutomatiques(String bienId, List<Echeance> nouvelles);
 
   Future<List<Rappel>> rappels(String echeanceId);
+
+  /// Tous les rappels, toutes échéances confondues (programmation des
+  /// notifications).
+  Future<List<Rappel>> tousLesRappels();
 
   /// Remplace les rappels d'une échéance (jours avant la date).
   Future<List<Rappel>> definirRappels(String echeanceId, List<int> joursAvant);

@@ -153,16 +153,23 @@ class DriftEcheanceRepository implements EcheanceRepository {
   DriftEcheanceRepository(this._db);
   final AppDatabase _db;
 
+  SimpleSelectStatement<$EcheancesTable, Echeance> _aFaire({String? bienId}) =>
+      _db.select(_db.echeances)
+        ..where((e) {
+          final aFaire = e.statut.equalsValue(StatutEcheance.aFaire);
+          return bienId == null ? aFaire : aFaire & e.bienId.equals(bienId);
+        })
+        ..orderBy([(e) => OrderingTerm(expression: e.date)]);
+
   @override
-  Stream<List<Echeance>> surveillerAFaire({String? bienId}) {
-    final requete = _db.select(_db.echeances)
-      ..where((e) {
-        final aFaire = e.statut.equalsValue(StatutEcheance.aFaire);
-        return bienId == null ? aFaire : aFaire & e.bienId.equals(bienId);
-      })
-      ..orderBy([(e) => OrderingTerm(expression: e.date)]);
-    return requete.watch();
-  }
+  Future<List<Echeance>> aFaire() => _aFaire().get();
+
+  @override
+  Future<List<Rappel>> tousLesRappels() => _db.select(_db.rappels).get();
+
+  @override
+  Stream<List<Echeance>> surveillerAFaire({String? bienId}) =>
+      _aFaire(bienId: bienId).watch();
 
   @override
   Stream<List<Echeance>> surveillerParBien(String bienId) =>

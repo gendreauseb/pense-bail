@@ -9,6 +9,7 @@ import 'app/etat_app.dart';
 import 'core/config/cles_reglages.dart';
 import 'core/format/formats.dart';
 import 'data/local/database.dart';
+import 'data/notifications/service_notifications.dart';
 import 'data/providers.dart';
 import 'data/repositories/drift_repositories.dart';
 
@@ -22,17 +23,30 @@ Future<void> main() async {
       await DriftReglagesRepository(db).lire(ClesReglages.onboardingTermine) ==
       'true';
   final documents = await getApplicationDocumentsDirectory();
+  final notifications = NotificationsLocales(
+    db: db,
+    echeances: DriftEcheanceRepository(db),
+    biens: DriftBienRepository(db),
+  );
+
+  final conteneur = ProviderContainer(
+    overrides: [
+      databaseProvider.overrideWithValue(db),
+      dossierDocumentsProvider.overrideWithValue(documents),
+      onboardingTermineAuDemarrageProvider.overrideWithValue(onboardingTermine),
+      serviceNotificationsProvider.overrideWithValue(notifications),
+    ],
+  );
+
+  void ouvrirEcheance(String id) =>
+      conteneur.read(echeanceAOuvrirProvider.notifier).ouvrir(id);
+
+  final lanceeParNotification = await notifications.initialiser(
+    onOuverture: ouvrirEcheance,
+  );
+  if (lanceeParNotification != null) ouvrirEcheance(lanceeParNotification);
 
   runApp(
-    ProviderScope(
-      overrides: [
-        databaseProvider.overrideWithValue(db),
-        dossierDocumentsProvider.overrideWithValue(documents),
-        onboardingTermineAuDemarrageProvider.overrideWithValue(
-          onboardingTermine,
-        ),
-      ],
-      child: const BailleurApp(),
-    ),
+    UncontrolledProviderScope(container: conteneur, child: const BailleurApp()),
   );
 }

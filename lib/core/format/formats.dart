@@ -51,6 +51,14 @@ abstract final class Formats {
   /// → « 25 septembre 2026 » (courriers)
   static String dateLongue(DateTime date) => _dateLongue.format(date);
 
+  static final _jourComplet = DateFormat('EEEE d MMMM', locale);
+
+  /// → « Vendredi 25 septembre » (en-tête du tableau de bord)
+  static String jourComplet(DateTime date) {
+    final texte = _jourComplet.format(date);
+    return texte[0].toUpperCase() + texte.substring(1);
+  }
+
   static final _moisAbrege = DateFormat('MMM', locale);
 
   /// → « SEPT », « DÉC », « MAI » (tuiles de date)

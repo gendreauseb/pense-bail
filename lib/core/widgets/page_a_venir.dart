@@ -9,17 +9,30 @@ class PageAVenir extends StatelessWidget {
     required this.titre,
     required this.icone,
     required this.etape,
+    this.avecRetour = false,
   });
 
   final String titre;
   final IconData icone;
   final String etape;
 
+  /// Écran ouvert par-dessus un autre : bouton retour en haut.
+  final bool avecRetour;
+
   @override
   Widget build(BuildContext context) {
     final c = context.couleurs;
     final t = context.textes;
     return Scaffold(
+      appBar: avecRetour
+          ? AppBar(
+              leading: IconButton(
+                icon: const Icon(AppIcons.retour),
+                tooltip: 'Retour',
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            )
+          : null,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

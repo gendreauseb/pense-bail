@@ -5,19 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../features/accueil/accueil_page.dart';
 import '../features/artisans/artisans_page.dart';
 import '../features/biens/biens_page.dart';
+import '../features/biens/fiche_bien_page.dart';
+import '../features/echeances/edition_echeance_page.dart';
 import '../features/onboarding/onboarding_page.dart';
 import '../features/reglages/reglages_page.dart';
+import '../features/revision/revision_page.dart';
 import 'etat_app.dart';
+import 'routes.dart';
 import 'shell.dart';
-
-abstract final class Routes {
-  static const onboarding = '/bienvenue';
-  static const accueil = '/accueil';
-  static const biens = '/biens';
-  static const artisans = '/artisans';
-  static const reglages = '/reglages';
-  // Étape 4 : fiche bien ; étape 5 : révision.
-}
 
 final routeurProvider = Provider<GoRouter>((ref) {
   // Tant que l'onboarding n'est pas terminé, toute navigation y ramène.
@@ -37,6 +32,26 @@ final routeurProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.onboarding,
         builder: (context, state) => const OnboardingPage(),
+      ),
+      // Écrans plein écran, au-dessus de la barre de navigation.
+      GoRoute(
+        path: Routes.nouvelleEcheance,
+        builder: (context, state) => const EditionEcheancePage(),
+      ),
+      GoRoute(
+        path: Routes.modifierEcheance(':id'),
+        builder: (context, state) =>
+            EditionEcheancePage(echeanceId: state.pathParameters['id']),
+      ),
+      GoRoute(
+        path: Routes.revision(':bienId'),
+        builder: (context, state) =>
+            RevisionPage(bienId: state.pathParameters['bienId']!),
+      ),
+      GoRoute(
+        path: Routes.ficheBien(':id'),
+        builder: (context, state) =>
+            FicheBienPage(bienId: state.pathParameters['id']!),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

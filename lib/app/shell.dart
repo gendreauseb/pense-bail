@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/widgets/composants.dart';
 import 'design/design.dart';
+import 'etat_app.dart';
+import 'routes.dart';
 
 /// Coque de l'application : contenu de l'onglet + barre de navigation.
-class ShellApp extends StatelessWidget {
+class ShellApp extends ConsumerWidget {
   const ShellApp({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
@@ -16,7 +19,11 @@ class ShellApp extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Notification touchée : retour à l'accueil, qui ouvre l'échéance.
+    ref.listen(echeanceAOuvrirProvider, (_, id) {
+      if (id != null) _allerA(0);
+    });
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: BarreNavigation(
@@ -35,6 +42,8 @@ class ShellApp extends StatelessWidget {
 
   Future<void> _ouvrirAjout(BuildContext context) => showModalBottomSheet<void>(
     context: context,
+    // Au-dessus de la barre de navigation et du bouton « + ».
+    useRootNavigator: true,
     builder: (context) => const _ChoixAjout(),
   );
 }
@@ -220,17 +229,21 @@ class _ChoixAjout extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: const [
-            TitreSection('Ajouter'),
-            // Branchés aux étapes 3 (échéances) et 4 (biens).
+          children: [
+            const TitreSection('Ajouter'),
             CarteAction(
               icone: AppIcons.echeance,
               titre: 'Ajouter une échéance',
-              sousTitre: 'Bientôt disponible',
-              onTap: null,
+              sousTitre: 'Un rappel personnel, pour un bien ou pour tous',
+              onTap: () {
+                final routeur = GoRouter.of(context);
+                Navigator.of(context).pop();
+                routeur.push(Routes.nouvelleEcheance);
+              },
             ),
-            SizedBox(height: AppSpacing.bloc),
-            CarteAction(
+            const SizedBox(height: AppSpacing.bloc),
+            // Branché à l'étape 4 (fiche bien).
+            const CarteAction(
               icone: AppIcons.biens,
               titre: 'Ajouter un bien',
               sousTitre: 'Bientôt disponible',

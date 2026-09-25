@@ -8,8 +8,11 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../domain/entities/entities.dart';
 import '../domain/repositories/repositories.dart';
+import '../domain/usecases/gestion_echeances.dart';
 import 'local/database.dart';
+import 'notifications/service_notifications.dart';
 import 'photos/photo_service.dart';
 import 'repositories/drift_repositories.dart';
 
@@ -66,4 +69,52 @@ final indiceIrlRepositoryProvider = Provider<IndiceIrlRepository>(
 
 final reglagesRepositoryProvider = Provider<ReglagesRepository>(
   (ref) => DriftReglagesRepository(ref.watch(databaseProvider)),
+);
+
+// ---------------------------------------------------------------------------
+// Cas d'usage
+// ---------------------------------------------------------------------------
+
+final gestionEcheancesProvider = Provider<GestionEcheances>(
+  (ref) => GestionEcheances(
+    transactions: ref.watch(transactionsProvider),
+    echeances: ref.watch(echeanceRepositoryProvider),
+  ),
+);
+
+/// Notifications locales. Fourni au démarrage (voir main.dart) ; inactif
+/// par défaut (tests).
+final serviceNotificationsProvider = Provider<ServiceNotifications>(
+  (ref) => const NotificationsInactives(),
+);
+
+// ---------------------------------------------------------------------------
+// Flux de données (mis à jour automatiquement à chaque modification)
+// ---------------------------------------------------------------------------
+
+final bailleurFluxProvider = StreamProvider<Bailleur?>(
+  (ref) => ref.watch(bailleurRepositoryProvider).surveiller(),
+);
+
+final biensFluxProvider = StreamProvider<List<Bien>>(
+  (ref) => ref.watch(bienRepositoryProvider).surveillerTous(),
+);
+
+final bauxActifsFluxProvider = StreamProvider<List<Bail>>(
+  (ref) => ref.watch(bailRepositoryProvider).surveillerBauxActifs(),
+);
+
+/// Échéances à faire, triées par date, tous biens confondus.
+final echeancesAFaireFluxProvider = StreamProvider<List<Echeance>>(
+  (ref) => ref.watch(echeanceRepositoryProvider).surveillerAFaire(),
+);
+
+final rappelsEcheanceProvider = FutureProvider.autoDispose
+    .family<List<Rappel>, String>(
+      (ref, echeanceId) =>
+          ref.watch(echeanceRepositoryProvider).rappels(echeanceId),
+    );
+
+final echeanceProvider = FutureProvider.autoDispose.family<Echeance?, String>(
+  (ref, id) => ref.watch(echeanceRepositoryProvider).parId(id),
 );
