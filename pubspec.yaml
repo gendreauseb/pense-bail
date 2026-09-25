@@ -1,0 +1,47 @@
+name: bailleur_app
+description: "Boîte à outils pour propriétaires bailleurs particuliers."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Base de données locale (SQLite)
+  drift: ^2.35.0
+  drift_flutter: ^0.3.1
+  path_provider: ^2.1.6
+  path: ^1.9.1
+
+  # État et navigation
+  flutter_riverpod: ^3.4.3
+  go_router: ^18.0.1
+
+  # Formats français, identifiants
+  intl: ^0.20.2
+  uuid: ^4.6.0
+
+  # Photos des biens
+  image_picker: ^1.2.3
+
+  # Ajoutés aux étapes suivantes :
+  #   flutter_local_notifications + timezone (rappels)   → étape 3
+  #   url_launcher (appeler / écrire)                     → étape 4
+  #   pdf + printing + share_plus (courriers, exports)    → étape 5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  drift_dev: ^2.35.0
+  build_runner: ^2.15.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/irl/
