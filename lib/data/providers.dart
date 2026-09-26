@@ -14,12 +14,14 @@ import '../domain/entities/entities.dart';
 import '../domain/repositories/repositories.dart';
 import '../domain/usecases/gestion_biens.dart';
 import '../domain/usecases/gestion_echeances.dart';
+import '../domain/usecases/preferences_rappels.dart';
 import '../domain/usecases/reviser_loyer.dart';
 import 'irl/service_indices_irl.dart';
 import 'local/database.dart';
 import 'notifications/service_notifications.dart';
 import 'photos/photo_service.dart';
 import 'repositories/drift_repositories.dart';
+import 'sauvegarde/service_sauvegarde.dart';
 
 /// Dossier Documents de l'application, résolu au démarrage (voir main.dart).
 final dossierDocumentsProvider = Provider<Directory>(
@@ -93,7 +95,23 @@ final gestionBiensProvider = Provider<GestionBiens>(
     biens: ref.watch(bienRepositoryProvider),
     baux: ref.watch(bailRepositoryProvider),
     echeances: ref.watch(echeanceRepositoryProvider),
+    rappelsParDefaut: () async =>
+        (await ref.read(gestionPreferencesRappelsProvider).lire())
+            .delaisParDefaut,
   ),
+);
+
+final gestionPreferencesRappelsProvider = Provider<GestionPreferencesRappels>(
+  (ref) => GestionPreferencesRappels(
+    transactions: ref.watch(transactionsProvider),
+    reglages: ref.watch(reglagesRepositoryProvider),
+    echeances: ref.watch(echeanceRepositoryProvider),
+  ),
+);
+
+/// Préférences de rappel, mises à jour à chaque modification.
+final preferencesRappelsProvider = StreamProvider<PreferencesRappels>(
+  (ref) => ref.watch(gestionPreferencesRappelsProvider).surveiller(),
 );
 
 final reviserLoyerProvider = Provider<ReviserLoyer>(
@@ -136,6 +154,13 @@ final indicesIrlFluxProvider = StreamProvider<List<IndiceIrl>>((ref) async* {
   await ref.watch(serviceIndicesIrlProvider).importerTableEmbarquee();
   yield* ref.watch(indiceIrlRepositoryProvider).surveillerTous();
 });
+
+final serviceSauvegardeProvider = Provider<ServiceSauvegarde>(
+  (ref) => ServiceSauvegarde(
+    db: ref.watch(databaseProvider),
+    documents: ref.watch(dossierDocumentsProvider),
+  ),
+);
 
 /// Date de la dernière vérification réussie auprès de l'INSEE.
 final derniereMiseAJourIrlProvider = FutureProvider.autoDispose<DateTime?>(

@@ -1,7 +1,7 @@
 import '../../core/config/config_app.dart';
 import '../../core/format/formats.dart';
 import '../../core/utils/dates.dart';
-import '../entities/echeance.dart';
+import '../entities/entities.dart';
 
 /// Notification à programmer sur le téléphone.
 class RappelAProgrammer {
@@ -25,12 +25,14 @@ class RappelAProgrammer {
 
 /// Calcule les notifications à programmer (fonction pure, testable).
 abstract final class PlanificationRappels {
-  /// [nomsBiens] : nom de chaque bien par identifiant.
+  /// [nomsBiens] : nom de chaque bien par identifiant. Aucune notification
+  /// pour les types de [typesSansRappel] (désactivés dans les réglages).
   static List<RappelAProgrammer> planifier({
     required List<Echeance> echeances,
     required List<Rappel> rappels,
     required Map<String, String> nomsBiens,
     required DateTime maintenant,
+    Set<TypeEcheance> typesSansRappel = const {},
     int maximum = ConfigApp.maxRappelsProgrammes,
   }) {
     final parId = {for (final e in echeances) e.id: e};
@@ -38,7 +40,11 @@ abstract final class PlanificationRappels {
 
     for (final rappel in rappels) {
       final echeance = parId[rappel.echeanceId];
-      if (echeance == null || echeance.estFaite) continue;
+      if (echeance == null ||
+          echeance.estFaite ||
+          typesSansRappel.contains(echeance.type)) {
+        continue;
+      }
 
       final jour = Dates.ajouterJours(echeance.date, -rappel.joursAvant);
       final quand = DateTime(

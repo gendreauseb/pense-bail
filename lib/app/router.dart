@@ -15,6 +15,9 @@ import '../features/biens/formulaires/edition_locataire_page.dart';
 import '../features/biens/formulaires/edition_mouvement_page.dart';
 import '../features/echeances/edition_echeance_page.dart';
 import '../features/onboarding/onboarding_page.dart';
+import '../features/reglages/edition_profil_page.dart';
+import '../features/reglages/mentions_legales_page.dart';
+import '../features/reglages/rappels_page.dart';
 import '../features/reglages/reglages_page.dart';
 import '../features/biens/rentabilite/recapitulatif_page.dart';
 import '../features/revision/courrier/courrier_revision_page.dart';
@@ -59,6 +62,18 @@ final routeurProvider = Provider<GoRouter>((ref) {
         path: Routes.artisan,
         builder: (context, state) =>
             EditionArtisanPage(artisanId: state.uri.queryParameters['artisan']),
+      ),
+      GoRoute(
+        path: Routes.profil,
+        builder: (context, state) => const EditionProfilPage(),
+      ),
+      GoRoute(
+        path: Routes.reglagesRappels,
+        builder: (context, state) => const RappelsPage(),
+      ),
+      GoRoute(
+        path: Routes.mentionsLegales,
+        builder: (context, state) => const MentionsLegalesPage(),
       ),
       GoRoute(
         path: Routes.modifierEcheance(':id'),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/design/design.dart';
 import '../../../core/widgets/composants.dart';
+import '../../reglages/actions_donnees.dart';
 import '../onboarding_controller.dart';
 import '../widgets/illustrations_bienvenue.dart';
 
@@ -149,6 +150,14 @@ class _EtapeBienvenueState extends ConsumerState<EtapeBienvenue> {
                         child: const Text('Passer l\'introduction'),
                       ),
                     ),
+            ),
+            // Nouveau téléphone : reprendre ses données sans refaire
+            // l'onboarding.
+            Center(
+              child: TextButton(
+                onPressed: () => restaurerDonnees(context, ref),
+                child: const Text('J\'ai une sauvegarde : la restaurer'),
+              ),
             ),
             const SizedBox(height: AppSpacing.s),
           ],

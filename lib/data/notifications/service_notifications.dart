@@ -8,6 +8,7 @@ import 'package:timezone/data/latest_all.dart' as tz_donnees;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../app/design/app_colors.dart';
+import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
 import '../../domain/services/planification_rappels.dart';
 import '../local/database.dart';
@@ -45,12 +46,14 @@ class NotificationsLocales implements ServiceNotifications {
     required this._db,
     required this._echeances,
     required this._biens,
+    required this._preferences,
     FlutterLocalNotificationsPlugin? plugin,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   final AppDatabase _db;
   final EcheanceRepository _echeances;
   final BienRepository _biens;
+  final Future<PreferencesRappels> Function() _preferences;
   final FlutterLocalNotificationsPlugin _plugin;
 
   StreamSubscription<void>? _abonnement;
@@ -105,7 +108,12 @@ class NotificationsLocales implements ServiceNotifications {
     // Reprogrammation automatique à chaque changement en base.
     _abonnement = _db
         .tableUpdates(
-          TableUpdateQuery.onAllTables([_db.echeances, _db.rappels, _db.biens]),
+          TableUpdateQuery.onAllTables([
+            _db.echeances,
+            _db.rappels,
+            _db.biens,
+            _db.reglages,
+          ]),
         )
         .listen((_) => _planifierSynchronisation());
     unawaited(synchroniser());
@@ -165,11 +173,13 @@ class NotificationsLocales implements ServiceNotifications {
       final echeances = await _echeances.aFaire();
       final rappels = await _echeances.tousLesRappels();
       final biens = await _biens.tous();
+      final preferences = await _preferences();
       final plan = PlanificationRappels.planifier(
         echeances: echeances,
         rappels: rappels,
         nomsBiens: {for (final b in biens) b.id: b.nom},
         maintenant: DateTime.now(),
+        typesSansRappel: preferences.typesDesactives,
       );
 
       await _plugin.cancelAllPendingNotifications();

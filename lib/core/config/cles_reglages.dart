@@ -14,4 +14,7 @@ abstract final class ClesReglages {
 
   /// Date (ISO) de la dernière mise à jour réussie depuis l'INSEE.
   static const irlDerniereMiseAJour = 'irl.derniere_mise_a_jour';
+
+  /// Préférences de rappel (JSON, voir PreferencesRappels).
+  static const preferencesRappels = 'rappels.preferences';
 }

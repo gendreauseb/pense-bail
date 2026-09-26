@@ -98,4 +98,15 @@ void main() {
     expect(plan.first.id, 0);
     expect(plan.last.id, 59);
   });
+
+  test("types désactivés dans les réglages : aucune notification", () {
+    final plan = PlanificationRappels.planifier(
+      echeances: [_echeance('e1', DateTime(2026, 12, 1))],
+      rappels: const [Rappel(id: 1, echeanceId: 'e1', joursAvant: 30)],
+      nomsBiens: const {},
+      maintenant: maintenant,
+      typesSansRappel: const {TypeEcheance.revisionLoyer},
+    );
+    expect(plan, isEmpty);
+  });
 }

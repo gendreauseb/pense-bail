@@ -47,4 +47,12 @@ abstract final class ConfigApp {
   /// Vérification automatique de nouveaux indices à l'ouverture de l'outil
   /// de révision, au plus une fois par période.
   static const Duration intervalleMiseAJourIrl = Duration(days: 7);
+
+  /// Éditeur de l'application, affiché dans les mentions légales.
+  /// À renseigner avant publication (nom ou raison sociale, et adresse).
+  static const String? editeur = null;
+
+  /// Moyen de contact de l'éditeur (email), affiché dans les mentions
+  /// légales. À renseigner avant publication.
+  static const String? contactEditeur = null;
 }

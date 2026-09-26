@@ -17,6 +17,10 @@ class OnboardingTermine extends Notifier<bool> {
   bool build() => ref.read(onboardingTermineAuDemarrageProvider);
 
   void marquerTermine() => state = true;
+
+  /// Après « Tout effacer » ou la restauration d'une sauvegarde incomplète :
+  /// retour à l'accueil de l'onboarding.
+  void reinitialiser() => state = false;
 }
 
 /// Date du jour (sans heure). Recalculée au retour dans l'app (voir

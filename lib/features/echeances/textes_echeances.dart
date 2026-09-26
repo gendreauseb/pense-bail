@@ -67,3 +67,7 @@ String? texteRappels(List<int> joursAvant) {
   final dernier = morceaux.removeLast();
   return 'Rappels ${morceaux.join(', ')} et $dernier';
 }
+
+/// Puce d'un délai de rappel : « 30 j avant », « Le jour même ».
+String texteDelaiRappel(int jours) =>
+    jours == 0 ? 'Le jour même' : '$jours j avant';

@@ -105,6 +105,24 @@ abstract final class AppTheme {
 
       dividerTheme: DividerThemeData(color: c.divider, thickness: 1, space: 1),
 
+      // Interrupteurs (réglages) : activé en primary, désactivé en neutre.
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (etats) => etats.contains(WidgetState.selected)
+              ? c.onPrimary
+              : c.textSecondary,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (etats) =>
+              etats.contains(WidgetState.selected) ? c.primary : c.surface,
+        ),
+        trackOutlineColor: WidgetStateProperty.resolveWith(
+          (etats) => etats.contains(WidgetState.selected)
+              ? c.primary
+              : c.textSecondary,
+        ),
+      ),
+
       filledButtonTheme: FilledButtonThemeData(
         style: ButtonStyle(
           minimumSize: const WidgetStatePropertyAll(

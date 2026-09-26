@@ -6,6 +6,7 @@ import '../../app/design/design.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/services/proximite.dart';
 import '../format/formats.dart';
+import 'composants.dart';
 import 'statut_echeance.dart';
 
 /// Lignes regroupées dans une carte, séparées par un trait inset de 14.
@@ -29,6 +30,58 @@ class CarteListe extends StatelessWidget {
       ],
     ),
   );
+}
+
+/// Ligne cliquable d'une liste : tuile d'icône, titre, sous-titre et
+/// chevron (réglages, choix d'un élément).
+class LigneNavigation extends StatelessWidget {
+  const LigneNavigation({
+    super.key,
+    required this.icone,
+    required this.titre,
+    required this.onTap,
+    this.sousTitre,
+  });
+
+  final IconData icone;
+  final String titre;
+  final String? sousTitre;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.textes;
+    final sousTitre = this.sousTitre;
+    return Semantics(
+      container: true,
+      button: true,
+      label: [titre, ?sousTitre].join(', '),
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.ligne),
+          child: Row(
+            children: [
+              TuileIcone(icone: icone),
+              const SizedBox(width: AppSpacing.bloc),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(titre, style: t.rowTitle),
+                    if (sousTitre != null) Text(sousTitre, style: t.secondary),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s),
+              Icon(AppIcons.suivant, color: context.couleurs.textSecondary),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// Ligne d'échéance : tuile de date (facultative), titre, sous-titre et

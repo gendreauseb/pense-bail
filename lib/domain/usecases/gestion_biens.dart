@@ -12,12 +12,17 @@ class GestionBiens {
     required this.biens,
     required this.baux,
     required this.echeances,
-  });
+    Future<List<int>> Function()? rappelsParDefaut,
+  }) : rappelsParDefaut =
+           rappelsParDefaut ?? (() async => ConfigApp.rappelsParDefautJours);
 
   final Transactions transactions;
   final BienRepository biens;
   final BailRepository baux;
   final EcheanceRepository echeances;
+
+  /// Rappels des nouvelles échéances (préférences de l'utilisateur).
+  final Future<List<int>> Function() rappelsParDefaut;
 
   /// Nouveau bien (après l'onboarding) : bien, bail éventuel, premières
   /// échéances et rappels par défaut.
@@ -84,8 +89,9 @@ class GestionBiens {
         p.versEcheance(id: Identifiants.nouveau(), maintenant: maintenant),
     ];
     await echeances.remplacerAutomatiques(bien.id, nouvelles);
+    final rappels = await rappelsParDefaut();
     for (final e in nouvelles) {
-      await echeances.definirRappels(e.id, ConfigApp.rappelsParDefautJours);
+      await echeances.definirRappels(e.id, rappels);
     }
   }
 
@@ -96,8 +102,9 @@ class GestionBiens {
         p.versEcheance(id: Identifiants.nouveau(), maintenant: maintenant),
     ];
     await echeances.enregistrerTout(aCreer);
+    final rappels = await rappelsParDefaut();
     for (final e in aCreer) {
-      await echeances.definirRappels(e.id, ConfigApp.rappelsParDefautJours);
+      await echeances.definirRappels(e.id, rappels);
     }
   }
 }

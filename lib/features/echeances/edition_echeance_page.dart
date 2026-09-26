@@ -13,6 +13,7 @@ import '../../core/widgets/composants.dart';
 import '../../core/widgets/listes.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
+import 'textes_echeances.dart';
 
 /// Valeurs proposées pour une nouvelle échéance (depuis la fiche d'un bien :
 /// assurance, chaudière, diagnostic…). Toutes restent modifiables.
@@ -165,7 +166,9 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   late String _bienId =
       widget.existante?.bienId ?? widget.preremplissage.bienId ?? _tousLesBiens;
   late final Set<int> _rappels = {
-    ...(widget.rappels ?? ConfigApp.rappelsParDefautJours),
+    ...(widget.rappels ??
+        ref.read(preferencesRappelsProvider).value?.delaisParDefaut ??
+        ConfigApp.rappelsParDefautJours),
   };
   bool _enCours = false;
 
@@ -389,7 +392,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                 children: [
                   for (final jours in ConfigApp.rappelsProposesJours)
                     PuceFiltre(
-                      libelle: jours == 0 ? 'Le jour même' : '$jours j avant',
+                      libelle: texteDelaiRappel(jours),
                       active: _rappels.contains(jours),
                       onTap: () => setState(
                         () => _rappels.contains(jours)

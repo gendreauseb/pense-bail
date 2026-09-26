@@ -59,6 +59,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/irl/
+    - assets/fonts/OFL-Fraunces.txt
+    - assets/fonts/OFL-Manrope.txt
 
   # Polices embarquées (SIL Open Font License, voir assets/fonts/OFL-*.txt)
   fonts:

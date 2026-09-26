@@ -6,4 +6,5 @@ export 'bien.dart';
 export 'copie.dart' show inchange;
 export 'echeance.dart';
 export 'finance.dart';
+export 'preferences.dart';
 export 'revision.dart';

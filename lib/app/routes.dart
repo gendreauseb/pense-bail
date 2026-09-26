@@ -12,6 +12,9 @@ abstract final class Routes {
   static const nouvelleEcheance = '/echeances/nouvelle';
   static const nouveauBien = '/biens/nouveau';
   static const artisan = '/artisans/fiche';
+  static const profil = '/reglages/profil';
+  static const reglagesRappels = '/reglages/rappels';
+  static const mentionsLegales = '/reglages/mentions-legales';
 
   static String modifierEcheance(String id) => '/echeances/$id';
   static String revision(String bienId) => '/revision/$bienId';
