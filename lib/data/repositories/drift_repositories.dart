@@ -409,6 +409,11 @@ class DriftRevisionRepository implements RevisionRepository {
           .watch();
 
   @override
+  Future<RevisionLoyer?> parId(String id) => (_db.select(
+    _db.revisionsLoyers,
+  )..where((r) => r.id.equals(id))).getSingleOrNull();
+
+  @override
   Future<void> enregistrer(RevisionLoyer revision) => _db
       .into(_db.revisionsLoyers)
       .insertOnConflictUpdate(revision.toInsertable());
@@ -422,14 +427,17 @@ class DriftIndiceIrlRepository implements IndiceIrlRepository {
   DriftIndiceIrlRepository(this._db);
   final AppDatabase _db;
 
+  SimpleSelectStatement<$IndicesIrlTable, IndiceIrl> get _parDate =>
+      _db.select(_db.indicesIrl)..orderBy([
+        (i) => OrderingTerm(expression: i.annee, mode: OrderingMode.desc),
+        (i) => OrderingTerm(expression: i.trimestre, mode: OrderingMode.desc),
+      ]);
+
   @override
-  Future<List<IndiceIrl>> tous() =>
-      (_db.select(_db.indicesIrl)..orderBy([
-            (i) => OrderingTerm(expression: i.annee, mode: OrderingMode.desc),
-            (i) =>
-                OrderingTerm(expression: i.trimestre, mode: OrderingMode.desc),
-          ]))
-          .get();
+  Stream<List<IndiceIrl>> surveillerTous() => _parDate.watch();
+
+  @override
+  Future<List<IndiceIrl>> tous() => _parDate.get();
 
   @override
   Future<IndiceIrl?> trouver({required int annee, required int trimestre}) =>

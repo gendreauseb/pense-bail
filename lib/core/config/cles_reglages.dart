@@ -8,4 +8,10 @@ abstract final class ClesReglages {
 
   /// 'true' une fois l'autorisation des notifications demandée.
   static const notificationsDemandees = 'notifications.demandees';
+
+  /// Version (« miseAJour ») de la table IRL embarquée déjà importée.
+  static const irlTableEmbarquee = 'irl.table_embarquee';
+
+  /// Date (ISO) de la dernière mise à jour réussie depuis l'INSEE.
+  static const irlDerniereMiseAJour = 'irl.derniere_mise_a_jour';
 }

@@ -290,3 +290,225 @@ bool validerEtMontrerErreur(GlobalKey<FormState> cle) {
   );
   return false;
 }
+
+/// Titre de section avec une action à droite (lien « Modifier », etc.).
+class EnTeteSection extends StatelessWidget {
+  const EnTeteSection({
+    super.key,
+    required this.titre,
+    this.action,
+    this.onAction,
+  });
+
+  final String titre;
+  final String? action;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final action = this.action;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.s),
+      child: Row(
+        children: [
+          Expanded(
+            child: Semantics(
+              header: true,
+              child: Text(titre, style: context.textes.title),
+            ),
+          ),
+          if (action != null)
+            TextButton(onPressed: onAction, child: Text(action)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Ligne d'information « libellé : valeur » dans une carte.
+class LigneInfo extends StatelessWidget {
+  const LigneInfo({
+    super.key,
+    required this.libelle,
+    required this.valeur,
+    this.icone,
+  });
+
+  final String libelle;
+  final String valeur;
+  final IconData? icone;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.textes;
+    final icone = this.icone;
+    return Semantics(
+      // Une ligne = un élément pour les lecteurs d'écran.
+      container: true,
+      label: '$libelle : $valeur',
+      excludeSemantics: true,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.ligne),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (icone != null) ...[
+              Icon(
+                icone,
+                size: AppSizes.iconePetite,
+                color: context.couleurs.textSecondary,
+              ),
+              const SizedBox(width: AppSpacing.blocSerre),
+            ],
+            Expanded(child: Text(libelle, style: t.secondary)),
+            const SizedBox(width: AppSpacing.bloc),
+            Expanded(
+              child: Text(valeur, style: t.rowTitle, textAlign: TextAlign.end),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Puce d'information (type de bien, type de location) : 30 de haut, non
+/// cliquable.
+class PuceInfo extends StatelessWidget {
+  const PuceInfo({super.key, required this.libelle, this.icone});
+  final String libelle;
+  final IconData? icone;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.couleurs;
+    final icone = this.icone;
+    return Container(
+      constraints: const BoxConstraints(minHeight: AppSizes.puceInfo),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.bloc),
+      decoration: BoxDecoration(
+        color: c.surface,
+        border: Border.all(color: c.border),
+        borderRadius: AppRadius.arrondi(AppRadius.complet),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icone != null) ...[
+            Icon(icone, size: AppSizes.iconePetite, color: c.textSecondary),
+            const SizedBox(width: AppSpacing.xs),
+          ],
+          Text(
+            libelle,
+            style: context.textes.label.copyWith(color: c.textPrimary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Bouton en pointillés pour ajouter un élément à une liste (48 de haut).
+class BoutonPointille extends StatelessWidget {
+  const BoutonPointille({
+    super.key,
+    required this.libelle,
+    required this.onPressed,
+    this.icone = AppIcons.ajouter,
+  });
+
+  final String libelle;
+  final VoidCallback onPressed;
+  final IconData icone;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.couleurs;
+    return Semantics(
+      button: true,
+      label: libelle,
+      excludeSemantics: true,
+      child: CustomPaint(
+        painter: _BordurePointillee(
+          couleur: c.borderDashed,
+          epaisseur: AppSizes.bordurePointillee,
+          rayon: AppRadius.bouton,
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: AppRadius.arrondi(AppRadius.bouton),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: AppSizes.boutonSecondaire,
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icone, size: AppSizes.iconePetite, color: c.primary),
+                    const SizedBox(width: AppSpacing.s),
+                    Flexible(child: Text(libelle, style: context.textes.label)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BordurePointillee extends CustomPainter {
+  const _BordurePointillee({
+    required this.couleur,
+    required this.epaisseur,
+    required this.rayon,
+  });
+
+  final Color couleur;
+  final double epaisseur;
+  final double rayon;
+
+  static const _trait = 6.0;
+  static const _espace = 4.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final pinceau = Paint()
+      ..color = couleur
+      ..strokeWidth = epaisseur
+      ..style = PaintingStyle.stroke;
+    final demi = epaisseur / 2;
+    final contour = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            demi,
+            demi,
+            size.width - epaisseur,
+            size.height - epaisseur,
+          ),
+          Radius.circular(rayon),
+        ),
+      );
+    for (final mesure in contour.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < mesure.length) {
+        canvas.drawPath(
+          mesure.extractPath(distance, distance + _trait),
+          pinceau,
+        );
+        distance += _trait + _espace;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_BordurePointillee ancien) =>
+      ancien.couleur != couleur ||
+      ancien.epaisseur != epaisseur ||
+      ancien.rayon != rayon;
+}

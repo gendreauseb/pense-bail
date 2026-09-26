@@ -185,6 +185,28 @@ abstract final class AppTheme {
         focusedErrorBorder: bordureChamp(c.erreur, 2),
       ),
 
+      // Onglets : actif en gras souligné de 3, ligne de base sous l'ensemble.
+      tabBarTheme: TabBarThemeData(
+        labelStyle: t.label.copyWith(color: c.textPrimary),
+        unselectedLabelStyle: t.label.copyWith(
+          color: c.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
+        labelColor: c.textPrimary,
+        unselectedLabelColor: c.textSecondary,
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(
+            color: c.primary,
+            width: AppSizes.soulignementOnglet,
+          ),
+        ),
+        indicatorSize: TabBarIndicatorSize.label,
+        dividerColor: c.border,
+        tabAlignment: TabAlignment.start,
+        labelPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.bloc),
+        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+      ),
+
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: c.primary,
         linearTrackColor: c.primarySoft,

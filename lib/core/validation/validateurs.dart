@@ -1,3 +1,5 @@
+import '../format/formats.dart';
+
 /// Validations de saisie. Chaque méthode retourne un message d'erreur clair,
 /// ou `null` si la saisie est correcte (format attendu par les TextFormField).
 abstract final class Validateurs {
@@ -5,6 +7,20 @@ abstract final class Validateurs {
     String? valeur, {
     String message = 'Ce champ est obligatoire.',
   }) => (valeur == null || valeur.trim().isEmpty) ? message : null;
+
+  static final _deuxDecimales = RegExp(r'^\d+([.,]\d{1,2})?$');
+
+  /// Valeur d'un IRL : positive, deux décimales au maximum (« 145,17 »).
+  static String? indiceIrl(String? valeur) {
+    final texte = valeur?.trim() ?? '';
+    if (texte.isEmpty) return "Indiquez la valeur de l'indice.";
+    final nombre = Formats.parseDecimal(texte);
+    if (nombre == null || nombre <= 0 || nombre >= 1000) {
+      return 'Valeur incorrecte (format : 123,45).';
+    }
+    if (!_deuxDecimales.hasMatch(texte)) return 'Deux décimales au maximum.';
+    return null;
+  }
 
   static final _email = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,}$');
 

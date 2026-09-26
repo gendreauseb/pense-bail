@@ -14,17 +14,82 @@ import '../../core/widgets/listes.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 
-/// Création (via le bouton « + ») ou modification d'une échéance.
-class EditionEcheancePage extends ConsumerWidget {
-  const EditionEcheancePage({super.key, this.echeanceId});
+/// Valeurs proposées pour une nouvelle échéance (depuis la fiche d'un bien :
+/// assurance, chaudière, diagnostic…). Toutes restent modifiables.
+class Preremplissage {
+  const Preremplissage({
+    this.bienId,
+    this.type = TypeEcheance.personnalisee,
+    this.titre,
+    this.date,
+    this.intervalleMois,
+    this.notes,
+    this.typeDiagnostic,
+  });
 
-  /// `null` : nouvelle échéance personnelle.
+  final String? bienId;
+  final TypeEcheance type;
+  final String? titre;
+  final DateTime? date;
+  final int? intervalleMois;
+  final String? notes;
+  final TypeDiagnostic? typeDiagnostic;
+
+  /// Paramètres d'URL (voir Routes.nouvelleEcheance).
+  Map<String, String?> versParametres() => {
+    'bien': bienId,
+    'type': type.name,
+    'titre': titre,
+    'date': date?.toIso8601String(),
+    'intervalle': intervalleMois?.toString(),
+    'notes': notes,
+    'diagnostic': typeDiagnostic?.name,
+  };
+
+  factory Preremplissage.depuisParametres(Map<String, String> p) {
+    T? parNom<T extends Enum>(List<T> valeurs, String? nom) {
+      for (final v in valeurs) {
+        if (v.name == nom) return v;
+      }
+      return null;
+    }
+
+    return Preremplissage(
+      bienId: p['bien'],
+      type:
+          parNom(TypeEcheance.values, p['type']) ?? TypeEcheance.personnalisee,
+      titre: p['titre'],
+      date: p['date'] == null ? null : DateTime.tryParse(p['date']!),
+      intervalleMois: int.tryParse(p['intervalle'] ?? ''),
+      notes: p['notes'],
+      typeDiagnostic: parNom(TypeDiagnostic.values, p['diagnostic']),
+    );
+  }
+}
+
+/// Création (via le bouton « + » ou la fiche d'un bien) ou modification
+/// d'une échéance.
+class EditionEcheancePage extends ConsumerWidget {
+  const EditionEcheancePage({
+    super.key,
+    this.echeanceId,
+    this.preremplissage = const Preremplissage(),
+  });
+
+  /// `null` : nouvelle échéance.
   final String? echeanceId;
+  final Preremplissage preremplissage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = echeanceId;
-    if (id == null) return const _Formulaire(existante: null, rappels: null);
+    if (id == null) {
+      return _Formulaire(
+        existante: null,
+        rappels: null,
+        preremplissage: preremplissage,
+      );
+    }
 
     final echeance = ref.watch(echeanceProvider(id));
     final rappels = ref.watch(rappelsEcheanceProvider(id));
@@ -32,6 +97,7 @@ class EditionEcheancePage extends ConsumerWidget {
       (AsyncData(value: final e?), AsyncData(value: final r)) => _Formulaire(
         existante: e,
         rappels: [for (final x in r) x.joursAvant],
+        preremplissage: const Preremplissage(),
       ),
       (AsyncData(value: null), _) => const _Introuvable(),
       (AsyncError(), _) || (_, AsyncError()) => const _Introuvable(),
@@ -65,10 +131,15 @@ const _recurrences = {
 const _tousLesBiens = '';
 
 class _Formulaire extends ConsumerStatefulWidget {
-  const _Formulaire({required this.existante, required this.rappels});
+  const _Formulaire({
+    required this.existante,
+    required this.rappels,
+    required this.preremplissage,
+  });
 
   final Echeance? existante;
   final List<int>? rappels;
+  final Preremplissage preremplissage;
 
   @override
   ConsumerState<_Formulaire> createState() => _FormulaireState();
@@ -76,15 +147,23 @@ class _Formulaire extends ConsumerStatefulWidget {
 
 class _FormulaireState extends ConsumerState<_Formulaire> {
   final _formulaire = GlobalKey<FormState>();
-  late final _titre = TextEditingController(text: widget.existante?.titre);
-  late final _notes = TextEditingController(text: widget.existante?.notes);
+  late final _titre = TextEditingController(
+    text: widget.existante?.titre ?? widget.preremplissage.titre,
+  );
+  late final _notes = TextEditingController(
+    text: widget.existante?.notes ?? widget.preremplissage.notes,
+  );
   late final _dateTexte = TextEditingController(
     text: _date == null ? '' : Formats.date(_date!),
   );
 
-  late DateTime? _date = widget.existante?.date;
-  late int _recurrence = widget.existante?.intervalleMois ?? 0;
-  late String _bienId = widget.existante?.bienId ?? _tousLesBiens;
+  late DateTime? _date = widget.existante?.date ?? widget.preremplissage.date;
+  late int _recurrence =
+      widget.existante?.intervalleMois ??
+      widget.preremplissage.intervalleMois ??
+      0;
+  late String _bienId =
+      widget.existante?.bienId ?? widget.preremplissage.bienId ?? _tousLesBiens;
   late final Set<int> _rappels = {
     ...(widget.rappels ?? ConfigApp.rappelsParDefautJours),
   };
@@ -133,7 +212,8 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
         ? Echeance(
             id: Identifiants.nouveau(),
             bienId: _bienId == _tousLesBiens ? null : _bienId,
-            type: TypeEcheance.personnalisee,
+            type: widget.preremplissage.type,
+            typeDiagnostic: widget.preremplissage.typeDiagnostic,
             titre: _titre.text.trim(),
             date: _date!,
             statut: StatutEcheance.aFaire,

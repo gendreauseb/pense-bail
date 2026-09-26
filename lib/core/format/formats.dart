@@ -59,6 +59,11 @@ abstract final class Formats {
     return texte[0].toUpperCase() + texte.substring(1);
   }
 
+  static final _mois = DateFormat('MMMM', locale);
+
+  /// 1 → « janvier »
+  static String nomMois(int mois) => _mois.format(DateTime(2000, mois));
+
   static final _moisAbrege = DateFormat('MMM', locale);
 
   /// → « SEPT », « DÉC », « MAI » (tuiles de date)
@@ -71,6 +76,12 @@ abstract final class Formats {
 
   /// 145.17 → « 145,17 » (indices IRL)
   static String decimal(double valeur) => _decimal.format(valeur);
+
+  /// (1, 2026) → « 1er trimestre 2026 » ; (2) → « 2e trimestre »
+  static String trimestre(int trimestre, [int? annee]) {
+    final rang = trimestre == 1 ? '1er' : '${trimestre}e';
+    return annee == null ? '$rang trimestre' : '$rang trimestre $annee';
+  }
 
   /// Convertit une saisie utilisateur en centimes.
   /// Accepte « 1 234,56 », « 1234.5 », « 1 234 € », « 650 ».

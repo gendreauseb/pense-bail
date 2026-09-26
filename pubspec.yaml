@@ -37,9 +37,16 @@ dependencies:
   timezone: ^0.11.1
   flutter_timezone: ^5.1.0
 
-  # Ajoutés aux étapes suivantes :
-  #   url_launcher (appeler / écrire)                     → étape 4
-  #   pdf + printing + share_plus (courriers, exports)    → étape 5
+  # Appeler / écrire (locataires, artisans)
+  url_launcher: ^6.3.2
+
+  # Courriers et exports PDF : aperçu, impression, partage, enregistrement
+  pdf: ^3.13.1
+  printing: ^5.15.1
+  file_picker: ^13.1.0
+
+  # Mise à jour des indices IRL depuis l'INSEE
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:

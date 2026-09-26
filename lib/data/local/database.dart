@@ -31,13 +31,19 @@ class AppDatabase extends _$AppDatabase {
   static const nomFichier = 'bailleur';
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();
       await _creerIndex();
+    },
+    onUpgrade: (m, de, vers) async {
+      // Version 2 : date de révision prévue, pour le courrier.
+      if (de < 2) {
+        await m.addColumn(revisionsLoyers, revisionsLoyers.datePrevue);
+      }
     },
     beforeOpen: (details) async {
       // Indispensable pour les suppressions en cascade.

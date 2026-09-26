@@ -4,11 +4,20 @@ import 'package:go_router/go_router.dart';
 
 import '../features/accueil/accueil_page.dart';
 import '../features/artisans/artisans_page.dart';
+import '../features/artisans/edition_artisan_page.dart';
+import '../features/artisans/edition_intervention_page.dart';
 import '../features/biens/biens_page.dart';
+import '../features/biens/edition_bail_page.dart';
+import '../features/biens/edition_bien_page.dart';
 import '../features/biens/fiche_bien_page.dart';
+import '../features/biens/formulaires/edition_investissement_page.dart';
+import '../features/biens/formulaires/edition_locataire_page.dart';
+import '../features/biens/formulaires/edition_mouvement_page.dart';
 import '../features/echeances/edition_echeance_page.dart';
 import '../features/onboarding/onboarding_page.dart';
 import '../features/reglages/reglages_page.dart';
+import '../features/biens/rentabilite/recapitulatif_page.dart';
+import '../features/revision/courrier/courrier_revision_page.dart';
 import '../features/revision/revision_page.dart';
 import 'etat_app.dart';
 import 'routes.dart';
@@ -36,7 +45,20 @@ final routeurProvider = Provider<GoRouter>((ref) {
       // Écrans plein écran, au-dessus de la barre de navigation.
       GoRoute(
         path: Routes.nouvelleEcheance,
-        builder: (context, state) => const EditionEcheancePage(),
+        builder: (context, state) => EditionEcheancePage(
+          preremplissage: Preremplissage.depuisParametres(
+            state.uri.queryParameters,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: Routes.nouveauBien,
+        builder: (context, state) => const EditionBienPage(),
+      ),
+      GoRoute(
+        path: Routes.artisan,
+        builder: (context, state) =>
+            EditionArtisanPage(artisanId: state.uri.queryParameters['artisan']),
       ),
       GoRoute(
         path: Routes.modifierEcheance(':id'),
@@ -49,9 +71,59 @@ final routeurProvider = Provider<GoRouter>((ref) {
             RevisionPage(bienId: state.pathParameters['bienId']!),
       ),
       GoRoute(
+        path: Routes.courrierRevision(':id'),
+        builder: (context, state) =>
+            CourrierRevisionPage(revisionId: state.pathParameters['id']!),
+      ),
+      GoRoute(
         path: Routes.ficheBien(':id'),
         builder: (context, state) =>
             FicheBienPage(bienId: state.pathParameters['id']!),
+        routes: [
+          GoRoute(
+            path: 'modifier',
+            builder: (context, state) =>
+                EditionBienPage(bienId: state.pathParameters['id']),
+          ),
+          GoRoute(
+            path: 'bail',
+            builder: (context, state) =>
+                EditionBailPage(bienId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: 'locataire',
+            builder: (context, state) => EditionLocatairePage(
+              bienId: state.pathParameters['id']!,
+              locataireId: state.uri.queryParameters['locataire'],
+            ),
+          ),
+          GoRoute(
+            path: 'investissement',
+            builder: (context, state) =>
+                EditionInvestissementPage(bienId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: 'mouvement',
+            builder: (context, state) => EditionMouvementPage(
+              bienId: state.pathParameters['id']!,
+              mouvementId: state.uri.queryParameters['mouvement'],
+            ),
+          ),
+          GoRoute(
+            path: 'recapitulatif/:annee',
+            builder: (context, state) => RecapitulatifPage(
+              bienId: state.pathParameters['id']!,
+              annee: int.parse(state.pathParameters['annee']!),
+            ),
+          ),
+          GoRoute(
+            path: 'intervention',
+            builder: (context, state) => EditionInterventionPage(
+              bienId: state.pathParameters['id']!,
+              interventionId: state.uri.queryParameters['intervention'],
+            ),
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

@@ -25,6 +25,11 @@ abstract final class AppIcons {
   static const notificationsCoupees = LucideIcons.bellOff;
   static const modifier = LucideIcons.pencil;
   static const verrou = LucideIcons.lock;
+  static const fermer = LucideIcons.x;
+  static const appeler = LucideIcons.phone;
+  static const ecrire = LucideIcons.mail;
+  static const photo = LucideIcons.imagePlus;
+  static const precedent = LucideIcons.chevronLeft;
 
   // Contenus
   static const logo = LucideIcons.calendarCheck;
@@ -36,6 +41,34 @@ abstract final class AppIcons {
   static const personne = LucideIcons.user;
   static const information = LucideIcons.info;
   static const confidentialite = LucideIcons.shieldCheck;
+  static const locataire = LucideIcons.userRound;
+  static const bail = LucideIcons.fileSignature;
+  static const argent = LucideIcons.wallet;
+  static const recette = LucideIcons.trendingUp;
+  static const depense = LucideIcons.trendingDown;
+  static const intervention = LucideIcons.hammer;
+  static const assurance = LucideIcons.umbrella;
+  static const chaudiere = LucideIcons.flame;
+  static const diagnostic = LucideIcons.clipboardCheck;
+  static const adresse = LucideIcons.mapPin;
+  static const surface = LucideIcons.ruler;
+  static const energie = LucideIcons.leaf;
+  static const attention = LucideIcons.triangleAlert;
+  static const partager = LucideIcons.share2;
+  static const imprimer = LucideIcons.printer;
+  static const enregistrer = LucideIcons.download;
+  static const actualiser = LucideIcons.refreshCw;
+  static const historique = LucideIcons.history;
+
+  static IconData metier(MetierArtisan m) => switch (m) {
+    MetierArtisan.plombier => LucideIcons.droplet,
+    MetierArtisan.electricien => LucideIcons.zap,
+    MetierArtisan.chauffagiste => LucideIcons.flame,
+    MetierArtisan.serrurier => LucideIcons.keyRound,
+    MetierArtisan.peintre => LucideIcons.paintRoller,
+    MetierArtisan.multiservice => LucideIcons.wrench,
+    MetierArtisan.autre => LucideIcons.hardHat,
+  };
 
   static IconData typeLogement(TypeLogement t) => switch (t) {
     TypeLogement.appartement => LucideIcons.building2,

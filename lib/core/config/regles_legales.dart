@@ -215,14 +215,50 @@ abstract final class ReglesLegales {
   // Révision de loyer (IRL)
   // --------------------------------------------------------------------------
 
+  // Sources : loi n° 89-462, art. 17-1 (version en vigueur depuis le
+  // 24/08/2022, legifrance.gouv.fr) ; service-public.gouv.fr, fiche F1311
+  // « Révision du loyer » (mise à jour du 08/08/2025), consultées le
+  // 26/09/2026.
+
   /// Une révision au plus par an, à la date prévue au bail (ou, à défaut, à
   /// la date anniversaire du bail).
   static const int periodiciteRevisionMois = 12;
 
   /// Le bailleur a un an à compter de la date de révision pour la demander.
   /// Passé ce délai, il perd la révision de l'année. La révision n'est
-  /// jamais rétroactive : elle s'applique à partir de la demande.
+  /// jamais rétroactive : demandée en retard, elle s'applique à partir de la
+  /// date de la demande.
   static const int delaiDemandeRevisionMois = 12;
+
+  /// Nouveau loyer = loyer actuel × IRL du trimestre de référence de l'année
+  /// / IRL du même trimestre de l'année précédente (service-public.gouv.fr).
+  /// Les années non réclamées sont perdues : on ne compare jamais à un
+  /// indice plus ancien, même si le loyer n'a pas été révisé depuis.
+  static const int ecartAnneesIndices = 1;
+
+  /// Jour du mois suivant la fin d'un trimestre à partir duquel l'app
+  /// considère l'IRL de ce trimestre comme publié (l'INSEE le publie vers
+  /// la mi-avril, mi-juillet, mi-octobre et mi-janvier).
+  static const int jourPublicationIrl = 15;
+
+  static const String aVerifierIndiceUtilise =
+      'Indice retenu : le dernier IRL du trimestre de référence publié à la '
+      'date de révision prévue, y compris quand la révision est demandée en '
+      'retard. La date de publication est estimée (15 du mois qui suit le '
+      "trimestre) : l'utilisateur peut choisir une autre année.";
+
+  /// À défaut de trimestre indiqué au bail : dernier IRL publié à la date
+  /// de signature du bail.
+  static const String trimestreParDefautExplication =
+      "Si le bail ne précise pas le trimestre, c'est celui du dernier IRL "
+      'publié à la date de signature du bail.';
+
+  /// Article cité dans le courrier de révision.
+  static String referenceLegaleRevision(TypeBail type) => switch (type) {
+    TypeBail.meuble =>
+      'aux articles 25-9 et 17-1 de la loi n° 89-462 du 6 juillet 1989',
+    _ => "à l'article 17-1 de la loi n° 89-462 du 6 juillet 1989",
+  };
 
   /// Logements pour lesquels toute hausse de loyer est interdite (gel des
   /// loyers des « passoires thermiques »).
@@ -240,7 +276,9 @@ abstract final class ReglesLegales {
   /// Nombre de décimales de l'IRL publié par l'INSEE.
   static const int decimalesIrl = 2;
 
-  /// Identifiant de la série IRL sur insee.fr (à vérifier).
+  /// Identifiant de la série « Indice de référence des loyers (IRL) » dans
+  /// la banque de données macro-économiques de l'INSEE (vérifié le
+  /// 26/09/2026).
   static const String idbankInseeIrl = '001515333';
 
   // --------------------------------------------------------------------------

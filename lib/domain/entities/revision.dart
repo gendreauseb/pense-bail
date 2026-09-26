@@ -19,6 +19,8 @@ class IndiceIrl {
   /// 1 à 4.
   final int trimestre;
   final double valeur;
+
+  /// Date de parution au Journal officiel (fournie par l'INSEE), si connue.
   final DateTime? datePublication;
   final SourceIndice source;
 
@@ -32,6 +34,7 @@ class RevisionLoyer {
     required this.id,
     required this.bienId,
     required this.bailId,
+    this.datePrevue,
     required this.dateEffet,
     required this.ancienLoyerCentimes,
     required this.nouveauLoyerCentimes,
@@ -49,7 +52,11 @@ class RevisionLoyer {
   final String bienId;
   final String bailId;
 
-  /// Date à partir de laquelle le nouveau loyer s'applique.
+  /// Date de révision prévue au bail pour cette année.
+  final DateTime? datePrevue;
+
+  /// Date à partir de laquelle le nouveau loyer s'applique : la date prévue,
+  /// ou la date de la demande si la révision a été demandée en retard.
   final DateTime dateEffet;
   final int ancienLoyerCentimes;
   final int nouveauLoyerCentimes;
@@ -66,4 +73,10 @@ class RevisionLoyer {
 
   int get augmentationMensuelleCentimes =>
       nouveauLoyerCentimes - ancienLoyerCentimes;
+
+  /// Demandée après la date prévue au bail.
+  bool get demandeeEnRetard {
+    final prevue = datePrevue;
+    return prevue != null && dateEffet.isAfter(prevue);
+  }
 }

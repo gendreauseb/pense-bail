@@ -36,7 +36,15 @@ abstract final class ConfigApp {
   /// Au-delà, la pastille affiche l'année plutôt qu'un nombre de mois.
   static const int pastilleAnneeAuDelaDeMois = 18;
 
-  /// Adresse du fichier distant contenant la table des indices IRL.
-  /// À définir avant la publication (voir assets/irl/LISEZMOI.md).
-  static const String? urlIndicesIrl = null;
+  /// Série IRL publiée par l'INSEE (format SDMX, accès libre, sans compte).
+  /// Seul appel réseau de l'application : rien n'est envoyé.
+  static const String urlIndicesIrl =
+      'https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/001515333';
+
+  /// Délai maximal d'attente de l'INSEE.
+  static const Duration delaiReseau = Duration(seconds: 20);
+
+  /// Vérification automatique de nouveaux indices à l'ouverture de l'outil
+  /// de révision, au plus une fois par période.
+  static const Duration intervalleMiseAJourIrl = Duration(days: 7);
 }

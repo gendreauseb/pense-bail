@@ -4685,6 +4685,17 @@ class $RevisionsLoyersTable extends RevisionsLoyers
       'REFERENCES baux (id) ON DELETE CASCADE',
     ),
   );
+  static const VerificationMeta _datePrevueMeta = const VerificationMeta(
+    'datePrevue',
+  );
+  @override
+  late final GeneratedColumn<DateTime> datePrevue = GeneratedColumn<DateTime>(
+    'date_prevue',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _dateEffetMeta = const VerificationMeta(
     'dateEffet',
   );
@@ -4805,6 +4816,7 @@ class $RevisionsLoyersTable extends RevisionsLoyers
     id,
     bienId,
     bailId,
+    datePrevue,
     dateEffet,
     ancienLoyerCentimes,
     nouveauLoyerCentimes,
@@ -4849,6 +4861,12 @@ class $RevisionsLoyersTable extends RevisionsLoyers
       );
     } else if (isInserting) {
       context.missing(_bailIdMeta);
+    }
+    if (data.containsKey('date_prevue')) {
+      context.handle(
+        _datePrevueMeta,
+        datePrevue.isAcceptableOrUnknown(data['date_prevue']!, _datePrevueMeta),
+      );
     }
     if (data.containsKey('date_effet')) {
       context.handle(
@@ -4984,6 +5002,10 @@ class $RevisionsLoyersTable extends RevisionsLoyers
         DriftSqlType.string,
         data['${effectivePrefix}bail_id'],
       )!,
+      datePrevue: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_prevue'],
+      ),
       dateEffet: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}date_effet'],
@@ -5041,6 +5063,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
   final Value<String> id;
   final Value<String> bienId;
   final Value<String> bailId;
+  final Value<DateTime?> datePrevue;
   final Value<DateTime> dateEffet;
   final Value<int> ancienLoyerCentimes;
   final Value<int> nouveauLoyerCentimes;
@@ -5057,6 +5080,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     this.id = const Value.absent(),
     this.bienId = const Value.absent(),
     this.bailId = const Value.absent(),
+    this.datePrevue = const Value.absent(),
     this.dateEffet = const Value.absent(),
     this.ancienLoyerCentimes = const Value.absent(),
     this.nouveauLoyerCentimes = const Value.absent(),
@@ -5074,6 +5098,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     required String id,
     required String bienId,
     required String bailId,
+    this.datePrevue = const Value.absent(),
     required DateTime dateEffet,
     required int ancienLoyerCentimes,
     required int nouveauLoyerCentimes,
@@ -5103,6 +5128,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     Expression<String>? id,
     Expression<String>? bienId,
     Expression<String>? bailId,
+    Expression<DateTime>? datePrevue,
     Expression<DateTime>? dateEffet,
     Expression<int>? ancienLoyerCentimes,
     Expression<int>? nouveauLoyerCentimes,
@@ -5120,6 +5146,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
       if (id != null) 'id': id,
       if (bienId != null) 'bien_id': bienId,
       if (bailId != null) 'bail_id': bailId,
+      if (datePrevue != null) 'date_prevue': datePrevue,
       if (dateEffet != null) 'date_effet': dateEffet,
       if (ancienLoyerCentimes != null)
         'ancien_loyer_centimes': ancienLoyerCentimes,
@@ -5143,6 +5170,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     Value<String>? id,
     Value<String>? bienId,
     Value<String>? bailId,
+    Value<DateTime?>? datePrevue,
     Value<DateTime>? dateEffet,
     Value<int>? ancienLoyerCentimes,
     Value<int>? nouveauLoyerCentimes,
@@ -5160,6 +5188,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
       id: id ?? this.id,
       bienId: bienId ?? this.bienId,
       bailId: bailId ?? this.bailId,
+      datePrevue: datePrevue ?? this.datePrevue,
       dateEffet: dateEffet ?? this.dateEffet,
       ancienLoyerCentimes: ancienLoyerCentimes ?? this.ancienLoyerCentimes,
       nouveauLoyerCentimes: nouveauLoyerCentimes ?? this.nouveauLoyerCentimes,
@@ -5186,6 +5215,9 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     }
     if (bailId.present) {
       map['bail_id'] = Variable<String>(bailId.value);
+    }
+    if (datePrevue.present) {
+      map['date_prevue'] = Variable<DateTime>(datePrevue.value);
     }
     if (dateEffet.present) {
       map['date_effet'] = Variable<DateTime>(dateEffet.value);
@@ -5232,6 +5264,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
           ..write('id: $id, ')
           ..write('bienId: $bienId, ')
           ..write('bailId: $bailId, ')
+          ..write('datePrevue: $datePrevue, ')
           ..write('dateEffet: $dateEffet, ')
           ..write('ancienLoyerCentimes: $ancienLoyerCentimes, ')
           ..write('nouveauLoyerCentimes: $nouveauLoyerCentimes, ')
@@ -5258,6 +5291,7 @@ class _$RevisionLoyerInsertable implements Insertable<RevisionLoyer> {
       id: Value(_object.id),
       bienId: Value(_object.bienId),
       bailId: Value(_object.bailId),
+      datePrevue: Value(_object.datePrevue),
       dateEffet: Value(_object.dateEffet),
       ancienLoyerCentimes: Value(_object.ancienLoyerCentimes),
       nouveauLoyerCentimes: Value(_object.nouveauLoyerCentimes),
@@ -11097,6 +11131,7 @@ typedef $$RevisionsLoyersTableCreateCompanionBuilder =
       required String id,
       required String bienId,
       required String bailId,
+      Value<DateTime?> datePrevue,
       required DateTime dateEffet,
       required int ancienLoyerCentimes,
       required int nouveauLoyerCentimes,
@@ -11115,6 +11150,7 @@ typedef $$RevisionsLoyersTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> bienId,
       Value<String> bailId,
+      Value<DateTime?> datePrevue,
       Value<DateTime> dateEffet,
       Value<int> ancienLoyerCentimes,
       Value<int> nouveauLoyerCentimes,
@@ -11184,6 +11220,11 @@ class $$RevisionsLoyersTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get datePrevue => $composableBuilder(
+    column: $table.datePrevue,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11303,6 +11344,11 @@ class $$RevisionsLoyersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get datePrevue => $composableBuilder(
+    column: $table.datePrevue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get dateEffet => $composableBuilder(
     column: $table.dateEffet,
     builder: (column) => ColumnOrderings(column),
@@ -11416,6 +11462,11 @@ class $$RevisionsLoyersTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get datePrevue => $composableBuilder(
+    column: $table.datePrevue,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get dateEffet =>
       $composableBuilder(column: $table.dateEffet, builder: (column) => column);
@@ -11548,6 +11599,7 @@ class $$RevisionsLoyersTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> bienId = const Value.absent(),
                 Value<String> bailId = const Value.absent(),
+                Value<DateTime?> datePrevue = const Value.absent(),
                 Value<DateTime> dateEffet = const Value.absent(),
                 Value<int> ancienLoyerCentimes = const Value.absent(),
                 Value<int> nouveauLoyerCentimes = const Value.absent(),
@@ -11564,6 +11616,7 @@ class $$RevisionsLoyersTableTableManager
                 id: id,
                 bienId: bienId,
                 bailId: bailId,
+                datePrevue: datePrevue,
                 dateEffet: dateEffet,
                 ancienLoyerCentimes: ancienLoyerCentimes,
                 nouveauLoyerCentimes: nouveauLoyerCentimes,
@@ -11582,6 +11635,7 @@ class $$RevisionsLoyersTableTableManager
                 required String id,
                 required String bienId,
                 required String bailId,
+                Value<DateTime?> datePrevue = const Value.absent(),
                 required DateTime dateEffet,
                 required int ancienLoyerCentimes,
                 required int nouveauLoyerCentimes,
@@ -11598,6 +11652,7 @@ class $$RevisionsLoyersTableTableManager
                 id: id,
                 bienId: bienId,
                 bailId: bailId,
+                datePrevue: datePrevue,
                 dateEffet: dateEffet,
                 ancienLoyerCentimes: ancienLoyerCentimes,
                 nouveauLoyerCentimes: nouveauLoyerCentimes,

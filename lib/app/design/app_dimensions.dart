@@ -85,6 +85,9 @@ abstract final class AppSizes {
   static const bordure = 1.0;
   static const bordurePointillee = 1.5;
   static const soulignementOnglet = 3.0;
+
+  /// Barre de progression d'un outil en étapes (révision du loyer).
+  static const progressionEtapes = 4.0;
 }
 
 /// Ombres : quasiment absentes (UI.md §4). Seuls le bouton central de la

@@ -207,6 +207,8 @@ class RevisionsLoyers extends Table {
       text().references(Biens, #id, onDelete: KeyAction.cascade)();
   TextColumn get bailId =>
       text().references(Baux, #id, onDelete: KeyAction.cascade)();
+  // Ajoutée en version 2 du schéma.
+  DateTimeColumn get datePrevue => dateTime().nullable()();
   DateTimeColumn get dateEffet => dateTime()();
   IntColumn get ancienLoyerCentimes => integer()();
   IntColumn get nouveauLoyerCentimes => integer()();

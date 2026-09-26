@@ -103,11 +103,15 @@ abstract interface class FinanceRepository {
 }
 
 abstract interface class RevisionRepository {
+  /// Révisions du bien, de la plus récente à la plus ancienne.
   Stream<List<RevisionLoyer>> surveillerHistorique(String bienId);
+  Future<RevisionLoyer?> parId(String id);
   Future<void> enregistrer(RevisionLoyer revision);
 }
 
 abstract interface class IndiceIrlRepository {
+  /// Du plus récent au plus ancien.
+  Stream<List<IndiceIrl>> surveillerTous();
   Future<List<IndiceIrl>> tous();
   Future<IndiceIrl?> trouver({required int annee, required int trimestre});
   Future<IndiceIrl?> dernier();

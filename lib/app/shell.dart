@@ -242,12 +242,15 @@ class _ChoixAjout extends StatelessWidget {
               },
             ),
             const SizedBox(height: AppSpacing.bloc),
-            // Branché à l'étape 4 (fiche bien).
-            const CarteAction(
+            CarteAction(
               icone: AppIcons.biens,
               titre: 'Ajouter un bien',
-              sousTitre: 'Bientôt disponible',
-              onTap: null,
+              sousTitre: 'Un nouveau logement ou local à suivre',
+              onTap: () {
+                final routeur = GoRouter.of(context);
+                Navigator.of(context).pop();
+                routeur.push(Routes.nouveauBien);
+              },
             ),
           ],
         ),
