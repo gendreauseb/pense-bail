@@ -6,6 +6,7 @@ import '../../../app/design/design.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/validation/validateurs.dart';
 import '../../../core/widgets/composants.dart';
+import '../../../core/widgets/feuille.dart';
 import '../../../core/widgets/formulaires.dart';
 import '../../../core/widgets/listes.dart';
 import '../../../data/providers.dart';
@@ -16,11 +17,8 @@ Future<void> ouvrirSaisieIndice(
   BuildContext context, {
   required int trimestre,
   required int annee,
-}) => showModalBottomSheet<void>(
-  context: context,
-  useRootNavigator: true,
-  isScrollControlled: true,
-  useSafeArea: true,
+}) => ouvrirFeuille<void>(
+  context,
   builder: (_) => _SaisieIndice(trimestre: trimestre, annee: annee),
 );
 
@@ -115,11 +113,8 @@ Future<void> ouvrirChoixAnnee(
   required int anneeParDefaut,
   required int anneeActuelle,
   required ValueChanged<int> onChoisie,
-}) => showModalBottomSheet<void>(
-  context: context,
-  useRootNavigator: true,
-  isScrollControlled: true,
-  useSafeArea: true,
+}) => ouvrirFeuille<void>(
+  context,
   builder: (context) {
     final t = context.textes;
     final annees = [

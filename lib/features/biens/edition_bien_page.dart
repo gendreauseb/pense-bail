@@ -11,6 +11,7 @@ import '../../core/config/regles_legales.dart';
 import '../../core/format/formats.dart';
 import '../../core/utils/dates.dart';
 import '../../core/utils/identifiants.dart';
+import '../../core/utils/texte.dart';
 import '../../core/validation/validateurs.dart';
 import '../../core/widgets/choix_cartes.dart';
 import '../../core/widgets/composants.dart';
@@ -71,6 +72,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     text: ChampMontant.texte(_b?.chargesCentimes),
   );
   late final _rue = TextEditingController(text: _b?.rue);
+  late final _complement = TextEditingController(text: _b?.complementAdresse);
   late final _codePostal = TextEditingController(text: _b?.codePostal);
   late final _ville = TextEditingController(text: _b?.ville);
   late final _surface = TextEditingController(
@@ -99,6 +101,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       _loyer,
       _charges,
       _rue,
+      _complement,
       _codePostal,
       _ville,
       _surface,
@@ -129,6 +132,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
             typeLogement: _typeLogement!,
             typeLocation: _typeLocation!,
             rue: _rue.text.trim(),
+            complementAdresse: facultatif(_complement.text),
             codePostal: _codePostal.text.trim(),
             ville: _ville.text.trim(),
             loyerHcCentimes: Formats.parseMontant(_loyer.text)!,
@@ -146,6 +150,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
             typeLogement: _typeLogement,
             typeLocation: _typeLocation,
             rue: _rue.text.trim(),
+            complementAdresse: facultatif(_complement.text),
             codePostal: _codePostal.text.trim(),
             ville: _ville.text.trim(),
             loyerHcCentimes: Formats.parseMontant(_loyer.text),
@@ -325,6 +330,13 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                 majuscules: TextCapitalization.sentences,
                 validator: (v) =>
                     Validateurs.obligatoire(v, message: 'Indiquez l\'adresse.'),
+              ),
+              ChampTexte(
+                controleur: _complement,
+                libelle: "Complément d'adresse (facultatif)",
+                aide: 'Bâtiment, résidence, étage, appartement…',
+                majuscules: TextCapitalization.sentences,
+                autofill: const [AutofillHints.streetAddressLine2],
               ),
               ChampTexte(
                 controleur: _codePostal,

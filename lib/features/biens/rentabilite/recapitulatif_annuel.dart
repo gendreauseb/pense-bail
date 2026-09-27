@@ -81,7 +81,7 @@ class RecapitulatifAnnuel {
     return RecapitulatifAnnuel(
       titre: 'Récapitulatif $annee',
       bien: bien.nom,
-      adresse: '${bien.rue}, ${bien.codePostal} ${bien.ville}',
+      adresse: bien.adresseComplete,
       proprietaire: bailleur.nomComplet,
       editeLe: Formats.date(maintenant),
       moisRecus: mois.isEmpty ? 'aucun' : mois.map(Formats.nomMois).join(', '),

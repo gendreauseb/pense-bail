@@ -227,6 +227,39 @@ void main() {
     await fermer(tester);
   });
 
+  testWidgets('détail : boutons au-dessus de la barre de navigation Android', (
+    tester,
+  ) async {
+    // Navigation à 3 boutons : 48 dp réservés en bas de l'écran.
+    const barreSysteme = 48.0;
+    const ratio = 2.625;
+    tester.view.padding = const FakeViewPadding(bottom: barreSysteme * ratio);
+    tester.view.viewPadding = const FakeViewPadding(
+      bottom: barreSysteme * ratio,
+    );
+    await ouvrir(tester);
+    await tester.tap(find.text('Déclaration des revenus fonciers'));
+    await tester.pumpAndSettle();
+
+    final hauteurEcran = tester.view.physicalSize.height / ratio;
+    for (final bouton in ['Reporter', 'Modifier']) {
+      final zone = tester.getRect(
+        find
+            .ancestor(
+              of: find.text(bouton),
+              matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+            )
+            .first,
+      );
+      expect(
+        zone.bottom,
+        lessThanOrEqualTo(hauteurEcran - barreSysteme),
+        reason: '« $bouton » passe sous la barre de navigation',
+      );
+    }
+    await fermer(tester);
+  });
+
   testWidgets('choix du bien à réviser : courte durée grisée', (tester) async {
     await ouvrir(tester);
     await tester.tap(find.text('Réviser un loyer'));

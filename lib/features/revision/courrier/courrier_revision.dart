@@ -63,20 +63,18 @@ class CourrierRevision {
     return CourrierRevision(
       expediteur: [
         bailleur.nomComplet,
-        bailleur.rue,
-        '${bailleur.codePostal} ${bailleur.ville}',
+        ...bailleur.lignesAdresse,
         if (bailleur.telephone.isNotEmpty) 'Tél. ${bailleur.telephone}',
         if (bailleur.email.isNotEmpty) bailleur.email,
       ],
       destinataire: [
         if (locataires.isEmpty) 'Au locataire',
         for (final l in locataires) l.nomComplet,
-        bien.rue,
-        '${bien.codePostal} ${bien.ville}',
+        ...bien.lignesAdresse,
       ],
       lieuEtDate: 'À ${bailleur.ville}, le ${Formats.dateLongue(dateCourrier)}',
       objet: 'Révision annuelle du loyer',
-      logement: '${bien.rue}, ${bien.codePostal} ${bien.ville}',
+      logement: bien.adresseComplete,
       salutation: '$politesse,',
       introduction: [
         'Conformément à la clause de révision de votre bail et '

@@ -45,6 +45,18 @@ class $BailleursTable extends Bailleurs
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _complementAdresseMeta = const VerificationMeta(
+    'complementAdresse',
+  );
+  @override
+  late final GeneratedColumn<String> complementAdresse =
+      GeneratedColumn<String>(
+        'complement_adresse',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _codePostalMeta = const VerificationMeta(
     'codePostal',
   );
@@ -111,6 +123,7 @@ class $BailleursTable extends Bailleurs
     prenom,
     nom,
     rue,
+    complementAdresse,
     codePostal,
     ville,
     telephone,
@@ -158,6 +171,15 @@ class $BailleursTable extends Bailleurs
       );
     } else if (isInserting) {
       context.missing(_rueMeta);
+    }
+    if (data.containsKey('complement_adresse')) {
+      context.handle(
+        _complementAdresseMeta,
+        complementAdresse.isAcceptableOrUnknown(
+          data['complement_adresse']!,
+          _complementAdresseMeta,
+        ),
+      );
     }
     if (data.containsKey('code_postal')) {
       context.handle(
@@ -232,6 +254,10 @@ class $BailleursTable extends Bailleurs
         DriftSqlType.string,
         data['${effectivePrefix}rue'],
       )!,
+      complementAdresse: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}complement_adresse'],
+      ),
       codePostal: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}code_postal'],
@@ -270,6 +296,7 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
   final Value<String> prenom;
   final Value<String> nom;
   final Value<String> rue;
+  final Value<String?> complementAdresse;
   final Value<String> codePostal;
   final Value<String> ville;
   final Value<String> telephone;
@@ -282,6 +309,7 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
     this.prenom = const Value.absent(),
     this.nom = const Value.absent(),
     this.rue = const Value.absent(),
+    this.complementAdresse = const Value.absent(),
     this.codePostal = const Value.absent(),
     this.ville = const Value.absent(),
     this.telephone = const Value.absent(),
@@ -295,6 +323,7 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
     required String prenom,
     required String nom,
     required String rue,
+    this.complementAdresse = const Value.absent(),
     required String codePostal,
     required String ville,
     required String telephone,
@@ -317,6 +346,7 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
     Expression<String>? prenom,
     Expression<String>? nom,
     Expression<String>? rue,
+    Expression<String>? complementAdresse,
     Expression<String>? codePostal,
     Expression<String>? ville,
     Expression<String>? telephone,
@@ -330,6 +360,7 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
       if (prenom != null) 'prenom': prenom,
       if (nom != null) 'nom': nom,
       if (rue != null) 'rue': rue,
+      if (complementAdresse != null) 'complement_adresse': complementAdresse,
       if (codePostal != null) 'code_postal': codePostal,
       if (ville != null) 'ville': ville,
       if (telephone != null) 'telephone': telephone,
@@ -345,6 +376,7 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
     Value<String>? prenom,
     Value<String>? nom,
     Value<String>? rue,
+    Value<String?>? complementAdresse,
     Value<String>? codePostal,
     Value<String>? ville,
     Value<String>? telephone,
@@ -358,6 +390,7 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
       prenom: prenom ?? this.prenom,
       nom: nom ?? this.nom,
       rue: rue ?? this.rue,
+      complementAdresse: complementAdresse ?? this.complementAdresse,
       codePostal: codePostal ?? this.codePostal,
       ville: ville ?? this.ville,
       telephone: telephone ?? this.telephone,
@@ -382,6 +415,9 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
     }
     if (rue.present) {
       map['rue'] = Variable<String>(rue.value);
+    }
+    if (complementAdresse.present) {
+      map['complement_adresse'] = Variable<String>(complementAdresse.value);
     }
     if (codePostal.present) {
       map['code_postal'] = Variable<String>(codePostal.value);
@@ -414,6 +450,7 @@ class BailleursCompanion extends UpdateCompanion<Bailleur> {
           ..write('prenom: $prenom, ')
           ..write('nom: $nom, ')
           ..write('rue: $rue, ')
+          ..write('complementAdresse: $complementAdresse, ')
           ..write('codePostal: $codePostal, ')
           ..write('ville: $ville, ')
           ..write('telephone: $telephone, ')
@@ -436,6 +473,7 @@ class _$BailleurInsertable implements Insertable<Bailleur> {
       prenom: Value(_object.prenom),
       nom: Value(_object.nom),
       rue: Value(_object.rue),
+      complementAdresse: Value(_object.complementAdresse),
       codePostal: Value(_object.codePostal),
       ville: Value(_object.ville),
       telephone: Value(_object.telephone),
@@ -502,6 +540,18 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _complementAdresseMeta = const VerificationMeta(
+    'complementAdresse',
+  );
+  @override
+  late final GeneratedColumn<String> complementAdresse =
+      GeneratedColumn<String>(
+        'complement_adresse',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _codePostalMeta = const VerificationMeta(
     'codePostal',
   );
@@ -718,6 +768,7 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
     typeLogement,
     typeLocation,
     rue,
+    complementAdresse,
     codePostal,
     ville,
     loyerHcCentimes,
@@ -771,6 +822,15 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
       );
     } else if (isInserting) {
       context.missing(_rueMeta);
+    }
+    if (data.containsKey('complement_adresse')) {
+      context.handle(
+        _complementAdresseMeta,
+        complementAdresse.isAcceptableOrUnknown(
+          data['complement_adresse']!,
+          _complementAdresseMeta,
+        ),
+      );
     }
     if (data.containsKey('code_postal')) {
       context.handle(
@@ -966,6 +1026,10 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
         DriftSqlType.string,
         data['${effectivePrefix}rue'],
       )!,
+      complementAdresse: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}complement_adresse'],
+      ),
       codePostal: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}code_postal'],
@@ -1076,6 +1140,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
   final Value<TypeLogement> typeLogement;
   final Value<TypeLocation> typeLocation;
   final Value<String> rue;
+  final Value<String?> complementAdresse;
   final Value<String> codePostal;
   final Value<String> ville;
   final Value<int> loyerHcCentimes;
@@ -1103,6 +1168,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     this.typeLogement = const Value.absent(),
     this.typeLocation = const Value.absent(),
     this.rue = const Value.absent(),
+    this.complementAdresse = const Value.absent(),
     this.codePostal = const Value.absent(),
     this.ville = const Value.absent(),
     this.loyerHcCentimes = const Value.absent(),
@@ -1131,6 +1197,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     required TypeLogement typeLogement,
     required TypeLocation typeLocation,
     required String rue,
+    this.complementAdresse = const Value.absent(),
     required String codePostal,
     required String ville,
     required int loyerHcCentimes,
@@ -1170,6 +1237,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     Expression<String>? typeLogement,
     Expression<String>? typeLocation,
     Expression<String>? rue,
+    Expression<String>? complementAdresse,
     Expression<String>? codePostal,
     Expression<String>? ville,
     Expression<int>? loyerHcCentimes,
@@ -1198,6 +1266,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
       if (typeLogement != null) 'type_logement': typeLogement,
       if (typeLocation != null) 'type_location': typeLocation,
       if (rue != null) 'rue': rue,
+      if (complementAdresse != null) 'complement_adresse': complementAdresse,
       if (codePostal != null) 'code_postal': codePostal,
       if (ville != null) 'ville': ville,
       if (loyerHcCentimes != null) 'loyer_hc_centimes': loyerHcCentimes,
@@ -1234,6 +1303,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     Value<TypeLogement>? typeLogement,
     Value<TypeLocation>? typeLocation,
     Value<String>? rue,
+    Value<String?>? complementAdresse,
     Value<String>? codePostal,
     Value<String>? ville,
     Value<int>? loyerHcCentimes,
@@ -1262,6 +1332,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
       typeLogement: typeLogement ?? this.typeLogement,
       typeLocation: typeLocation ?? this.typeLocation,
       rue: rue ?? this.rue,
+      complementAdresse: complementAdresse ?? this.complementAdresse,
       codePostal: codePostal ?? this.codePostal,
       ville: ville ?? this.ville,
       loyerHcCentimes: loyerHcCentimes ?? this.loyerHcCentimes,
@@ -1310,6 +1381,9 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     }
     if (rue.present) {
       map['rue'] = Variable<String>(rue.value);
+    }
+    if (complementAdresse.present) {
+      map['complement_adresse'] = Variable<String>(complementAdresse.value);
     }
     if (codePostal.present) {
       map['code_postal'] = Variable<String>(codePostal.value);
@@ -1393,6 +1467,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
           ..write('typeLogement: $typeLogement, ')
           ..write('typeLocation: $typeLocation, ')
           ..write('rue: $rue, ')
+          ..write('complementAdresse: $complementAdresse, ')
           ..write('codePostal: $codePostal, ')
           ..write('ville: $ville, ')
           ..write('loyerHcCentimes: $loyerHcCentimes, ')
@@ -1432,6 +1507,7 @@ class _$BienInsertable implements Insertable<Bien> {
       typeLogement: Value(_object.typeLogement),
       typeLocation: Value(_object.typeLocation),
       rue: Value(_object.rue),
+      complementAdresse: Value(_object.complementAdresse),
       codePostal: Value(_object.codePostal),
       ville: Value(_object.ville),
       loyerHcCentimes: Value(_object.loyerHcCentimes),
@@ -5927,6 +6003,7 @@ typedef $$BailleursTableCreateCompanionBuilder =
       required String prenom,
       required String nom,
       required String rue,
+      Value<String?> complementAdresse,
       required String codePostal,
       required String ville,
       required String telephone,
@@ -5941,6 +6018,7 @@ typedef $$BailleursTableUpdateCompanionBuilder =
       Value<String> prenom,
       Value<String> nom,
       Value<String> rue,
+      Value<String?> complementAdresse,
       Value<String> codePostal,
       Value<String> ville,
       Value<String> telephone,
@@ -5976,6 +6054,11 @@ class $$BailleursTableFilterComposer
 
   ColumnFilters<String> get rue => $composableBuilder(
     column: $table.rue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get complementAdresse => $composableBuilder(
+    column: $table.complementAdresse,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6039,6 +6122,11 @@ class $$BailleursTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get complementAdresse => $composableBuilder(
+    column: $table.complementAdresse,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get codePostal => $composableBuilder(
     column: $table.codePostal,
     builder: (column) => ColumnOrderings(column),
@@ -6090,6 +6178,11 @@ class $$BailleursTableAnnotationComposer
 
   GeneratedColumn<String> get rue =>
       $composableBuilder(column: $table.rue, builder: (column) => column);
+
+  GeneratedColumn<String> get complementAdresse => $composableBuilder(
+    column: $table.complementAdresse,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get codePostal => $composableBuilder(
     column: $table.codePostal,
@@ -6144,6 +6237,7 @@ class $$BailleursTableTableManager
                 Value<String> prenom = const Value.absent(),
                 Value<String> nom = const Value.absent(),
                 Value<String> rue = const Value.absent(),
+                Value<String?> complementAdresse = const Value.absent(),
                 Value<String> codePostal = const Value.absent(),
                 Value<String> ville = const Value.absent(),
                 Value<String> telephone = const Value.absent(),
@@ -6156,6 +6250,7 @@ class $$BailleursTableTableManager
                 prenom: prenom,
                 nom: nom,
                 rue: rue,
+                complementAdresse: complementAdresse,
                 codePostal: codePostal,
                 ville: ville,
                 telephone: telephone,
@@ -6170,6 +6265,7 @@ class $$BailleursTableTableManager
                 required String prenom,
                 required String nom,
                 required String rue,
+                Value<String?> complementAdresse = const Value.absent(),
                 required String codePostal,
                 required String ville,
                 required String telephone,
@@ -6182,6 +6278,7 @@ class $$BailleursTableTableManager
                 prenom: prenom,
                 nom: nom,
                 rue: rue,
+                complementAdresse: complementAdresse,
                 codePostal: codePostal,
                 ville: ville,
                 telephone: telephone,
@@ -6228,6 +6325,7 @@ typedef $$BiensTableCreateCompanionBuilder =
       required TypeLogement typeLogement,
       required TypeLocation typeLocation,
       required String rue,
+      Value<String?> complementAdresse,
       required String codePostal,
       required String ville,
       required int loyerHcCentimes,
@@ -6257,6 +6355,7 @@ typedef $$BiensTableUpdateCompanionBuilder =
       Value<TypeLogement> typeLogement,
       Value<TypeLocation> typeLocation,
       Value<String> rue,
+      Value<String?> complementAdresse,
       Value<String> codePostal,
       Value<String> ville,
       Value<int> loyerHcCentimes,
@@ -6438,6 +6537,11 @@ class $$BiensTableFilterComposer extends Composer<_$AppDatabase, $BiensTable> {
 
   ColumnFilters<String> get rue => $composableBuilder(
     column: $table.rue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get complementAdresse => $composableBuilder(
+    column: $table.complementAdresse,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6727,6 +6831,11 @@ class $$BiensTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get complementAdresse => $composableBuilder(
+    column: $table.complementAdresse,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get codePostal => $composableBuilder(
     column: $table.codePostal,
     builder: (column) => ColumnOrderings(column),
@@ -6857,6 +6966,11 @@ class $$BiensTableAnnotationComposer
 
   GeneratedColumn<String> get rue =>
       $composableBuilder(column: $table.rue, builder: (column) => column);
+
+  GeneratedColumn<String> get complementAdresse => $composableBuilder(
+    column: $table.complementAdresse,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get codePostal => $composableBuilder(
     column: $table.codePostal,
@@ -7137,6 +7251,7 @@ class $$BiensTableTableManager
                 Value<TypeLogement> typeLogement = const Value.absent(),
                 Value<TypeLocation> typeLocation = const Value.absent(),
                 Value<String> rue = const Value.absent(),
+                Value<String?> complementAdresse = const Value.absent(),
                 Value<String> codePostal = const Value.absent(),
                 Value<String> ville = const Value.absent(),
                 Value<int> loyerHcCentimes = const Value.absent(),
@@ -7165,6 +7280,7 @@ class $$BiensTableTableManager
                 typeLogement: typeLogement,
                 typeLocation: typeLocation,
                 rue: rue,
+                complementAdresse: complementAdresse,
                 codePostal: codePostal,
                 ville: ville,
                 loyerHcCentimes: loyerHcCentimes,
@@ -7194,6 +7310,7 @@ class $$BiensTableTableManager
                 required TypeLogement typeLogement,
                 required TypeLocation typeLocation,
                 required String rue,
+                Value<String?> complementAdresse = const Value.absent(),
                 required String codePostal,
                 required String ville,
                 required int loyerHcCentimes,
@@ -7222,6 +7339,7 @@ class $$BiensTableTableManager
                 typeLogement: typeLogement,
                 typeLocation: typeLocation,
                 rue: rue,
+                complementAdresse: complementAdresse,
                 codePostal: codePostal,
                 ville: ville,
                 loyerHcCentimes: loyerHcCentimes,

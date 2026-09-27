@@ -1,4 +1,5 @@
 export '../enums.dart';
+export 'adresse.dart';
 export 'artisan.dart';
 export 'bail.dart';
 export 'bailleur.dart';

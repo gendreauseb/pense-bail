@@ -8,6 +8,7 @@ import '../../app/routes.dart';
 import '../../core/config/regles_legales.dart';
 import '../../core/format/formats.dart';
 import '../../core/widgets/composants.dart';
+import '../../core/widgets/feuille.dart';
 import '../../core/widgets/photo_bien.dart';
 import '../../data/photos/photo_service.dart';
 import '../../data/providers.dart';
@@ -218,45 +219,40 @@ class _Visuel extends ConsumerWidget {
   }
 
   Future<void> _photo(BuildContext context, WidgetRef ref) async {
-    final choix = await showModalBottomSheet<_ChoixPhoto>(
-      context: context,
-      useRootNavigator: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.ecran,
-            0,
-            AppSpacing.ecran,
-            AppSpacing.ecran,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const TitreSection('Photo du bien'),
-              OutlinedButton.icon(
-                onPressed: () =>
-                    Navigator.of(context).pop(_ChoixPhoto.appareil),
-                icon: const Icon(AppIcons.appareilPhoto),
-                label: const Text('Prendre une photo'),
-              ),
+    final choix = await ouvrirFeuille<_ChoixPhoto>(
+      context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.ecran,
+          0,
+          AppSpacing.ecran,
+          AppSpacing.ecran,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const TitreSection('Photo du bien'),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(context).pop(_ChoixPhoto.appareil),
+              icon: const Icon(AppIcons.appareilPhoto),
+              label: const Text('Prendre une photo'),
+            ),
+            const SizedBox(height: AppSpacing.bloc),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(context).pop(_ChoixPhoto.galerie),
+              icon: const Icon(AppIcons.galerie),
+              label: const Text('Choisir dans la galerie'),
+            ),
+            if (bien.photoChemin != null) ...[
               const SizedBox(height: AppSpacing.bloc),
-              OutlinedButton.icon(
-                onPressed: () => Navigator.of(context).pop(_ChoixPhoto.galerie),
-                icon: const Icon(AppIcons.galerie),
-                label: const Text('Choisir dans la galerie'),
+              TextButton.icon(
+                onPressed: () => Navigator.of(context).pop(_ChoixPhoto.retirer),
+                icon: const Icon(AppIcons.supprimer),
+                label: const Text('Retirer la photo'),
               ),
-              if (bien.photoChemin != null) ...[
-                const SizedBox(height: AppSpacing.bloc),
-                TextButton.icon(
-                  onPressed: () =>
-                      Navigator.of(context).pop(_ChoixPhoto.retirer),
-                  icon: const Icon(AppIcons.supprimer),
-                  label: const Text('Retirer la photo'),
-                ),
-              ],
             ],
-          ),
+          ],
         ),
       ),
     );

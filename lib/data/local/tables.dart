@@ -18,6 +18,8 @@ class Bailleurs extends Table {
   TextColumn get prenom => text()();
   TextColumn get nom => text()();
   TextColumn get rue => text()();
+  // Ajoutée en version 3 du schéma.
+  TextColumn get complementAdresse => text().nullable()();
   TextColumn get codePostal => text()();
   TextColumn get ville => text()();
   TextColumn get telephone => text()();
@@ -36,6 +38,8 @@ class Biens extends Table {
   TextColumn get typeLogement => textEnum<TypeLogement>()();
   TextColumn get typeLocation => textEnum<TypeLocation>()();
   TextColumn get rue => text()();
+  // Ajoutée en version 3 du schéma.
+  TextColumn get complementAdresse => text().nullable()();
   TextColumn get codePostal => text()();
   TextColumn get ville => text()();
   IntColumn get loyerHcCentimes => integer()();

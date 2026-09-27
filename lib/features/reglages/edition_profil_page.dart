@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/design/design.dart';
+import '../../core/utils/texte.dart';
 import '../../core/validation/validateurs.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/formulaires.dart';
@@ -34,6 +35,9 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   late final _prenom = TextEditingController(text: widget.bailleur.prenom);
   late final _nom = TextEditingController(text: widget.bailleur.nom);
   late final _rue = TextEditingController(text: widget.bailleur.rue);
+  late final _complement = TextEditingController(
+    text: widget.bailleur.complementAdresse,
+  );
   late final _codePostal = TextEditingController(
     text: widget.bailleur.codePostal,
   );
@@ -50,6 +54,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       _prenom,
       _nom,
       _rue,
+      _complement,
       _codePostal,
       _ville,
       _telephone,
@@ -71,6 +76,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
             prenom: _prenom.text.trim(),
             nom: _nom.text.trim(),
             rue: _rue.text.trim(),
+            complementAdresse: facultatif(_complement.text),
             codePostal: _codePostal.text.trim(),
             ville: _ville.text.trim(),
             telephone: Validateurs.normaliserTelephone(_telephone.text) ?? '',
@@ -123,6 +129,13 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
         autofill: const [AutofillHints.streetAddressLine1],
         validator: (v) =>
             Validateurs.obligatoire(v, message: 'Indiquez votre adresse.'),
+      ),
+      ChampTexte(
+        controleur: _complement,
+        libelle: "Complément d'adresse (facultatif)",
+        aide: 'Bâtiment, résidence, étage, appartement…',
+        majuscules: TextCapitalization.sentences,
+        autofill: const [AutofillHints.streetAddressLine2],
       ),
       ChampTexte(
         controleur: _codePostal,

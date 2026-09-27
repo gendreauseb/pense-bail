@@ -53,10 +53,7 @@ class ReglagesPage extends ConsumerWidget {
                   LigneNavigation(
                     icone: AppIcons.personne,
                     titre: bailleur?.nomComplet ?? 'Mon profil',
-                    sousTitre: bailleur == null
-                        ? null
-                        : '${bailleur.rue}, ${bailleur.codePostal} '
-                              '${bailleur.ville}',
+                    sousTitre: bailleur?.adresseComplete,
                     onTap: () => context.push(Routes.profil),
                   ),
                 ],

@@ -8,6 +8,7 @@ import '../../app/routes.dart';
 import '../../core/format/formats.dart';
 import '../../core/utils/dates.dart';
 import '../../core/widgets/composants.dart';
+import '../../core/widgets/feuille.dart';
 import '../../core/widgets/statut_echeance.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
@@ -17,12 +18,8 @@ import 'textes_echeances.dart';
 /// Ouvre le détail d'une échéance dans un panneau (UI.md : panneau ivoire,
 /// haut arrondi).
 Future<void> ouvrirDetailEcheance(BuildContext context, Echeance echeance) =>
-    showModalBottomSheet<void>(
-      context: context,
-      // Au-dessus de la barre de navigation et du bouton « + ».
-      useRootNavigator: true,
-      isScrollControlled: true,
-      useSafeArea: true,
+    ouvrirFeuille<void>(
+      context,
       builder: (_) => _PanneauEcheance(echeance: echeance),
     );
 

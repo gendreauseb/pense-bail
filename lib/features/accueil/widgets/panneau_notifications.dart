@@ -5,6 +5,7 @@ import '../../../app/design/design.dart';
 import '../../../app/etat_app.dart';
 import '../../../core/config/config_app.dart';
 import '../../../core/widgets/composants.dart';
+import '../../../core/widgets/feuille.dart';
 import '../../../core/widgets/listes.dart';
 import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
@@ -24,18 +25,11 @@ class BoutonNotifications extends ConsumerWidget {
       tooltip: urgentes == 0
           ? 'Notifications'
           : 'Notifications, $urgentes ${urgentes > 1 ? 'échéances urgentes' : 'échéance urgente'}',
-      onPressed: () => showModalBottomSheet<void>(
-        context: context,
-        // Au-dessus de la barre de navigation et du bouton « + ».
-        useRootNavigator: true,
-        isScrollControlled: true,
-        useSafeArea: true,
+      onPressed: () => ouvrirFeuille<void>(
+        context,
         builder: (_) => const _PanneauNotifications(),
       ),
-      style: IconButton.styleFrom(
-        backgroundColor: c.surface,
-        side: BorderSide(color: c.border),
-      ),
+      color: c.textPrimary,
       icon: Badge(
         isLabelVisible: urgentes > 0,
         backgroundColor: c.notification,

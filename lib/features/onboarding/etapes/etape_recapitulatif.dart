@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/design/design.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/widgets/photo_bien.dart';
+import '../../../domain/entities/adresse.dart';
 import '../brouillon_onboarding.dart';
 import '../onboarding_controller.dart';
 import '../widgets/gabarit_etape.dart';
@@ -71,8 +72,12 @@ class _EtapeRecapitulatifState extends ConsumerState<EtapeRecapitulatif> {
               visuel: const TuileIcone(icone: AppIcons.personne),
               titre: '${id.prenom.trim()} ${id.nom.trim()}',
               lignes: [
-                id.rue.trim(),
-                '${id.codePostal.trim()} ${id.ville.trim()}',
+                formaterAdresseSurUneLigne(
+                  rue: id.rue,
+                  complement: id.complementAdresse,
+                  codePostal: id.codePostal,
+                  ville: id.ville,
+                ),
               ],
               descriptionModifier: 'Modifier vos coordonnées',
               onModifier: _enCours ? null : _controleur.modifierIdentite,

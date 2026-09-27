@@ -1,4 +1,5 @@
 import '../../core/format/formats.dart';
+import '../../core/utils/texte.dart';
 import '../../core/validation/validateurs.dart';
 import '../../domain/entities/entities.dart';
 
@@ -17,6 +18,7 @@ class BrouillonIdentite {
     this.prenom = '',
     this.nom = '',
     this.rue = '',
+    this.complementAdresse = '',
     this.codePostal = '',
     this.ville = '',
     this.telephone = '',
@@ -26,6 +28,7 @@ class BrouillonIdentite {
   final String prenom;
   final String nom;
   final String rue;
+  final String complementAdresse;
   final String codePostal;
   final String ville;
   final String telephone;
@@ -37,6 +40,7 @@ class BrouillonIdentite {
         prenom: prenom.trim(),
         nom: nom.trim(),
         rue: rue.trim(),
+        complementAdresse: facultatif(complementAdresse),
         codePostal: codePostal.trim(),
         ville: ville.trim(),
         telephone: Validateurs.normaliserTelephone(telephone) ?? '',
@@ -49,6 +53,7 @@ class BrouillonIdentite {
     'prenom': prenom,
     'nom': nom,
     'rue': rue,
+    'complementAdresse': complementAdresse,
     'codePostal': codePostal,
     'ville': ville,
     'telephone': telephone,
@@ -60,6 +65,7 @@ class BrouillonIdentite {
         prenom: json['prenom'] as String? ?? '',
         nom: json['nom'] as String? ?? '',
         rue: json['rue'] as String? ?? '',
+        complementAdresse: json['complementAdresse'] as String? ?? '',
         codePostal: json['codePostal'] as String? ?? '',
         ville: json['ville'] as String? ?? '',
         telephone: json['telephone'] as String? ?? '',
@@ -84,6 +90,7 @@ class BrouillonBien {
     this.loyer = '',
     this.charges = '',
     this.rue = '',
+    this.complementAdresse = '',
     this.codePostal = '',
     this.ville = '',
     this.photoChemin,
@@ -98,6 +105,7 @@ class BrouillonBien {
   final String loyer;
   final String charges;
   final String rue;
+  final String complementAdresse;
   final String codePostal;
   final String ville;
   final String? photoChemin;
@@ -129,6 +137,7 @@ class BrouillonBien {
       typeLogement: typeLogement!,
       typeLocation: typeLocation!,
       rue: rue.trim(),
+      complementAdresse: facultatif(complementAdresse),
       codePostal: codePostal.trim(),
       ville: ville.trim(),
       loyerHcCentimes: loyerCentimes!,
@@ -165,6 +174,7 @@ class BrouillonBien {
     String? loyer,
     String? charges,
     String? rue,
+    String? complementAdresse,
     String? codePostal,
     String? ville,
     Object? photoChemin = inchange,
@@ -178,6 +188,7 @@ class BrouillonBien {
     loyer: loyer ?? this.loyer,
     charges: charges ?? this.charges,
     rue: rue ?? this.rue,
+    complementAdresse: complementAdresse ?? this.complementAdresse,
     codePostal: codePostal ?? this.codePostal,
     ville: ville ?? this.ville,
     photoChemin: identical(photoChemin, inchange)
@@ -195,6 +206,7 @@ class BrouillonBien {
     'loyer': loyer,
     'charges': charges,
     'rue': rue,
+    'complementAdresse': complementAdresse,
     'codePostal': codePostal,
     'ville': ville,
     'photoChemin': photoChemin,
@@ -212,6 +224,7 @@ class BrouillonBien {
     loyer: json['loyer'] as String? ?? '',
     charges: json['charges'] as String? ?? '',
     rue: json['rue'] as String? ?? '',
+    complementAdresse: json['complementAdresse'] as String? ?? '',
     codePostal: json['codePostal'] as String? ?? '',
     ville: json['ville'] as String? ?? '',
     photoChemin: json['photoChemin'] as String?,

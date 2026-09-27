@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/widgets/composants.dart';
+import '../core/widgets/feuille.dart';
 import 'design/design.dart';
 import 'etat_app.dart';
 import 'routes.dart';
@@ -40,12 +41,8 @@ class ShellApp extends ConsumerWidget {
     );
   }
 
-  Future<void> _ouvrirAjout(BuildContext context) => showModalBottomSheet<void>(
-    context: context,
-    // Au-dessus de la barre de navigation et du bouton « + ».
-    useRootNavigator: true,
-    builder: (context) => const _ChoixAjout(),
-  );
+  Future<void> _ouvrirAjout(BuildContext context) =>
+      ouvrirFeuille<void>(context, builder: (context) => const _ChoixAjout());
 }
 
 /// Destinations de la barre (le bouton central « + » n'est pas un onglet).

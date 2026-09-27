@@ -21,6 +21,9 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
   late final _prenom = TextEditingController(text: _initial.prenom);
   late final _nom = TextEditingController(text: _initial.nom);
   late final _rue = TextEditingController(text: _initial.rue);
+  late final _complement = TextEditingController(
+    text: _initial.complementAdresse,
+  );
   late final _codePostal = TextEditingController(text: _initial.codePostal);
   late final _ville = TextEditingController(text: _initial.ville);
   late final _telephone = TextEditingController(text: _initial.telephone);
@@ -36,6 +39,7 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
       _prenom,
       _nom,
       _rue,
+      _complement,
       _codePostal,
       _ville,
       _telephone,
@@ -51,6 +55,7 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
       prenom: _prenom.text,
       nom: _nom.text,
       rue: _rue.text,
+      complementAdresse: _complement.text,
       codePostal: _codePostal.text,
       ville: _ville.text,
       telephone: _telephone.text,
@@ -140,6 +145,13 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
                 ),
                 majuscules: TextCapitalization.sentences,
                 autofill: const [AutofillHints.streetAddressLine1],
+              ),
+              _champ(
+                _complement,
+                "Complément d'adresse (facultatif)",
+                aide: 'Bâtiment, résidence, étage, appartement…',
+                majuscules: TextCapitalization.sentences,
+                autofill: const [AutofillHints.streetAddressLine2],
               ),
               _champ(
                 _codePostal,

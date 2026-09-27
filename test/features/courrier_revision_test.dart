@@ -82,6 +82,23 @@ void main() {
     expect(c.application, contains('25 septembre 2026'));
   });
 
+  test("complément d'adresse du logement avant la voie", () {
+    final c = CourrierRevision.depuis(
+      bailleur: bailleur,
+      locataires: [locataire],
+      bien: unBien().copyWith(complementAdresse: 'Bât. B, apt 12'),
+      bail: unBail(debut: DateTime(2023, 9, 1)),
+      revision: revision(dateEffet: DateTime(2026, 9, 1)),
+    );
+    expect(c.destinataire, [
+      'Paul Martin',
+      'Bât. B, apt 12',
+      '12 rue Gambetta',
+      '75020 Paris',
+    ]);
+    expect(c.logement, '12 rue Gambetta, Bât. B, apt 12, 75020 Paris');
+  });
+
   test('nom de fichier sans accents', () {
     expect(
       CourrierRevision.nomFichier(

@@ -1,4 +1,5 @@
 import '../enums.dart';
+import 'adresse.dart';
 import 'copie.dart';
 
 /// Un bien immobilier mis en location.
@@ -12,6 +13,7 @@ class Bien {
     required this.typeLogement,
     required this.typeLocation,
     required this.rue,
+    this.complementAdresse,
     required this.codePostal,
     required this.ville,
     required this.loyerHcCentimes,
@@ -42,6 +44,9 @@ class Bien {
   final TypeLocation typeLocation;
 
   final String rue;
+
+  /// Bâtiment, résidence, étage, appartement… (facultatif).
+  final String? complementAdresse;
   final String codePostal;
   final String ville;
 
@@ -79,14 +84,28 @@ class Bien {
 
   int get totalMensuelCentimes => loyerHcCentimes + chargesCentimes;
 
-  String get adresseComplete =>
-      [rue, '$codePostal $ville'.trim()].where((l) => l.isNotEmpty).join(', ');
+  /// Sur une ligne : « 12 rue Gambetta, Résidence Les Pins, 75020 Paris ».
+  String get adresseComplete => formaterAdresseSurUneLigne(
+    rue: rue,
+    complement: complementAdresse,
+    codePostal: codePostal,
+    ville: ville,
+  );
+
+  /// Lignes d'un courrier, complément avant la voie (norme postale).
+  List<String> get lignesAdresse => lignesAdressePostale(
+    rue: rue,
+    complement: complementAdresse,
+    codePostal: codePostal,
+    ville: ville,
+  );
 
   Bien copyWith({
     String? nom,
     TypeLogement? typeLogement,
     TypeLocation? typeLocation,
     String? rue,
+    Object? complementAdresse = inchange,
     String? codePostal,
     String? ville,
     int? loyerHcCentimes,
@@ -112,6 +131,7 @@ class Bien {
     typeLogement: typeLogement ?? this.typeLogement,
     typeLocation: typeLocation ?? this.typeLocation,
     rue: rue ?? this.rue,
+    complementAdresse: choisir(complementAdresse, this.complementAdresse),
     codePostal: codePostal ?? this.codePostal,
     ville: ville ?? this.ville,
     loyerHcCentimes: loyerHcCentimes ?? this.loyerHcCentimes,

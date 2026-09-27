@@ -10,6 +10,7 @@ import '../../../core/format/formats.dart';
 import '../../../core/utils/dates.dart';
 import '../../../core/widgets/choix_cartes.dart';
 import '../../../core/widgets/composants.dart';
+import '../../../core/widgets/feuille.dart';
 import '../../../core/widgets/formulaires.dart';
 import '../../../core/widgets/listes.dart';
 import '../../../data/providers.dart';
@@ -99,13 +100,8 @@ class OngletEcheances extends ConsumerWidget {
     );
   }
 
-  Future<void> _ajouter(BuildContext context) => showModalBottomSheet<void>(
-    context: context,
-    useRootNavigator: true,
-    isScrollControlled: true,
-    useSafeArea: true,
-    builder: (_) => _AjoutRappel(bien: bien),
-  );
+  Future<void> _ajouter(BuildContext context) =>
+      ouvrirFeuille<void>(context, builder: (_) => _AjoutRappel(bien: bien));
 }
 
 /// Choix du rappel à ajouter, avec des dates suggérées modifiables.
@@ -170,11 +166,8 @@ class _AjoutRappel extends ConsumerWidget {
             titre: 'Validité d\'un diagnostic',
             sousTitre: 'DPE, électricité, gaz, plomb…',
             onTap: () async {
-              final p = await showModalBottomSheet<Preremplissage>(
-                context: context,
-                useRootNavigator: true,
-                isScrollControlled: true,
-                useSafeArea: true,
+              final p = await ouvrirFeuille<Preremplissage>(
+                context,
                 builder: (_) => _Diagnostic(bien: bien),
               );
               if (p != null && context.mounted) ouvrir(p);

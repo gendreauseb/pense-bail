@@ -28,6 +28,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
   late final _loyer = TextEditingController(text: _bien.loyer);
   late final _charges = TextEditingController(text: _bien.charges);
   late final _rue = TextEditingController(text: _bien.rue);
+  late final _complement = TextEditingController(text: _bien.complementAdresse);
   late final _codePostal = TextEditingController(text: _bien.codePostal);
   late final _ville = TextEditingController(text: _bien.ville);
   late final _dateDebut = TextEditingController(
@@ -52,6 +53,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
       _loyer,
       _charges,
       _rue,
+      _complement,
       _codePostal,
       _ville,
       _dateDebut,
@@ -73,6 +75,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
       loyer: _loyer.text,
       charges: _charges.text,
       rue: _rue.text,
+      complementAdresse: _complement.text,
       codePostal: _codePostal.text,
       ville: _ville.text,
       typeLogement: typeLogement,
@@ -211,6 +214,12 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
               'Numéro et rue',
               validator: (v) =>
                   Validateurs.obligatoire(v, message: 'Indiquez l\'adresse.'),
+              majuscules: TextCapitalization.sentences,
+            ),
+            _texte(
+              _complement,
+              "Complément d'adresse (facultatif)",
+              aide: 'Bâtiment, résidence, étage, appartement…',
               majuscules: TextCapitalization.sentences,
             ),
             _texte(

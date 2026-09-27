@@ -6,6 +6,7 @@ import '../../app/design/design.dart';
 import '../../app/routes.dart';
 import '../../core/format/formats.dart';
 import '../../core/widgets/composants.dart';
+import '../../core/widgets/feuille.dart';
 import '../../core/widgets/listes.dart';
 import '../../core/widgets/photo_bien.dart';
 import '../../data/providers.dart';
@@ -15,14 +16,7 @@ import '../../domain/services/calculateur_revision.dart';
 /// Choix du bien à réviser : seuls les biens en location longue durée sont
 /// proposés, les autres apparaissent grisés avec l'explication.
 Future<void> ouvrirChoixBienRevision(BuildContext context) =>
-    showModalBottomSheet<void>(
-      context: context,
-      // Au-dessus de la barre de navigation et du bouton « + ».
-      useRootNavigator: true,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (_) => const _ChoixBien(),
-    );
+    ouvrirFeuille<void>(context, builder: (_) => const _ChoixBien());
 
 class _ChoixBien extends ConsumerWidget {
   const _ChoixBien();
