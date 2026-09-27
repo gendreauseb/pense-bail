@@ -3,7 +3,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../domain/enums.dart';
 
-/// Icônes au trait (Lucide, trait de 2), centralisées ici (UI.md §5).
+/// Icônes au trait (Lucide, trait de 2), centralisées ici (design-system.md
+/// §5).
 abstract final class AppIcons {
   // Navigation
   static const accueil = LucideIcons.house;

@@ -1,4 +1,4 @@
-// Explications en langage clair des échéances (UI.md §8 : un terme
+// Explications en langage clair des échéances (design-system.md §8 : un terme
 // juridique est toujours accompagné d'une explication). Les durées citées
 // proviennent de ReglesLegales, jamais écrites ici.
 

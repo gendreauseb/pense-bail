@@ -1,4 +1,4 @@
-// Composants communs du design system (UI.md §6).
+// Composants communs du design system (design-system.md §6).
 
 import 'package:flutter/material.dart';
 

@@ -1,8 +1,11 @@
 # Pense-Bail
 
 Boîte à outils mobile (Flutter, Android et iOS) pour les propriétaires bailleurs
-particuliers. Cahier des charges : [PROMPT.md](PROMPT.md). Design system :
-[UI.md](UI.md), qui fait foi pour tout ce qui touche l'interface.
+particuliers. Cahier des charges :
+[docs/cahier-des-charges.md](docs/cahier-des-charges.md). Design system :
+[docs/design-system.md](docs/design-system.md), qui fait foi pour tout ce qui
+touche l'interface. Conventions et décisions : [CLAUDE.md](CLAUDE.md) et
+[docs/](docs/).
 
 ## Architecture
 

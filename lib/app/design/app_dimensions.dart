@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import 'app_colors.dart';
 
-/// Espacements (UI.md §4).
+/// Espacements (design-system.md §4).
 abstract final class AppSpacing {
   static const xxs = 4.0;
   static const xs = 6.0;
@@ -32,7 +32,7 @@ abstract final class AppSpacing {
   static const paddingEcran = EdgeInsets.symmetric(horizontal: ecran);
 }
 
-/// Rayons (UI.md §4).
+/// Rayons (design-system.md §4).
 abstract final class AppRadius {
   static const tuile = 12.0; // tuiles d'icône et de date
   static const bouton = 14.0;
@@ -45,7 +45,7 @@ abstract final class AppRadius {
   static BorderRadius arrondi(double r) => BorderRadius.circular(r);
 }
 
-/// Dimensions fixes (UI.md §4 et §6).
+/// Dimensions fixes (design-system.md §4 et §6).
 abstract final class AppSizes {
   static const boutonPrincipal = 56.0;
   static const boutonSecondaire = 48.0;
@@ -90,8 +90,8 @@ abstract final class AppSizes {
   static const progressionEtapes = 4.0;
 }
 
-/// Ombres : quasiment absentes (UI.md §4). Seuls le bouton central de la
-/// navigation et les cartes d'illustration de bienvenue en ont une.
+/// Ombres : quasiment absentes (design-system.md §4). Seuls le bouton central
+/// de la navigation et les cartes d'illustration de bienvenue en ont une.
 abstract final class AppShadows {
   static List<BoxShadow> douce(AppColors c) => [
     BoxShadow(color: c.ombre, blurRadius: 24, offset: const Offset(0, 8)),

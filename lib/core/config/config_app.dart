@@ -26,9 +26,9 @@ abstract final class ConfigApp {
   /// aujourd'hui + ce nombre de mois.
   static const int debutBailMaxMoisDansLeFutur = 3;
 
-  /// Statut des échéances selon les jours restants (UI.md §2, règle stricte) :
-  /// urgent si dépassée ou ≤ 7 j ; bientôt de 8 à 30 j ; à venir de 31 à
-  /// 90 j ; lointain au-delà.
+  /// Statut des échéances selon les jours restants (design-system.md §2, règle
+  /// stricte) : urgent si dépassée ou ≤ 7 j ; bientôt de 8 à 30 j ; à venir de
+  /// 31 à 90 j ; lointain au-delà.
   static const int seuilUrgentJours = 7;
   static const int seuilBientotJours = 30;
   static const int seuilAVenirJours = 90;

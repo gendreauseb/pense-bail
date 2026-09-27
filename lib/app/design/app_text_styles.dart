@@ -11,7 +11,7 @@ abstract final class AppFonts {
   static const manrope = 'Manrope';
 }
 
-/// Styles de texte Pense-Bail (UI.md §3).
+/// Styles de texte Pense-Bail (design-system.md §3).
 ///
 /// Les tailles sont données en points logiques : elles suivent le réglage
 /// de taille de texte du téléphone.

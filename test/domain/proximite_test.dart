@@ -6,7 +6,7 @@ void main() {
   DateTime dans(int jours) =>
       DateTime(aujourdhui.year, aujourdhui.month, aujourdhui.day + jours);
 
-  test('4 statuts : bornes strictes de UI.md', () {
+  test('4 statuts : bornes strictes de design-system.md', () {
     expect(Proximite.depuisJours(-3), Proximite.urgent);
     expect(Proximite.depuisJours(0), Proximite.urgent);
     expect(Proximite.depuisJours(7), Proximite.urgent);

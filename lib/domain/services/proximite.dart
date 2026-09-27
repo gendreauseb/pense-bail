@@ -1,7 +1,8 @@
 import '../../core/config/config_app.dart';
 import '../../core/utils/dates.dart';
 
-/// Statut d'une échéance selon sa proximité (UI.md §2, règle stricte).
+/// Statut d'une échéance selon sa proximité (design-system.md §2, règle
+/// stricte).
 enum Proximite {
   /// Dépassée ou dans 7 jours ou moins.
   urgent,
@@ -26,7 +27,8 @@ enum Proximite {
       depuisJours(Dates.joursEntre(aujourdhui, date));
 }
 
-/// Texte de la pastille de statut (UI.md §6) : jamais la couleur seule.
+/// Texte de la pastille de statut (design-system.md §6) : jamais la couleur
+/// seule.
 ///
 /// « 4 j » (liste dense) ou « Dans 4 j » (fiche), puis « 5 mois » au-delà de
 /// 90 jours, puis l'année au-delà de 18 mois.

@@ -99,7 +99,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
       fieldLabelText: 'Date (JJ/MM/AAAA)',
       errorFormatText: 'Format attendu : JJ/MM/AAAA',
       errorInvalidText: 'Date trop éloignée dans le futur',
-      // Jamais « OK » seul (UI.md §8).
+      // Jamais « OK » seul (design-system.md §8).
       confirmText: 'Choisir cette date',
       cancelText: 'Annuler',
     );

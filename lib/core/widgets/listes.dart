@@ -1,4 +1,4 @@
-// Listes, puces et bannières (UI.md §6).
+// Listes, puces et bannières (design-system.md §6).
 
 import 'package:flutter/material.dart';
 

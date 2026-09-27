@@ -15,8 +15,8 @@ import '../../domain/entities/entities.dart';
 import '../../domain/services/proximite.dart';
 import 'textes_echeances.dart';
 
-/// Ouvre le détail d'une échéance dans un panneau (UI.md : panneau ivoire,
-/// haut arrondi).
+/// Ouvre le détail d'une échéance dans un panneau (design-system.md : panneau
+/// ivoire, haut arrondi).
 Future<void> ouvrirDetailEcheance(BuildContext context, Echeance echeance) =>
     ouvrirFeuille<void>(
       context,

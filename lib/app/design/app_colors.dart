@@ -8,7 +8,7 @@ class CouleursStatut {
   final Color texte;
 }
 
-/// Palette Pense-Bail (UI.md §2).
+/// Palette Pense-Bail (design-system.md §2).
 ///
 /// Exposée comme extension de thème : les écrans lisent `context.couleurs`
 /// et non des constantes, pour pouvoir ajouter un mode sombre plus tard

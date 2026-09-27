@@ -15,7 +15,7 @@ class BailleurApp extends ConsumerWidget {
     return MaterialApp.router(
       title: nom,
       debugShowCheckedModeBanner: false,
-      // Mode sombre hors périmètre V1 (UI.md §10).
+      // Mode sombre hors périmètre V1 (design-system.md §10).
       theme: AppTheme.clair(),
       themeMode: ThemeMode.light,
       routerConfig: ref.watch(routeurProvider),

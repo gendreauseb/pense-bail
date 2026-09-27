@@ -1,5 +1,9 @@
 # Pense-Bail : règles de design (design system V1)
 
+> Fait foi pour tout ce qui touche l'interface (en cas de contradiction avec
+> le cahier des charges). À relire avant toute modification d'écran. La
+> section 11 indique où chaque règle est implémentée.
+
 ## 1. Intention
 
 Pense-Bail doit inspirer confiance et calme : le bailleur ouvre l'app pour être rassuré, pas pour être stressé. Le style est sobre, chaleureux et « patrimonial » : un bleu canard profond sur un fond ivoire, des titres à empattements, beaucoup d'air, peu d'ombres. L'information clé de chaque écran est une date ou un montant, jamais une photo.
@@ -121,3 +125,46 @@ Les tailles doivent suivre le réglage de taille de texte du téléphone sans ca
 ## 10. Hors périmètre V1
 
 Mode sombre non prévu en V1, mais les tokens doivent être structurés pour pouvoir l'ajouter sans toucher aux écrans.
+
+## 11. Correspondance dans le code
+
+Tokens (`lib/app/design/`, importés via `design.dart`) :
+- Couleurs : `AppColors` (`context.couleurs`), palette `AppColors.clair`.
+  Couleurs d'un statut : `context.couleurs.statut(proximite)` (extension
+  dans `statut_echeance.dart`). Erreurs de saisie : `couleurs.erreur`.
+- Textes : `AppTextStyles` (`context.textes`) : `displayLarge`,
+  `headline`, `title`, `figure`, `body`, `rowTitle`, `button`, `label`,
+  `secondary`, `caption`, `overline`, `nav`.
+- Espacements, rayons, tailles, ombres : `AppSpacing`, `AppRadius`,
+  `AppSizes`, `AppShadows` (`app_dimensions.dart`).
+- Icônes Lucide : `AppIcons` (jamais `LucideIcons` directement dans un
+  écran).
+- Thème unique : `AppTheme.clair()`.
+
+Composants (`lib/core/widgets/`) :
+
+| Composant | Widget |
+| --- | --- |
+| Carte d'action | `CarteAction` |
+| Tuile d'icône | `TuileIcone` |
+| Tuile de date, pastille de statut | `TuileDate`, `PastilleStatut` (`statut_echeance.dart`) |
+| Liste en carte, ligne d'échéance | `CarteListe`, `LigneEcheance` (`listes.dart`) |
+| Ligne cliquable (réglages, choix) | `LigneNavigation` |
+| Ligne libellé / valeur | `LigneInfo` |
+| Bouton « Calculer » | `BoutonCompact` |
+| Puces de filtre, puces d'information | `PuceFiltre`, `PuceInfo` |
+| Bannière d'information | `BanniereInformation` |
+| Note explicative (« à quoi ça sert ») | `Note` |
+| Bouton pointillé | `BoutonPointille` |
+| Barre d'action fixe | `BarreActionFixe` |
+| Titres | `TitreSection`, `EnTeteSection` (avec action) |
+| État vide | `EtatVide` |
+| Choix en cartes | `ChoixCartes`, `ChampChoix` (`choix_cartes.dart`) |
+| Champs de formulaire, page de formulaire | `ChampTexte`, `ChampMontant`, `ChampDate`, `PageFormulaire` (`formulaires.dart`) |
+| Panneau du bas | `ouvrirFeuille` (`feuille.dart`), jamais `showModalBottomSheet` directement |
+| Photo ou illustration d'un bien | `PhotoBien`, `IllustrationBien` |
+| Pagination de bienvenue, logo | `Pagination`, `LogoPenseBail` |
+
+Documents PDF : `StylePdf` (mêmes polices et couleurs, palette claire) et
+`ApercuPdfPage` (aperçu, partager, imprimer, enregistrer) dans
+`lib/core/pdf/`.

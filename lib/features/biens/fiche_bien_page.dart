@@ -19,8 +19,8 @@ import 'onglets/onglet_echeances.dart';
 import 'onglets/onglet_infos.dart';
 import 'onglets/onglet_rentabilite.dart';
 
-/// Fiche d'un bien (UI.md §7) : visuel, panneau superposé, chiffres clés,
-/// onglets, barre « Réviser le loyer » en longue durée.
+/// Fiche d'un bien (design-system.md §7) : visuel, panneau superposé, chiffres
+/// clés, onglets, barre « Réviser le loyer » en longue durée.
 class FicheBienPage extends ConsumerStatefulWidget {
   const FicheBienPage({super.key, required this.bienId});
   final String bienId;

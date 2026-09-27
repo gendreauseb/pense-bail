@@ -4,12 +4,13 @@ import '../../../app/design/design.dart';
 import '../../../core/format/formats.dart';
 import '../../../domain/services/tableau_de_bord.dart';
 
-/// Carte de synthèse : fond bleu canard, 3 colonnes égales (UI.md §6).
+/// Carte de synthèse : fond bleu canard, 3 colonnes égales (design-system.md
+/// §6).
 class CarteSynthese extends StatelessWidget {
   const CarteSynthese({super.key, required this.synthese});
   final Synthese synthese;
 
-  /// Libellés à 85 % d'opacité (UI.md).
+  /// Libellés à 85 % d'opacité (design-system.md).
   static const _opaciteLibelle = 0.85;
 
   @override

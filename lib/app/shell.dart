@@ -70,7 +70,7 @@ class _EmplacementBoutonCentral extends FloatingActionButtonLocation {
   );
 }
 
-/// Barre de navigation (UI.md §6) : fond blanc, bordure haute, 5
+/// Barre de navigation (design-system.md §6) : fond blanc, bordure haute, 5
 /// emplacements ; celui du centre est laissé libre pour le bouton « + ».
 class BarreNavigation extends StatelessWidget {
   const BarreNavigation({

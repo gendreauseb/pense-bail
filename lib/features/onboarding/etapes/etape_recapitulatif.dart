@@ -169,7 +169,7 @@ class _LigneBien extends StatelessWidget {
   }
 }
 
-/// Ligne de liste entièrement cliquable, avec chevron (UI.md §6).
+/// Ligne de liste entièrement cliquable, avec chevron (design-system.md §6).
 class _Ligne extends StatelessWidget {
   const _Ligne({
     required this.visuel,

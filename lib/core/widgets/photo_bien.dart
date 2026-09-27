@@ -44,7 +44,7 @@ class PhotoBien extends ConsumerWidget {
   }
 }
 
-/// Grand pictogramme au trait centré sur un fond coloré (UI.md §5) :
+/// Grand pictogramme au trait centré sur un fond coloré (design-system.md §5) :
 /// maison sur fond sable, les autres types sur fond bleu canard pâle.
 class IllustrationBien extends StatelessWidget {
   const IllustrationBien({

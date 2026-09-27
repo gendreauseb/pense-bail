@@ -1,6 +1,7 @@
 // Illustrations décoratives des écrans de bienvenue : cartes légèrement
-// inclinées, avec une ombre douce (UI.md §4 et §7). Exemples fictifs,
-// masqués aux lecteurs d'écran (le titre et le texte portent le message).
+// inclinées, avec une ombre douce (design-system.md §4 et §7). Exemples
+// fictifs, masqués aux lecteurs d'écran (le titre et le texte portent le
+// message).
 
 import 'dart:math' as math;
 
