@@ -75,6 +75,16 @@ void main() {
     expect(suivante.dateInitiale, isNull);
   });
 
+  test("« Faite le » : date du jour de l'application", () async {
+    await gestion.enregistrer(revision(), const []);
+    await gestion.marquerFaite(
+      revision(),
+      aujourdhui: DateTime(2026, 9, 24),
+      maintenant: t0,
+    );
+    expect((await echeances.parId('rev'))!.faiteLe, DateTime(2026, 9, 24));
+  });
+
   test('échéance non récurrente : pas d\'occurrence suivante', () async {
     final unique = revision(intervalle: null);
     await gestion.enregistrer(unique, const [7]);

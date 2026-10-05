@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/etat_app.dart';
 import '../../core/config/cles_reglages.dart';
-import '../../core/utils/dates.dart';
 import '../../core/utils/identifiants.dart';
 import '../../data/photos/photo_service.dart';
 import '../../data/providers.dart';
@@ -227,7 +226,7 @@ class OnboardingController extends AsyncNotifier<BrouillonOnboarding> {
                   ),
                 ),
             ],
-            aujourdhui: Dates.aujourdhui(),
+            aujourdhui: ref.read(aujourdhuiProvider),
           );
     } catch (_) {
       _termine = false;

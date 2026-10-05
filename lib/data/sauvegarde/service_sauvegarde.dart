@@ -196,6 +196,8 @@ class ServiceSauvegarde {
           );
         }
       }
+      // Sauvegarde du schéma 4 ou avant : dates avec fuseau horaire.
+      await _db.normaliserJours();
     });
     await _supprimerPhotos();
     for (final MapEntry(key: chemin, value: octets)

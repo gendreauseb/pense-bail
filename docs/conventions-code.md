@@ -66,14 +66,20 @@ anglais restent tels quels (`build`, `copyWith`, `Provider`).
 ## Base de données (drift)
 
 - Tables dans `data/local/tables.dart`, liées aux entités par
-  `@UseRowClass(…, generateInsertable: true)`. Dates stockées en texte
-  (`build.yaml`), énumérations en texte (`textEnum`), clés étrangères avec
+  `@UseRowClass(…, generateInsertable: true)`. Dates calendaires (début
+  de bail, échéances, mouvements…) en texte `AAAA-MM-JJ`, sans fuseau :
+  `text().map(const ConvertisseurJour())`, jamais `dateTime()`, sinon la
+  date change de jour dans un autre fuseau horaire. `dateTime()` est
+  réservé aux horodatages (`creeLe`, `modifieLe`, stockés en texte ISO via
+  `build.yaml`). Énumérations en texte (`textEnum`), clés étrangères avec
   suppression en cascade (`PRAGMA foreign_keys = ON`).
 - Après toute modification d'une table : `dart run build_runner build`.
 - Changement de schéma : incrémenter `schemaVersion`, ajouter l'étape dans
   `onUpgrade` (`if (de < N)`), colonnes ajoutées nullables ou avec valeur
   par défaut. Les sauvegardes JSON d'un schéma plus ancien doivent rester
-  restaurables : vérifier `test/data/sauvegarde_test.dart`.
+  restaurables : vérifier `test/data/sauvegarde_test.dart`. Les dates d'une
+  base ou d'une sauvegarde antérieure au schéma 5 sont réécrites par
+  `AppDatabase.normaliserJours()` (mise à jour et restauration).
 - Réglages clé / valeur : clés dans `ClesReglages`.
 
 ## Montants, dates, textes

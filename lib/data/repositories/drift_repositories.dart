@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import '../../core/utils/identifiants.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
+import '../local/convertisseur_jour.dart';
 import '../local/database.dart';
 
 // ---------------------------------------------------------------------------
@@ -347,7 +348,13 @@ class DriftFinanceRepository implements FinanceRepository {
         (m) => OrderingTerm(expression: m.date, mode: OrderingMode.desc),
       ]);
     if (annee != null) {
-      requete.where((m) => m.date.year.equals(annee));
+      // Dates en texte AAAA-MM-JJ : comparaison directe.
+      requete.where(
+        (m) => m.date.isBetweenValues(
+          ConvertisseurJour.texte(DateTime(annee)),
+          ConvertisseurJour.texte(DateTime(annee, 12, 31)),
+        ),
+      );
     }
     return requete;
   }

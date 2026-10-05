@@ -194,7 +194,10 @@ class _PanneauEcheance extends ConsumerWidget {
     final gestion = ref.read(gestionEcheancesProvider);
     Navigator.of(context).pop();
 
-    final suivante = await gestion.marquerFaite(echeance);
+    final suivante = await gestion.marquerFaite(
+      echeance,
+      aujourdhui: ref.read(aujourdhuiProvider),
+    );
     final message = suivante == null
         ? '« ${echeance.titre} » est marquée comme faite.'
         : '« ${echeance.titre} » est faite. Prochaine le '

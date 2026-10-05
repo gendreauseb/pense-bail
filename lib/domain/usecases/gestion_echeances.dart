@@ -25,7 +25,14 @@ class GestionEcheances {
   ///
   /// L'occurrence suivante est calculée depuis la date prévue à l'origine :
   /// une révision prévue le 01/09 et reportée au 15/09 revient le 01/09.
-  Future<Echeance?> marquerFaite(Echeance echeance, {DateTime? maintenant}) {
+  ///
+  /// [aujourdhui] (date du jour de l'application) donne « Faite le » ; à
+  /// défaut, le jour de [maintenant].
+  Future<Echeance?> marquerFaite(
+    Echeance echeance, {
+    DateTime? aujourdhui,
+    DateTime? maintenant,
+  }) {
     final t = maintenant ?? DateTime.now();
     final intervalle = echeance.intervalleMois;
     final suivante = intervalle == null
@@ -53,7 +60,7 @@ class GestionEcheances {
       await echeances.enregistrer(
         echeance.copyWith(
           statut: StatutEcheance.faite,
-          faiteLe: Dates.jour(t),
+          faiteLe: Dates.jour(aujourdhui ?? t),
           modifieLe: t,
         ),
       );

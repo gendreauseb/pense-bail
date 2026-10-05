@@ -625,17 +625,15 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       ).withConverter<ClasseDpe?>($BiensTable.$converterclasseDpen);
-  static const VerificationMeta _dateDpeMeta = const VerificationMeta(
-    'dateDpe',
-  );
   @override
-  late final GeneratedColumn<DateTime> dateDpe = GeneratedColumn<DateTime>(
-    'date_dpe',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime?, String> dateDpe =
+      GeneratedColumn<String>(
+        'date_dpe',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($BiensTable.$converterdateDpen);
   static const VerificationMeta _nombreLotsMeta = const VerificationMeta(
     'nombreLots',
   );
@@ -885,12 +883,6 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
         surfaceM2.isAcceptableOrUnknown(data['surface_m2']!, _surfaceM2Meta),
       );
     }
-    if (data.containsKey('date_dpe')) {
-      context.handle(
-        _dateDpeMeta,
-        dateDpe.isAcceptableOrUnknown(data['date_dpe']!, _dateDpeMeta),
-      );
-    }
     if (data.containsKey('nombre_lots')) {
       context.handle(
         _nombreLotsMeta,
@@ -1060,9 +1052,11 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
           data['${effectivePrefix}classe_dpe'],
         ),
       ),
-      dateDpe: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_dpe'],
+      dateDpe: $BiensTable.$converterdateDpen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date_dpe'],
+        ),
       ),
       nombreLots: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -1132,6 +1126,10 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
       const EnumNameConverter<ClasseDpe>(ClasseDpe.values);
   static JsonTypeConverter2<ClasseDpe?, String?, String?> $converterclasseDpen =
       JsonTypeConverter2.asNullable($converterclasseDpe);
+  static TypeConverter<DateTime, String> $converterdateDpe =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $converterdateDpen =
+      NullAwareTypeConverter.wrap($converterdateDpe);
 }
 
 class BiensCompanion extends UpdateCompanion<Bien> {
@@ -1245,7 +1243,7 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     Expression<String>? photoChemin,
     Expression<double>? surfaceM2,
     Expression<String>? classeDpe,
-    Expression<DateTime>? dateDpe,
+    Expression<String>? dateDpe,
     Expression<int>? nombreLots,
     Expression<int>? prixAchatCentimes,
     Expression<int>? fraisNotaireCentimes,
@@ -1409,7 +1407,9 @@ class BiensCompanion extends UpdateCompanion<Bien> {
       );
     }
     if (dateDpe.present) {
-      map['date_dpe'] = Variable<DateTime>(dateDpe.value);
+      map['date_dpe'] = Variable<String>(
+        $BiensTable.$converterdateDpen.toSql(dateDpe.value),
+      );
     }
     if (nombreLots.present) {
       map['nombre_lots'] = Variable<int>(nombreLots.value);
@@ -1575,17 +1575,15 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       ).withConverter<TypeBail>($BauxTable.$convertertypeBail);
-  static const VerificationMeta _dateDebutMeta = const VerificationMeta(
-    'dateDebut',
-  );
   @override
-  late final GeneratedColumn<DateTime> dateDebut = GeneratedColumn<DateTime>(
-    'date_debut',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime, String> dateDebut =
+      GeneratedColumn<String>(
+        'date_debut',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>($BauxTable.$converterdateDebut);
   static const VerificationMeta _dureeMoisMeta = const VerificationMeta(
     'dureeMois',
   );
@@ -1607,17 +1605,15 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _dateRevisionMeta = const VerificationMeta(
-    'dateRevision',
-  );
   @override
-  late final GeneratedColumn<DateTime> dateRevision = GeneratedColumn<DateTime>(
-    'date_revision',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime?, String> dateRevision =
+      GeneratedColumn<String>(
+        'date_revision',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($BauxTable.$converterdateRevisionn);
   static const VerificationMeta _irlTrimestreMeta = const VerificationMeta(
     'irlTrimestre',
   );
@@ -1725,14 +1721,6 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
     } else if (isInserting) {
       context.missing(_bienIdMeta);
     }
-    if (data.containsKey('date_debut')) {
-      context.handle(
-        _dateDebutMeta,
-        dateDebut.isAcceptableOrUnknown(data['date_debut']!, _dateDebutMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateDebutMeta);
-    }
     if (data.containsKey('duree_mois')) {
       context.handle(
         _dureeMoisMeta,
@@ -1745,15 +1733,6 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
         depotGarantieCentimes.isAcceptableOrUnknown(
           data['depot_garantie_centimes']!,
           _depotGarantieCentimesMeta,
-        ),
-      );
-    }
-    if (data.containsKey('date_revision')) {
-      context.handle(
-        _dateRevisionMeta,
-        dateRevision.isAcceptableOrUnknown(
-          data['date_revision']!,
-          _dateRevisionMeta,
         ),
       );
     }
@@ -1825,10 +1804,12 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
           data['${effectivePrefix}type_bail'],
         )!,
       ),
-      dateDebut: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_debut'],
-      )!,
+      dateDebut: $BauxTable.$converterdateDebut.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date_debut'],
+        )!,
+      ),
       dureeMois: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}duree_mois'],
@@ -1837,9 +1818,11 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
         DriftSqlType.int,
         data['${effectivePrefix}depot_garantie_centimes'],
       ),
-      dateRevision: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_revision'],
+      dateRevision: $BauxTable.$converterdateRevisionn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date_revision'],
+        ),
       ),
       irlTrimestre: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -1875,6 +1858,12 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
 
   static JsonTypeConverter2<TypeBail, String, String> $convertertypeBail =
       const EnumNameConverter<TypeBail>(TypeBail.values);
+  static TypeConverter<DateTime, String> $converterdateDebut =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime, String> $converterdateRevision =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $converterdateRevisionn =
+      NullAwareTypeConverter.wrap($converterdateRevision);
 }
 
 class BauxCompanion extends UpdateCompanion<Bail> {
@@ -1934,10 +1923,10 @@ class BauxCompanion extends UpdateCompanion<Bail> {
     Expression<String>? id,
     Expression<String>? bienId,
     Expression<String>? typeBail,
-    Expression<DateTime>? dateDebut,
+    Expression<String>? dateDebut,
     Expression<int>? dureeMois,
     Expression<int>? depotGarantieCentimes,
-    Expression<DateTime>? dateRevision,
+    Expression<String>? dateRevision,
     Expression<int>? irlTrimestre,
     Expression<int>? irlAnnee,
     Expression<double>? irlValeur,
@@ -2015,7 +2004,9 @@ class BauxCompanion extends UpdateCompanion<Bail> {
       );
     }
     if (dateDebut.present) {
-      map['date_debut'] = Variable<DateTime>(dateDebut.value);
+      map['date_debut'] = Variable<String>(
+        $BauxTable.$converterdateDebut.toSql(dateDebut.value),
+      );
     }
     if (dureeMois.present) {
       map['duree_mois'] = Variable<int>(dureeMois.value);
@@ -2026,7 +2017,9 @@ class BauxCompanion extends UpdateCompanion<Bail> {
       );
     }
     if (dateRevision.present) {
-      map['date_revision'] = Variable<DateTime>(dateRevision.value);
+      map['date_revision'] = Variable<String>(
+        $BauxTable.$converterdateRevisionn.toSql(dateRevision.value),
+      );
     }
     if (irlTrimestre.present) {
       map['irl_trimestre'] = Variable<int>(irlTrimestre.value);
@@ -2522,26 +2515,24 @@ class $EcheancesTable extends Echeances
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-    'date',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _dateInitialeMeta = const VerificationMeta(
-    'dateInitiale',
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime, String> date =
+      GeneratedColumn<String>(
+        'date',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>($EcheancesTable.$converterdate);
   @override
-  late final GeneratedColumn<DateTime> dateInitiale = GeneratedColumn<DateTime>(
-    'date_initiale',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime?, String> dateInitiale =
+      GeneratedColumn<String>(
+        'date_initiale',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($EcheancesTable.$converterdateInitialen);
   @override
   late final GeneratedColumnWithTypeConverter<StatutEcheance, String> statut =
       GeneratedColumn<String>(
@@ -2551,17 +2542,15 @@ class $EcheancesTable extends Echeances
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       ).withConverter<StatutEcheance>($EcheancesTable.$converterstatut);
-  static const VerificationMeta _faiteLeMeta = const VerificationMeta(
-    'faiteLe',
-  );
   @override
-  late final GeneratedColumn<DateTime> faiteLe = GeneratedColumn<DateTime>(
-    'faite_le',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime?, String> faiteLe =
+      GeneratedColumn<String>(
+        'faite_le',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($EcheancesTable.$converterfaiteLen);
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -2673,29 +2662,6 @@ class $EcheancesTable extends Echeances
     } else if (isInserting) {
       context.missing(_titreMeta);
     }
-    if (data.containsKey('date')) {
-      context.handle(
-        _dateMeta,
-        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
-    if (data.containsKey('date_initiale')) {
-      context.handle(
-        _dateInitialeMeta,
-        dateInitiale.isAcceptableOrUnknown(
-          data['date_initiale']!,
-          _dateInitialeMeta,
-        ),
-      );
-    }
-    if (data.containsKey('faite_le')) {
-      context.handle(
-        _faiteLeMeta,
-        faiteLe.isAcceptableOrUnknown(data['faite_le']!, _faiteLeMeta),
-      );
-    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
@@ -2765,13 +2731,17 @@ class $EcheancesTable extends Echeances
         DriftSqlType.string,
         data['${effectivePrefix}titre'],
       )!,
-      date: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date'],
-      )!,
-      dateInitiale: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_initiale'],
+      date: $EcheancesTable.$converterdate.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date'],
+        )!,
+      ),
+      dateInitiale: $EcheancesTable.$converterdateInitialen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date_initiale'],
+        ),
       ),
       statut: $EcheancesTable.$converterstatut.fromSql(
         attachedDatabase.typeMapping.read(
@@ -2779,9 +2749,11 @@ class $EcheancesTable extends Echeances
           data['${effectivePrefix}statut'],
         )!,
       ),
-      faiteLe: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}faite_le'],
+      faiteLe: $EcheancesTable.$converterfaiteLen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}faite_le'],
+        ),
       ),
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -2819,8 +2791,18 @@ class $EcheancesTable extends Echeances
 
   static JsonTypeConverter2<TypeEcheance, String, String> $convertertype =
       const EnumNameConverter<TypeEcheance>(TypeEcheance.values);
+  static TypeConverter<DateTime, String> $converterdate =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime, String> $converterdateInitiale =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $converterdateInitialen =
+      NullAwareTypeConverter.wrap($converterdateInitiale);
   static JsonTypeConverter2<StatutEcheance, String, String> $converterstatut =
       const EnumNameConverter<StatutEcheance>(StatutEcheance.values);
+  static TypeConverter<DateTime, String> $converterfaiteLe =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $converterfaiteLen =
+      NullAwareTypeConverter.wrap($converterfaiteLe);
   static JsonTypeConverter2<TypeDiagnostic, String, String>
   $convertertypeDiagnostic = const EnumNameConverter<TypeDiagnostic>(
     TypeDiagnostic.values,
@@ -2893,10 +2875,10 @@ class EcheancesCompanion extends UpdateCompanion<Echeance> {
     Expression<String>? bienId,
     Expression<String>? type,
     Expression<String>? titre,
-    Expression<DateTime>? date,
-    Expression<DateTime>? dateInitiale,
+    Expression<String>? date,
+    Expression<String>? dateInitiale,
     Expression<String>? statut,
-    Expression<DateTime>? faiteLe,
+    Expression<String>? faiteLe,
     Expression<String>? notes,
     Expression<int>? intervalleMois,
     Expression<String>? typeDiagnostic,
@@ -2978,10 +2960,14 @@ class EcheancesCompanion extends UpdateCompanion<Echeance> {
       map['titre'] = Variable<String>(titre.value);
     }
     if (date.present) {
-      map['date'] = Variable<DateTime>(date.value);
+      map['date'] = Variable<String>(
+        $EcheancesTable.$converterdate.toSql(date.value),
+      );
     }
     if (dateInitiale.present) {
-      map['date_initiale'] = Variable<DateTime>(dateInitiale.value);
+      map['date_initiale'] = Variable<String>(
+        $EcheancesTable.$converterdateInitialen.toSql(dateInitiale.value),
+      );
     }
     if (statut.present) {
       map['statut'] = Variable<String>(
@@ -2989,7 +2975,9 @@ class EcheancesCompanion extends UpdateCompanion<Echeance> {
       );
     }
     if (faiteLe.present) {
-      map['faite_le'] = Variable<DateTime>(faiteLe.value);
+      map['faite_le'] = Variable<String>(
+        $EcheancesTable.$converterfaiteLen.toSql(faiteLe.value),
+      );
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -3682,15 +3670,15 @@ class $InterventionsTable extends Interventions
       'REFERENCES artisans (id) ON DELETE SET NULL',
     ),
   );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-    'date',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime, String> date =
+      GeneratedColumn<String>(
+        'date',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>($InterventionsTable.$converterdate);
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
     'description',
   );
@@ -3775,14 +3763,6 @@ class $InterventionsTable extends Interventions
         artisanId.isAcceptableOrUnknown(data['artisan_id']!, _artisanIdMeta),
       );
     }
-    if (data.containsKey('date')) {
-      context.handle(
-        _dateMeta,
-        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
@@ -3840,10 +3820,12 @@ class $InterventionsTable extends Interventions
         DriftSqlType.string,
         data['${effectivePrefix}artisan_id'],
       ),
-      date: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date'],
-      )!,
+      date: $InterventionsTable.$converterdate.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date'],
+        )!,
+      ),
       description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}description'],
@@ -3867,6 +3849,9 @@ class $InterventionsTable extends Interventions
   $InterventionsTable createAlias(String alias) {
     return $InterventionsTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<DateTime, String> $converterdate =
+      const ConvertisseurJour();
 }
 
 class InterventionsCompanion extends UpdateCompanion<Intervention> {
@@ -3910,7 +3895,7 @@ class InterventionsCompanion extends UpdateCompanion<Intervention> {
     Expression<String>? id,
     Expression<String>? bienId,
     Expression<String>? artisanId,
-    Expression<DateTime>? date,
+    Expression<String>? date,
     Expression<String>? description,
     Expression<int>? coutCentimes,
     Expression<DateTime>? creeLe,
@@ -3967,7 +3952,9 @@ class InterventionsCompanion extends UpdateCompanion<Intervention> {
       map['artisan_id'] = Variable<String>(artisanId.value);
     }
     if (date.present) {
-      map['date'] = Variable<DateTime>(date.value);
+      map['date'] = Variable<String>(
+        $InterventionsTable.$converterdate.toSql(date.value),
+      );
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
@@ -4055,15 +4042,15 @@ class $MouvementsFinanciersTable extends MouvementsFinanciers
       'REFERENCES biens (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-    'date',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime, String> date =
+      GeneratedColumn<String>(
+        'date',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>($MouvementsFinanciersTable.$converterdate);
   static const VerificationMeta _montantCentimesMeta = const VerificationMeta(
     'montantCentimes',
   );
@@ -4167,14 +4154,6 @@ class $MouvementsFinanciersTable extends MouvementsFinanciers
     } else if (isInserting) {
       context.missing(_bienIdMeta);
     }
-    if (data.containsKey('date')) {
-      context.handle(
-        _dateMeta,
-        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
     if (data.containsKey('montant_centimes')) {
       context.handle(
         _montantCentimesMeta,
@@ -4234,10 +4213,12 @@ class $MouvementsFinanciersTable extends MouvementsFinanciers
         DriftSqlType.string,
         data['${effectivePrefix}bien_id'],
       )!,
-      date: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date'],
-      )!,
+      date: $MouvementsFinanciersTable.$converterdate.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date'],
+        )!,
+      ),
       montantCentimes: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}montant_centimes'],
@@ -4272,6 +4253,8 @@ class $MouvementsFinanciersTable extends MouvementsFinanciers
     return $MouvementsFinanciersTable(attachedDatabase, alias);
   }
 
+  static TypeConverter<DateTime, String> $converterdate =
+      const ConvertisseurJour();
   static JsonTypeConverter2<CategorieMouvement, String, String>
   $convertercategorie = const EnumNameConverter<CategorieMouvement>(
     CategorieMouvement.values,
@@ -4323,7 +4306,7 @@ class MouvementsFinanciersCompanion
   static Insertable<MouvementFinancier> custom({
     Expression<String>? id,
     Expression<String>? bienId,
-    Expression<DateTime>? date,
+    Expression<String>? date,
     Expression<int>? montantCentimes,
     Expression<String>? categorie,
     Expression<String>? note,
@@ -4382,7 +4365,9 @@ class MouvementsFinanciersCompanion
       map['bien_id'] = Variable<String>(bienId.value);
     }
     if (date.present) {
-      map['date'] = Variable<DateTime>(date.value);
+      map['date'] = Variable<String>(
+        $MouvementsFinanciersTable.$converterdate.toSql(date.value),
+      );
     }
     if (montantCentimes.present) {
       map['montant_centimes'] = Variable<int>(montantCentimes.value);
@@ -4502,15 +4487,15 @@ class $EncaissementsLoyersTable extends EncaissementsLoyers
       'CHECK ("recu" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _recuLeMeta = const VerificationMeta('recuLe');
   @override
-  late final GeneratedColumn<DateTime> recuLe = GeneratedColumn<DateTime>(
-    'recu_le',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime?, String> recuLe =
+      GeneratedColumn<String>(
+        'recu_le',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($EncaissementsLoyersTable.$converterrecuLen);
   @override
   List<GeneratedColumn> get $columns => [bienId, annee, mois, recu, recuLe];
   @override
@@ -4557,12 +4542,6 @@ class $EncaissementsLoyersTable extends EncaissementsLoyers
     } else if (isInserting) {
       context.missing(_recuMeta);
     }
-    if (data.containsKey('recu_le')) {
-      context.handle(
-        _recuLeMeta,
-        recuLe.isAcceptableOrUnknown(data['recu_le']!, _recuLeMeta),
-      );
-    }
     return context;
   }
 
@@ -4588,9 +4567,11 @@ class $EncaissementsLoyersTable extends EncaissementsLoyers
         DriftSqlType.bool,
         data['${effectivePrefix}recu'],
       )!,
-      recuLe: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}recu_le'],
+      recuLe: $EncaissementsLoyersTable.$converterrecuLen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}recu_le'],
+        ),
       ),
     );
   }
@@ -4599,6 +4580,11 @@ class $EncaissementsLoyersTable extends EncaissementsLoyers
   $EncaissementsLoyersTable createAlias(String alias) {
     return $EncaissementsLoyersTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<DateTime, String> $converterrecuLe =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $converterrecuLen =
+      NullAwareTypeConverter.wrap($converterrecuLe);
 }
 
 class EncaissementsLoyersCompanion extends UpdateCompanion<EncaissementLoyer> {
@@ -4632,7 +4618,7 @@ class EncaissementsLoyersCompanion extends UpdateCompanion<EncaissementLoyer> {
     Expression<int>? annee,
     Expression<int>? mois,
     Expression<bool>? recu,
-    Expression<DateTime>? recuLe,
+    Expression<String>? recuLe,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4679,7 +4665,9 @@ class EncaissementsLoyersCompanion extends UpdateCompanion<EncaissementLoyer> {
       map['recu'] = Variable<bool>(recu.value);
     }
     if (recuLe.present) {
-      map['recu_le'] = Variable<DateTime>(recuLe.value);
+      map['recu_le'] = Variable<String>(
+        $EncaissementsLoyersTable.$converterrecuLen.toSql(recuLe.value),
+      );
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -4761,28 +4749,24 @@ class $RevisionsLoyersTable extends RevisionsLoyers
       'REFERENCES baux (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _datePrevueMeta = const VerificationMeta(
-    'datePrevue',
-  );
   @override
-  late final GeneratedColumn<DateTime> datePrevue = GeneratedColumn<DateTime>(
-    'date_prevue',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _dateEffetMeta = const VerificationMeta(
-    'dateEffet',
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime?, String> datePrevue =
+      GeneratedColumn<String>(
+        'date_prevue',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($RevisionsLoyersTable.$converterdatePrevuen);
   @override
-  late final GeneratedColumn<DateTime> dateEffet = GeneratedColumn<DateTime>(
-    'date_effet',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<DateTime, String> dateEffet =
+      GeneratedColumn<String>(
+        'date_effet',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<DateTime>($RevisionsLoyersTable.$converterdateEffet);
   static const VerificationMeta _ancienLoyerCentimesMeta =
       const VerificationMeta('ancienLoyerCentimes');
   @override
@@ -4954,20 +4938,6 @@ class $RevisionsLoyersTable extends RevisionsLoyers
     } else if (isInserting) {
       context.missing(_bailIdMeta);
     }
-    if (data.containsKey('date_prevue')) {
-      context.handle(
-        _datePrevueMeta,
-        datePrevue.isAcceptableOrUnknown(data['date_prevue']!, _datePrevueMeta),
-      );
-    }
-    if (data.containsKey('date_effet')) {
-      context.handle(
-        _dateEffetMeta,
-        dateEffet.isAcceptableOrUnknown(data['date_effet']!, _dateEffetMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateEffetMeta);
-    }
     if (data.containsKey('ancien_loyer_centimes')) {
       context.handle(
         _ancienLoyerCentimesMeta,
@@ -5103,14 +5073,18 @@ class $RevisionsLoyersTable extends RevisionsLoyers
         DriftSqlType.string,
         data['${effectivePrefix}bail_id'],
       )!,
-      datePrevue: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_prevue'],
+      datePrevue: $RevisionsLoyersTable.$converterdatePrevuen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date_prevue'],
+        ),
       ),
-      dateEffet: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_effet'],
-      )!,
+      dateEffet: $RevisionsLoyersTable.$converterdateEffet.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date_effet'],
+        )!,
+      ),
       ancienLoyerCentimes: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}ancien_loyer_centimes'],
@@ -5162,6 +5136,13 @@ class $RevisionsLoyersTable extends RevisionsLoyers
   $RevisionsLoyersTable createAlias(String alias) {
     return $RevisionsLoyersTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<DateTime, String> $converterdatePrevue =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $converterdatePrevuen =
+      NullAwareTypeConverter.wrap($converterdatePrevue);
+  static TypeConverter<DateTime, String> $converterdateEffet =
+      const ConvertisseurJour();
 }
 
 class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
@@ -5236,8 +5217,8 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     Expression<String>? id,
     Expression<String>? bienId,
     Expression<String>? bailId,
-    Expression<DateTime>? datePrevue,
-    Expression<DateTime>? dateEffet,
+    Expression<String>? datePrevue,
+    Expression<String>? dateEffet,
     Expression<int>? ancienLoyerCentimes,
     Expression<int>? nouveauLoyerCentimes,
     Expression<int>? ancienIrlTrimestre,
@@ -5329,10 +5310,14 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
       map['bail_id'] = Variable<String>(bailId.value);
     }
     if (datePrevue.present) {
-      map['date_prevue'] = Variable<DateTime>(datePrevue.value);
+      map['date_prevue'] = Variable<String>(
+        $RevisionsLoyersTable.$converterdatePrevuen.toSql(datePrevue.value),
+      );
     }
     if (dateEffet.present) {
-      map['date_effet'] = Variable<DateTime>(dateEffet.value);
+      map['date_effet'] = Variable<String>(
+        $RevisionsLoyersTable.$converterdateEffet.toSql(dateEffet.value),
+      );
     }
     if (ancienLoyerCentimes.present) {
       map['ancien_loyer_centimes'] = Variable<int>(ancienLoyerCentimes.value);
@@ -5466,18 +5451,15 @@ class $IndicesIrlTable extends IndicesIrl
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _datePublicationMeta = const VerificationMeta(
-    'datePublication',
-  );
   @override
-  late final GeneratedColumn<DateTime> datePublication =
-      GeneratedColumn<DateTime>(
-        'date_publication',
-        aliasedName,
-        true,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-      );
+  late final GeneratedColumnWithTypeConverter<DateTime?, String>
+  datePublication = GeneratedColumn<String>(
+    'date_publication',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  ).withConverter<DateTime?>($IndicesIrlTable.$converterdatePublicationn);
   @override
   late final GeneratedColumnWithTypeConverter<SourceIndice, String> source =
       GeneratedColumn<String>(
@@ -5531,15 +5513,6 @@ class $IndicesIrlTable extends IndicesIrl
     } else if (isInserting) {
       context.missing(_valeurMeta);
     }
-    if (data.containsKey('date_publication')) {
-      context.handle(
-        _datePublicationMeta,
-        datePublication.isAcceptableOrUnknown(
-          data['date_publication']!,
-          _datePublicationMeta,
-        ),
-      );
-    }
     return context;
   }
 
@@ -5561,9 +5534,11 @@ class $IndicesIrlTable extends IndicesIrl
         DriftSqlType.double,
         data['${effectivePrefix}valeur'],
       )!,
-      datePublication: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_publication'],
+      datePublication: $IndicesIrlTable.$converterdatePublicationn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}date_publication'],
+        ),
       ),
       source: $IndicesIrlTable.$convertersource.fromSql(
         attachedDatabase.typeMapping.read(
@@ -5579,6 +5554,10 @@ class $IndicesIrlTable extends IndicesIrl
     return $IndicesIrlTable(attachedDatabase, alias);
   }
 
+  static TypeConverter<DateTime, String> $converterdatePublication =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $converterdatePublicationn =
+      NullAwareTypeConverter.wrap($converterdatePublication);
   static JsonTypeConverter2<SourceIndice, String, String> $convertersource =
       const EnumNameConverter<SourceIndice>(SourceIndice.values);
 }
@@ -5613,7 +5592,7 @@ class IndicesIrlCompanion extends UpdateCompanion<IndiceIrl> {
     Expression<int>? annee,
     Expression<int>? trimestre,
     Expression<double>? valeur,
-    Expression<DateTime>? datePublication,
+    Expression<String>? datePublication,
     Expression<String>? source,
     Expression<int>? rowid,
   }) {
@@ -5658,7 +5637,11 @@ class IndicesIrlCompanion extends UpdateCompanion<IndiceIrl> {
       map['valeur'] = Variable<double>(valeur.value);
     }
     if (datePublication.present) {
-      map['date_publication'] = Variable<DateTime>(datePublication.value);
+      map['date_publication'] = Variable<String>(
+        $IndicesIrlTable.$converterdatePublicationn.toSql(
+          datePublication.value,
+        ),
+      );
     }
     if (source.present) {
       map['source'] = Variable<String>(
@@ -6622,10 +6605,11 @@ class $$BiensTableFilterComposer extends Composer<_$AppDatabase, $BiensTable> {
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
 
-  ColumnFilters<DateTime> get dateDpe => $composableBuilder(
-    column: $table.dateDpe,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String> get dateDpe =>
+      $composableBuilder(
+        column: $table.dateDpe,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<int> get nombreLots => $composableBuilder(
     column: $table.nombreLots,
@@ -6912,7 +6896,7 @@ class $$BiensTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get dateDpe => $composableBuilder(
+  ColumnOrderings<String> get dateDpe => $composableBuilder(
     column: $table.dateDpe,
     builder: (column) => ColumnOrderings(column),
   );
@@ -7042,7 +7026,7 @@ class $$BiensTableAnnotationComposer
   GeneratedColumnWithTypeConverter<ClasseDpe?, String> get classeDpe =>
       $composableBuilder(column: $table.classeDpe, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get dateDpe =>
+  GeneratedColumnWithTypeConverter<DateTime?, String> get dateDpe =>
       $composableBuilder(column: $table.dateDpe, builder: (column) => column);
 
   GeneratedColumn<int> get nombreLots => $composableBuilder(
@@ -7690,10 +7674,11 @@ class $$BauxTableFilterComposer extends Composer<_$AppDatabase, $BauxTable> {
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
 
-  ColumnFilters<DateTime> get dateDebut => $composableBuilder(
-    column: $table.dateDebut,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime, DateTime, String> get dateDebut =>
+      $composableBuilder(
+        column: $table.dateDebut,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<int> get dureeMois => $composableBuilder(
     column: $table.dureeMois,
@@ -7705,9 +7690,10 @@ class $$BauxTableFilterComposer extends Composer<_$AppDatabase, $BauxTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get dateRevision => $composableBuilder(
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String>
+  get dateRevision => $composableBuilder(
     column: $table.dateRevision,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<int> get irlTrimestre => $composableBuilder(
@@ -7832,7 +7818,7 @@ class $$BauxTableOrderingComposer extends Composer<_$AppDatabase, $BauxTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get dateDebut => $composableBuilder(
+  ColumnOrderings<String> get dateDebut => $composableBuilder(
     column: $table.dateDebut,
     builder: (column) => ColumnOrderings(column),
   );
@@ -7847,7 +7833,7 @@ class $$BauxTableOrderingComposer extends Composer<_$AppDatabase, $BauxTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get dateRevision => $composableBuilder(
+  ColumnOrderings<String> get dateRevision => $composableBuilder(
     column: $table.dateRevision,
     builder: (column) => ColumnOrderings(column),
   );
@@ -7921,7 +7907,7 @@ class $$BauxTableAnnotationComposer
   GeneratedColumnWithTypeConverter<TypeBail, String> get typeBail =>
       $composableBuilder(column: $table.typeBail, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get dateDebut =>
+  GeneratedColumnWithTypeConverter<DateTime, String> get dateDebut =>
       $composableBuilder(column: $table.dateDebut, builder: (column) => column);
 
   GeneratedColumn<int> get dureeMois =>
@@ -7932,10 +7918,11 @@ class $$BauxTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<DateTime> get dateRevision => $composableBuilder(
-    column: $table.dateRevision,
-    builder: (column) => column,
-  );
+  GeneratedColumnWithTypeConverter<DateTime?, String> get dateRevision =>
+      $composableBuilder(
+        column: $table.dateRevision,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<int> get irlTrimestre => $composableBuilder(
     column: $table.irlTrimestre,
@@ -8718,14 +8705,16 @@ class $$EcheancesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime, DateTime, String> get date =>
+      $composableBuilder(
+        column: $table.date,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
-  ColumnFilters<DateTime> get dateInitiale => $composableBuilder(
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String>
+  get dateInitiale => $composableBuilder(
     column: $table.dateInitiale,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnWithTypeConverterFilters<StatutEcheance, StatutEcheance, String>
@@ -8734,10 +8723,11 @@ class $$EcheancesTableFilterComposer
     builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
-  ColumnFilters<DateTime> get faiteLe => $composableBuilder(
-    column: $table.faiteLe,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String> get faiteLe =>
+      $composableBuilder(
+        column: $table.faiteLe,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
@@ -8843,12 +8833,12 @@ class $$EcheancesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get date => $composableBuilder(
+  ColumnOrderings<String> get date => $composableBuilder(
     column: $table.date,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get dateInitiale => $composableBuilder(
+  ColumnOrderings<String> get dateInitiale => $composableBuilder(
     column: $table.dateInitiale,
     builder: (column) => ColumnOrderings(column),
   );
@@ -8858,7 +8848,7 @@ class $$EcheancesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get faiteLe => $composableBuilder(
+  ColumnOrderings<String> get faiteLe => $composableBuilder(
     column: $table.faiteLe,
     builder: (column) => ColumnOrderings(column),
   );
@@ -8935,18 +8925,19 @@ class $$EcheancesTableAnnotationComposer
   GeneratedColumn<String> get titre =>
       $composableBuilder(column: $table.titre, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get date =>
+  GeneratedColumnWithTypeConverter<DateTime, String> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get dateInitiale => $composableBuilder(
-    column: $table.dateInitiale,
-    builder: (column) => column,
-  );
+  GeneratedColumnWithTypeConverter<DateTime?, String> get dateInitiale =>
+      $composableBuilder(
+        column: $table.dateInitiale,
+        builder: (column) => column,
+      );
 
   GeneratedColumnWithTypeConverter<StatutEcheance, String> get statut =>
       $composableBuilder(column: $table.statut, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get faiteLe =>
+  GeneratedColumnWithTypeConverter<DateTime?, String> get faiteLe =>
       $composableBuilder(column: $table.faiteLe, builder: (column) => column);
 
   GeneratedColumn<String> get notes =>
@@ -9963,10 +9954,11 @@ class $$InterventionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime, DateTime, String> get date =>
+      $composableBuilder(
+        column: $table.date,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
@@ -10074,7 +10066,7 @@ class $$InterventionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get date => $composableBuilder(
+  ColumnOrderings<String> get date => $composableBuilder(
     column: $table.date,
     builder: (column) => ColumnOrderings(column),
   );
@@ -10158,7 +10150,7 @@ class $$InterventionsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get date =>
+  GeneratedColumnWithTypeConverter<DateTime, String> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<String> get description => $composableBuilder(
@@ -10531,10 +10523,11 @@ class $$MouvementsFinanciersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime, DateTime, String> get date =>
+      $composableBuilder(
+        column: $table.date,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<int> get montantCentimes => $composableBuilder(
     column: $table.montantCentimes,
@@ -10623,7 +10616,7 @@ class $$MouvementsFinanciersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get date => $composableBuilder(
+  ColumnOrderings<String> get date => $composableBuilder(
     column: $table.date,
     builder: (column) => ColumnOrderings(column),
   );
@@ -10712,7 +10705,7 @@ class $$MouvementsFinanciersTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get date =>
+  GeneratedColumnWithTypeConverter<DateTime, String> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<int> get montantCentimes => $composableBuilder(
@@ -11021,10 +11014,11 @@ class $$EncaissementsLoyersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get recuLe => $composableBuilder(
-    column: $table.recuLe,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String> get recuLe =>
+      $composableBuilder(
+        column: $table.recuLe,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   $$BiensTableFilterComposer get bienId {
     final $$BiensTableFilterComposer composer = $composerBuilder(
@@ -11074,7 +11068,7 @@ class $$EncaissementsLoyersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get recuLe => $composableBuilder(
+  ColumnOrderings<String> get recuLe => $composableBuilder(
     column: $table.recuLe,
     builder: (column) => ColumnOrderings(column),
   );
@@ -11121,7 +11115,7 @@ class $$EncaissementsLoyersTableAnnotationComposer
   GeneratedColumn<bool> get recu =>
       $composableBuilder(column: $table.recu, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get recuLe =>
+  GeneratedColumnWithTypeConverter<DateTime?, String> get recuLe =>
       $composableBuilder(column: $table.recuLe, builder: (column) => column);
 
   $$BiensTableAnnotationComposer get bienId {
@@ -11384,15 +11378,17 @@ class $$RevisionsLoyersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get datePrevue => $composableBuilder(
-    column: $table.datePrevue,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String> get datePrevue =>
+      $composableBuilder(
+        column: $table.datePrevue,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
-  ColumnFilters<DateTime> get dateEffet => $composableBuilder(
-    column: $table.dateEffet,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnWithTypeConverterFilters<DateTime, DateTime, String> get dateEffet =>
+      $composableBuilder(
+        column: $table.dateEffet,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<int> get ancienLoyerCentimes => $composableBuilder(
     column: $table.ancienLoyerCentimes,
@@ -11510,12 +11506,12 @@ class $$RevisionsLoyersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get datePrevue => $composableBuilder(
+  ColumnOrderings<String> get datePrevue => $composableBuilder(
     column: $table.datePrevue,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get dateEffet => $composableBuilder(
+  ColumnOrderings<String> get dateEffet => $composableBuilder(
     column: $table.dateEffet,
     builder: (column) => ColumnOrderings(column),
   );
@@ -11634,12 +11630,13 @@ class $$RevisionsLoyersTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get datePrevue => $composableBuilder(
-    column: $table.datePrevue,
-    builder: (column) => column,
-  );
+  GeneratedColumnWithTypeConverter<DateTime?, String> get datePrevue =>
+      $composableBuilder(
+        column: $table.datePrevue,
+        builder: (column) => column,
+      );
 
-  GeneratedColumn<DateTime> get dateEffet =>
+  GeneratedColumnWithTypeConverter<DateTime, String> get dateEffet =>
       $composableBuilder(column: $table.dateEffet, builder: (column) => column);
 
   GeneratedColumn<int> get ancienLoyerCentimes => $composableBuilder(
@@ -11973,9 +11970,10 @@ class $$IndicesIrlTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get datePublication => $composableBuilder(
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String>
+  get datePublication => $composableBuilder(
     column: $table.datePublication,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnWithTypeConverterFilters<SourceIndice, SourceIndice, String>
@@ -12009,7 +12007,7 @@ class $$IndicesIrlTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get datePublication => $composableBuilder(
+  ColumnOrderings<String> get datePublication => $composableBuilder(
     column: $table.datePublication,
     builder: (column) => ColumnOrderings(column),
   );
@@ -12038,10 +12036,11 @@ class $$IndicesIrlTableAnnotationComposer
   GeneratedColumn<double> get valeur =>
       $composableBuilder(column: $table.valeur, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get datePublication => $composableBuilder(
-    column: $table.datePublication,
-    builder: (column) => column,
-  );
+  GeneratedColumnWithTypeConverter<DateTime?, String> get datePublication =>
+      $composableBuilder(
+        column: $table.datePublication,
+        builder: (column) => column,
+      );
 
   GeneratedColumnWithTypeConverter<SourceIndice, String> get source =>
       $composableBuilder(column: $table.source, builder: (column) => column);

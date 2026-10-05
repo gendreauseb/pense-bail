@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/design/design.dart';
+import '../../../app/etat_app.dart';
 import '../../../core/config/config_app.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/utils/dates.dart';
@@ -42,7 +43,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
   static String _texteDate(DateTime? d) => d == null ? '' : Formats.date(d);
 
   DateTime get _dateMax => Dates.ajouterMois(
-    Dates.aujourdhui(),
+    ref.read(aujourdhuiProvider),
     ConfigApp.debutBailMaxMoisDansLeFutur,
   );
 
@@ -92,7 +93,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
       context: context,
       helpText: 'Date de début du bail',
       initialDate: actuelle == null || actuelle.isAfter(max)
-          ? Dates.aujourdhui()
+          ? ref.read(aujourdhuiProvider)
           : actuelle,
       firstDate: DateTime(1970),
       lastDate: max,

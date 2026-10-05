@@ -172,6 +172,37 @@ void main() {
     },
   );
 
+  test(
+    "sauvegarde du schéma 4 : dates avec fuseau horaire relues au bon jour",
+    () async {
+      await remplir();
+      final json =
+          jsonDecode(utf8.decode(await service.exporter()))
+              as Map<String, Object?>;
+      json['schema'] = 4;
+      // Ancien format : instant avec décalage (ici, celui de Kiritimati).
+      final tablesJson = json['tables']! as Map<String, Object?>;
+      for (final b in tablesJson['baux']! as List) {
+        (b as Map<String, Object?>)['date_debut'] =
+            '2023-09-01T00:00:00.000+14:00';
+      }
+      for (final e in tablesJson['echeances']! as List) {
+        final ligne = e as Map<String, Object?>;
+        ligne['date'] = '${ligne['date']}T00:00:00.000+14:00';
+      }
+
+      await service.restaurer(service.lire(utf8.encode(jsonEncode(json))));
+
+      final bail = (await DriftBailRepository(db).bailActif('bien-1'))!;
+      expect(bail.dateDebut, DateTime(2023, 9, 1));
+      final restaurees = (await tables())['echeances']! as List;
+      expect(restaurees, isNotEmpty);
+      for (final e in restaurees) {
+        expect((e as Map<String, Object?>)['date'], hasLength(10));
+      }
+    },
+  );
+
   group('mode Premium simulé : propre au téléphone', () {
     late DriftReglagesRepository reglages;
     setUp(() => reglages = DriftReglagesRepository(db));

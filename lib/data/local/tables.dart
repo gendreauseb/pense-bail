@@ -7,10 +7,13 @@
 // @UseRowClass : pas de classes intermédiaires à maintenir.
 // Identifiants : UUID texte (prêts pour une future synchronisation).
 // Montants : entiers en centimes. Énumérations : stockées par leur nom.
+// Dates calendaires : texte AAAA-MM-JJ (ConvertisseurJour), sans fuseau ;
+// creeLe et modifieLe restent des instants.
 
 import 'package:drift/drift.dart';
 
 import '../../domain/entities/entities.dart';
+import 'convertisseur_jour.dart';
 
 @UseRowClass(Bailleur, generateInsertable: true)
 class Bailleurs extends Table {
@@ -47,7 +50,8 @@ class Biens extends Table {
   TextColumn get photoChemin => text().nullable()();
   RealColumn get surfaceM2 => real().nullable()();
   TextColumn get classeDpe => textEnum<ClasseDpe>().nullable()();
-  DateTimeColumn get dateDpe => dateTime().nullable()();
+  TextColumn get dateDpe =>
+      text().nullable().map(const ConvertisseurJour())();
   IntColumn get nombreLots => integer().nullable()();
   IntColumn get prixAchatCentimes => integer().nullable()();
   IntColumn get fraisNotaireCentimes => integer().nullable()();
@@ -71,10 +75,12 @@ class Baux extends Table {
   TextColumn get bienId =>
       text().references(Biens, #id, onDelete: KeyAction.cascade)();
   TextColumn get typeBail => textEnum<TypeBail>()();
-  DateTimeColumn get dateDebut => dateTime()();
+  TextColumn get dateDebut =>
+      text().map(const ConvertisseurJour())();
   IntColumn get dureeMois => integer().nullable()();
   IntColumn get depotGarantieCentimes => integer().nullable()();
-  DateTimeColumn get dateRevision => dateTime().nullable()();
+  TextColumn get dateRevision =>
+      text().nullable().map(const ConvertisseurJour())();
   IntColumn get irlTrimestre =>
       integer().nullable().check(irlTrimestre.isBetweenValues(1, 4))();
   IntColumn get irlAnnee => integer().nullable()();
@@ -110,10 +116,13 @@ class Echeances extends Table {
       text().nullable().references(Biens, #id, onDelete: KeyAction.cascade)();
   TextColumn get type => textEnum<TypeEcheance>()();
   TextColumn get titre => text()();
-  DateTimeColumn get date => dateTime()();
-  DateTimeColumn get dateInitiale => dateTime().nullable()();
+  TextColumn get date =>
+      text().map(const ConvertisseurJour())();
+  TextColumn get dateInitiale =>
+      text().nullable().map(const ConvertisseurJour())();
   TextColumn get statut => textEnum<StatutEcheance>()();
-  DateTimeColumn get faiteLe => dateTime().nullable()();
+  TextColumn get faiteLe =>
+      text().nullable().map(const ConvertisseurJour())();
   TextColumn get notes => text().nullable()();
   IntColumn get intervalleMois => integer().nullable()();
   TextColumn get typeDiagnostic => textEnum<TypeDiagnostic>().nullable()();
@@ -160,7 +169,8 @@ class Interventions extends Table {
     #id,
     onDelete: KeyAction.setNull,
   )();
-  DateTimeColumn get date => dateTime()();
+  TextColumn get date =>
+      text().map(const ConvertisseurJour())();
   TextColumn get description => text()();
   IntColumn get coutCentimes => integer().nullable()();
   DateTimeColumn get creeLe => dateTime()();
@@ -175,7 +185,8 @@ class MouvementsFinanciers extends Table {
   TextColumn get id => text()();
   TextColumn get bienId =>
       text().references(Biens, #id, onDelete: KeyAction.cascade)();
-  DateTimeColumn get date => dateTime()();
+  TextColumn get date =>
+      text().map(const ConvertisseurJour())();
   IntColumn get montantCentimes => integer()();
   TextColumn get categorie => textEnum<CategorieMouvement>()();
   TextColumn get note => text().nullable()();
@@ -198,7 +209,8 @@ class EncaissementsLoyers extends Table {
   IntColumn get annee => integer()();
   IntColumn get mois => integer().check(mois.isBetweenValues(1, 12))();
   BoolColumn get recu => boolean()();
-  DateTimeColumn get recuLe => dateTime().nullable()();
+  TextColumn get recuLe =>
+      text().nullable().map(const ConvertisseurJour())();
 
   @override
   Set<Column> get primaryKey => {bienId, annee, mois};
@@ -212,8 +224,10 @@ class RevisionsLoyers extends Table {
   TextColumn get bailId =>
       text().references(Baux, #id, onDelete: KeyAction.cascade)();
   // Ajoutée en version 2 du schéma.
-  DateTimeColumn get datePrevue => dateTime().nullable()();
-  DateTimeColumn get dateEffet => dateTime()();
+  TextColumn get datePrevue =>
+      text().nullable().map(const ConvertisseurJour())();
+  TextColumn get dateEffet =>
+      text().map(const ConvertisseurJour())();
   IntColumn get ancienLoyerCentimes => integer()();
   IntColumn get nouveauLoyerCentimes => integer()();
   IntColumn get ancienIrlTrimestre => integer()();
@@ -237,7 +251,8 @@ class IndicesIrl extends Table {
   IntColumn get annee => integer()();
   IntColumn get trimestre => integer().check(trimestre.isBetweenValues(1, 4))();
   RealColumn get valeur => real()();
-  DateTimeColumn get datePublication => dateTime().nullable()();
+  TextColumn get datePublication =>
+      text().nullable().map(const ConvertisseurJour())();
   TextColumn get source => textEnum<SourceIndice>()();
 
   @override
