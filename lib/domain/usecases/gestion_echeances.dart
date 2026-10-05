@@ -2,13 +2,23 @@ import '../../core/utils/dates.dart';
 import '../../core/utils/identifiants.dart';
 import '../entities/entities.dart';
 import '../repositories/repositories.dart';
+import 'verrou_biens.dart';
 
 /// Actions sur une échéance : marquer comme faite, reporter, enregistrer.
+///
+/// Sur un bien en lecture seule (version gratuite), une échéance peut
+/// toujours être marquée faite ou reportée, sinon ses rappels continueraient
+/// sans fin ; la créer, la modifier ou la supprimer est refusé.
 class GestionEcheances {
-  GestionEcheances({required this.transactions, required this.echeances});
+  GestionEcheances({
+    required this.transactions,
+    required this.echeances,
+    required this.verrou,
+  });
 
   final Transactions transactions;
   final EcheanceRepository echeances;
+  final VerrouBiens verrou;
 
   /// Marque l'échéance comme faite. Si elle est récurrente, crée l'occurrence
   /// suivante (mêmes rappels) et la retourne.
@@ -78,11 +88,23 @@ class GestionEcheances {
   }
 
   /// Crée ou modifie une échéance et ses rappels (jours avant la date).
-  Future<void> enregistrer(Echeance echeance, List<int> rappelsJours) =>
-      transactions.executer(() async {
-        await echeances.enregistrer(echeance);
-        await echeances.definirRappels(echeance.id, rappelsJours);
-      });
+  ///
+  /// Lève [BienVerrouille] si l'échéance est (ou était) rattachée à un bien
+  /// en lecture seule.
+  Future<void> enregistrer(Echeance echeance, List<int> rappelsJours) async {
+    final existante = await echeances.parId(echeance.id);
+    await verrou.verifierModifiable(existante?.bienId);
+    await verrou.verifierModifiable(echeance.bienId);
+    return transactions.executer(() async {
+      await echeances.enregistrer(echeance);
+      await echeances.definirRappels(echeance.id, rappelsJours);
+    });
+  }
 
-  Future<void> supprimer(String id) => echeances.supprimer(id);
+  /// Lève [BienVerrouille] si l'échéance est rattachée à un bien en lecture
+  /// seule.
+  Future<void> supprimer(String id) async {
+    await verrou.verifierModifiable((await echeances.parId(id))?.bienId);
+    await echeances.supprimer(id);
+  }
 }

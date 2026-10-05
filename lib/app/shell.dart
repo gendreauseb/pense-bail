@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/widgets/composants.dart';
 import '../core/widgets/feuille.dart';
+import '../data/providers.dart';
 import 'design/design.dart';
 import 'etat_app.dart';
 import 'routes.dart';
@@ -209,12 +210,14 @@ class BoutonCentral extends StatelessWidget {
   }
 }
 
-/// Choix proposé par le bouton « + ».
-class _ChoixAjout extends StatelessWidget {
+/// Choix proposé par le bouton « + ». Au-delà de la limite de la version
+/// gratuite, « Ajouter un bien » ouvre la présentation de Premium.
+class _ChoixAjout extends ConsumerWidget {
   const _ChoixAjout();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final peutAjouterBien = ref.watch(peutAjouterBienProvider);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -240,13 +243,17 @@ class _ChoixAjout extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.bloc),
             CarteAction(
-              icone: AppIcons.biens,
+              icone: peutAjouterBien ? AppIcons.biens : AppIcons.verrou,
               titre: 'Ajouter un bien',
-              sousTitre: 'Un nouveau logement ou local à suivre',
+              sousTitre: peutAjouterBien
+                  ? 'Un nouveau logement ou local à suivre'
+                  : 'Avec Pense-Bail Premium',
               onTap: () {
                 final routeur = GoRouter.of(context);
                 Navigator.of(context).pop();
-                routeur.push(Routes.nouveauBien);
+                routeur.push(
+                  peutAjouterBien ? Routes.nouveauBien : Routes.premium,
+                );
               },
             ),
           ],

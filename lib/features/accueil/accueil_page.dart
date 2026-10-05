@@ -8,6 +8,7 @@ import '../../core/format/formats.dart';
 import '../../core/widgets/composants.dart';
 import '../../data/providers.dart';
 import '../echeances/detail_echeance.dart';
+import '../premium/fin_abonnement.dart';
 import '../revision/choix_bien_revision.dart';
 import 'accueil_providers.dart';
 import 'widgets/carte_synthese.dart';
@@ -38,6 +39,25 @@ class _AccueilPageState extends ConsumerState<AccueilPage> {
       if (id != null) _ouvrirDepuisNotification(id);
     }, fireImmediately: true);
     WidgetsBinding.instance.addPostFrameCallback((_) => _demanderRappels());
+    // Fin de l'abonnement Premium : message affiché une seule fois.
+    ref.listenManual(finAbonnementAAnnoncerProvider, (_, etat) {
+      if (etat.value ?? false) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _annoncerFinAbonnement(),
+        );
+      }
+    }, fireImmediately: true);
+  }
+
+  bool _annonceEnCours = false;
+
+  Future<void> _annoncerFinAbonnement() async {
+    if (_annonceEnCours || !mounted) return;
+    _annonceEnCours = true;
+    final reglages = ref.read(reglagesRepositoryProvider);
+    await ouvrirMessageFinAbonnement(context);
+    await reglages.supprimer(ClesReglages.finAbonnementAAnnoncer);
+    _annonceEnCours = false;
   }
 
   @override
@@ -116,11 +136,19 @@ class _Contenu extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    Formats.jourComplet(aujourdhui),
-                    style: t.label.copyWith(
-                      color: context.couleurs.textSecondary,
-                    ),
+                  Wrap(
+                    spacing: AppSpacing.s,
+                    runSpacing: AppSpacing.xxs,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        Formats.jourComplet(aujourdhui),
+                        style: t.label.copyWith(
+                          color: context.couleurs.textSecondary,
+                        ),
+                      ),
+                      if (ref.watch(estBetaProvider)) const _BadgeBeta(),
+                    ],
                   ),
                   const SizedBox(height: AppSpacing.xxs),
                   Semantics(
@@ -156,6 +184,24 @@ class _Contenu extends ConsumerWidget {
           prochaineParBien: donnees.prochaineParBien,
         ),
       ],
+    );
+  }
+}
+
+/// Mode actif de la version bêta (« Bêta : gratuit » ou « Bêta : Premium »).
+class _BadgeBeta extends ConsumerWidget {
+  const _BadgeBeta();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final droits = ref.watch(droitsProvider).value;
+    if (droits == null) return const SizedBox.shrink();
+    final mode = droits.estPremium ? 'Premium' : 'gratuit';
+    return Semantics(
+      container: true,
+      label: 'Version bêta, mode $mode',
+      excludeSemantics: true,
+      child: PuceInfo(libelle: 'Bêta : $mode', icone: AppIcons.beta),
     );
   }
 }

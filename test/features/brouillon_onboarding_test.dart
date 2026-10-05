@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/features/onboarding/brouillon_onboarding.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/features/onboarding/brouillon_onboarding.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 BrouillonBien bienComplet({

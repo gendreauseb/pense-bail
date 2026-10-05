@@ -4,15 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/design/design.dart';
+import '../../app/etat_app.dart';
 import '../../app/routes.dart';
 import '../../core/config/regles_legales.dart';
 import '../../core/format/formats.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/feuille.dart';
 import '../../core/widgets/photo_bien.dart';
+import '../../core/widgets/verrou.dart';
 import '../../data/photos/photo_service.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
+import '../premium/premium_page.dart';
 import 'onglets/onglet_artisans.dart';
 import 'onglets/onglet_bail.dart';
 import 'onglets/onglet_echeances.dart';
@@ -84,6 +87,7 @@ class _FicheBienPageState extends ConsumerState<FicheBienPage>
     final dpeGel = ReglesLegales.classesDpeSansRevision.contains(
       bien.classeDpe,
     );
+    final verrouille = ref.watch(bienVerrouilleProvider(bien.id));
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       // Barre d'état lisible : icônes claires sur une photo, foncées sur
@@ -132,7 +136,10 @@ class _FicheBienPageState extends ConsumerState<FicheBienPage>
                 legende: dpeGel
                     ? 'Révision impossible : logement classé F ou G.'
                     : revision == null
-                    ? 'Renseignez le bail pour connaître la date de révision.'
+                    ? verrouille
+                          ? 'Aucun bail renseigné pour ce bien.'
+                          : 'Renseignez le bail pour connaître la date de '
+                                'révision.'
                     : 'Prochaine révision le ${Formats.date(revision.date)}',
               )
             : null,
@@ -185,30 +192,31 @@ class _Visuel extends ConsumerWidget {
                     ),
                   ),
                   const Spacer(),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: FilledButton.icon(
-                      onPressed: () => _photo(context, ref),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(
-                          AppSizes.zoneTactile,
-                          AppSizes.zoneTactile,
+                  if (!ref.watch(bienVerrouilleProvider(bien.id)))
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: FilledButton.icon(
+                        onPressed: () => _photo(context, ref),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(
+                            AppSizes.zoneTactile,
+                            AppSizes.zoneTactile,
+                          ),
+                          backgroundColor: c.surface,
+                          foregroundColor: c.textPrimary,
+                          textStyle: context.textes.label,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.ligne,
+                          ),
                         ),
-                        backgroundColor: c.surface,
-                        foregroundColor: c.textPrimary,
-                        textStyle: context.textes.label,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.ligne,
+                        icon: const Icon(AppIcons.photo),
+                        label: Text(
+                          bien.photoChemin == null
+                              ? 'Ajouter une photo'
+                              : 'Changer la photo',
                         ),
-                      ),
-                      icon: const Icon(AppIcons.photo),
-                      label: Text(
-                        bien.photoChemin == null
-                            ? 'Ajouter une photo'
-                            : 'Changer la photo',
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -259,7 +267,8 @@ class _Visuel extends ConsumerWidget {
     if (choix == null || !context.mounted) return;
 
     final photos = ref.read(photoServiceProvider);
-    final biens = ref.read(bienRepositoryProvider);
+    final gestion = ref.read(gestionBiensProvider);
+    final aujourdhui = ref.read(aujourdhuiProvider);
     final messager = ScaffoldMessenger.of(context);
     String? nouveau;
     if (choix != _ChoixPhoto.retirer) {
@@ -282,15 +291,26 @@ class _Visuel extends ConsumerWidget {
       }
       if (nouveau == null) return;
     }
+    if (!context.mounted) return;
     final ancienne = bien.photoChemin;
-    await biens.enregistrer(bien.copyWith(photoChemin: nouveau));
+    final enregistre = await executerSiAutorise(
+      context,
+      () => gestion.modifier(
+        bien: bien.copyWith(photoChemin: nouveau),
+        aujourdhui: aujourdhui,
+      ),
+    );
+    if (!enregistre) {
+      if (nouveau != null) await photos.supprimer(nouveau);
+      return;
+    }
     if (ancienne != null) await photos.supprimer(ancienne);
   }
 }
 
 enum _ChoixPhoto { appareil, galerie, retirer }
 
-class _Panneau extends StatelessWidget {
+class _Panneau extends ConsumerWidget {
   const _Panneau({
     required this.bien,
     required this.prochaineRevision,
@@ -302,10 +322,11 @@ class _Panneau extends StatelessWidget {
   final TabController controleur;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.couleurs;
     final t = context.textes;
     final revision = prochaineRevision;
+    final verrouille = ref.watch(bienVerrouilleProvider(bien.id));
 
     return Container(
       decoration: BoxDecoration(
@@ -346,6 +367,16 @@ class _Panneau extends StatelessWidget {
                 ),
             ],
           ),
+          if (verrouille) ...[
+            const SizedBox(height: AppSpacing.section),
+            BandeauVerrou(
+              texte:
+                  'Ce bien est en lecture seule dans la version gratuite : '
+                  'vous consultez ses informations et suivez ses échéances. '
+                  'Pense-Bail Premium permet de le modifier.',
+              onDecouvrir: () => ouvrirPremium(context),
+            ),
+          ],
           const SizedBox(height: AppSpacing.section),
           _ChiffresCles(
             loyer: bien.loyerHcCentimes,

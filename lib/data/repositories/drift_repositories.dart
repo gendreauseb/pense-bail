@@ -374,13 +374,18 @@ class DriftFinanceRepository implements FinanceRepository {
 
   @override
   Stream<List<EncaissementLoyer>> surveillerEncaissements(
-    String bienId,
-    int annee,
-  ) =>
-      (_db.select(_db.encaissementsLoyers)
-            ..where((e) => e.bienId.equals(bienId) & e.annee.equals(annee))
-            ..orderBy([(e) => OrderingTerm(expression: e.mois)]))
-          .watch();
+    String bienId, {
+    int? annee,
+  }) {
+    final requete = _db.select(_db.encaissementsLoyers)
+      ..where((e) => e.bienId.equals(bienId))
+      ..orderBy([
+        (e) => OrderingTerm(expression: e.annee),
+        (e) => OrderingTerm(expression: e.mois),
+      ]);
+    if (annee != null) requete.where((e) => e.annee.equals(annee));
+    return requete.watch();
+  }
 
   @override
   Future<void> definirEncaissement(EncaissementLoyer encaissement) => _db

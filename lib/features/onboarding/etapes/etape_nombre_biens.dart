@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/design/design.dart';
 import '../../../core/config/config_app.dart';
+import '../../../data/providers.dart';
 import '../brouillon_onboarding.dart';
 import '../onboarding_controller.dart';
 import '../widgets/gabarit_etape.dart';
@@ -19,6 +20,10 @@ class EtapeNombreBiens extends ConsumerWidget {
     final nombre = brouillon.nombreBiens;
     final t = context.textes;
     final unite = nombre > 1 ? 'biens' : 'bien';
+    // Version gratuite : prévenir avant la saisie que les biens au-delà du
+    // premier seront en lecture seule (rien n'est perdu).
+    final maxGratuit = ref.watch(droitsProvider).value?.maxBiensActifs;
+    final auDelaDuGratuit = maxGratuit != null && nombre > maxGratuit;
 
     return GabaritEtape(
       titre: 'Combien de biens louez-vous ?',
@@ -74,7 +79,22 @@ class EtapeNombreBiens extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.section),
-          const Note(texte: 'Vous pourrez en ajouter ou en retirer plus tard.'),
+          if (auDelaDuGratuit)
+            Note(
+              icone: AppIcons.verrou,
+              texte: maxGratuit == 1
+                  ? 'La version gratuite permet de gérer un bien. Les autres '
+                        'seront enregistrés et consultables, en lecture seule. '
+                        'Pense-Bail Premium permet de tous les gérer.'
+                  : 'La version gratuite permet de gérer $maxGratuit biens. '
+                        'Les autres seront enregistrés et consultables, en '
+                        'lecture seule. Pense-Bail Premium permet de tous '
+                        'les gérer.',
+            )
+          else
+            const Note(
+              texte: 'Vous pourrez en ajouter ou en retirer plus tard.',
+            ),
         ],
       ),
     );

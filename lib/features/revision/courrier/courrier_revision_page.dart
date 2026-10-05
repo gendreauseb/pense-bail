@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/design/design.dart';
 import '../../../core/pdf/apercu_pdf_page.dart';
 import '../../../core/widgets/composants.dart';
+import '../../../core/widgets/verrou.dart';
 import '../../../data/providers.dart';
+import '../../../domain/entities/entities.dart';
+import '../../premium/premium_page.dart';
 import 'courrier_revision.dart';
 
 /// Courrier de révision : aperçu, partage, impression, enregistrement.
@@ -27,6 +30,21 @@ class CourrierRevisionPage extends ConsumerWidget {
         ? null
         : ref.watch(locatairesFluxProvider(revision.bailId)).value;
     final bailleur = ref.watch(bailleurFluxProvider).value;
+    final disponible = ref.watch(
+      fonctionnaliteDisponibleProvider(Fonctionnalite.courrierRevision),
+    );
+
+    // Version gratuite : seuls les courriers déjà produits restent
+    // consultables.
+    if (revision != null && !revision.courrierInclus && !disponible) {
+      return PageVerrouillee(
+        titre: 'Courrier au locataire',
+        texte:
+            'Le courrier de révision est inclus dans Pense-Bail Premium. '
+            'La révision est bien enregistrée et le loyer mis à jour.',
+        onDecouvrir: () => ouvrirPremium(context),
+      );
+    }
 
     if (revision == null ||
         bien == null ||

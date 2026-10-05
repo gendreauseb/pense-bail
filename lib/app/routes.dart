@@ -15,6 +15,7 @@ abstract final class Routes {
   static const profil = '/reglages/profil';
   static const reglagesRappels = '/reglages/rappels';
   static const mentionsLegales = '/reglages/mentions-legales';
+  static const premium = '/premium';
 
   static String modifierEcheance(String id) => '/echeances/$id';
   static String revision(String bienId) => '/revision/$bienId';

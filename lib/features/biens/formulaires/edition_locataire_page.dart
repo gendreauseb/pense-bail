@@ -6,6 +6,7 @@ import '../../../core/utils/identifiants.dart';
 import '../../../core/validation/validateurs.dart';
 import '../../../core/widgets/composants.dart';
 import '../../../core/widgets/formulaires.dart';
+import '../../../core/widgets/verrou.dart';
 import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
 
@@ -103,7 +104,18 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       modifieLe: maintenant,
     );
     final navigateur = Navigator.of(context);
-    await ref.read(bailRepositoryProvider).enregistrerLocataire(locataire);
+    final gestion = ref.read(gestionBiensProvider);
+    final enregistre = await executerSiAutorise(
+      context,
+      () => gestion.enregistrerLocataire(
+        bienId: widget.bail.bienId,
+        locataire: locataire,
+      ),
+    );
+    if (!enregistre) {
+      if (mounted) setState(() => _enCours = false);
+      return;
+    }
     navigateur.pop();
   }
 
@@ -117,7 +129,15 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     );
     if (!ok || !mounted) return;
     final navigateur = Navigator.of(context);
-    await ref.read(bailRepositoryProvider).supprimerLocataire(l.id);
+    final gestion = ref.read(gestionBiensProvider);
+    final supprime = await executerSiAutorise(
+      context,
+      () => gestion.supprimerLocataire(
+        bienId: widget.bail.bienId,
+        locataireId: l.id,
+      ),
+    );
+    if (!supprime) return;
     navigateur.pop();
   }
 

@@ -18,6 +18,18 @@ abstract final class ConfigApp {
   /// Nombre d'échéances affichées sur l'accueil avant « Afficher tout ».
   static const int echeancesAccueil = 5;
 
+  /// Version bêta : `flutter build apk --dart-define=BETA=true`. Les
+  /// testeurs choisissent eux-mêmes le mode gratuit ou Premium dans les
+  /// réglages. Sans ce drapeau, l'application est en version gratuite.
+  static const bool estBeta = bool.fromEnvironment('BETA');
+
+  /// Mode d'une installation bêta tant que le testeur n'a rien choisi :
+  /// Premium, pour découvrir toutes les fonctionnalités.
+  static const bool betaPremiumParDefaut = true;
+
+  /// Nombre de biens actifs (modifiables) dans la version gratuite.
+  static const int maxBiensGratuit = 1;
+
   /// Nombre de biens proposé pendant l'onboarding.
   static const int nombreBiensMin = 1;
   static const int nombreBiensMax = 20;

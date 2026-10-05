@@ -17,4 +17,17 @@ abstract final class ClesReglages {
 
   /// Préférences de rappel (JSON, voir PreferencesRappels).
   static const preferencesRappels = 'rappels.preferences';
+
+  /// Mode simulé de la version bêta : 'premium' ou 'gratuit' (voir
+  /// DroitsBeta). Absent : ConfigApp.betaPremiumParDefaut.
+  static const modePremiumBeta = 'beta.mode_premium';
+
+  /// Réglages propres au téléphone, jamais exportés dans une sauvegarde,
+  /// ignorés dans un fichier restauré et conservés par « Tout effacer » :
+  /// un statut d'abonnement ne voyage pas avec les données.
+  static const propresAuTelephone = {modePremiumBeta, finAbonnementAAnnoncer};
+
+  /// Présent quand la fin de l'abonnement Premium doit être annoncée sur
+  /// l'accueil ; supprimé une fois le message affiché (une seule fois).
+  static const finAbonnementAAnnoncer = 'premium.fin_a_annoncer';
 }

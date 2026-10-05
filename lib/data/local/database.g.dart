@@ -4878,6 +4878,21 @@ class $RevisionsLoyersTable extends RevisionsLoyers
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _courrierInclusMeta = const VerificationMeta(
+    'courrierInclus',
+  );
+  @override
+  late final GeneratedColumn<bool> courrierInclus = GeneratedColumn<bool>(
+    'courrier_inclus',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("courrier_inclus" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _creeLeMeta = const VerificationMeta('creeLe');
   @override
   late final GeneratedColumn<DateTime> creeLe = GeneratedColumn<DateTime>(
@@ -4903,6 +4918,7 @@ class $RevisionsLoyersTable extends RevisionsLoyers
     nouvelIrlAnnee,
     nouvelIrlValeur,
     courrierChemin,
+    courrierInclus,
     creeLe,
   ];
   @override
@@ -5049,6 +5065,15 @@ class $RevisionsLoyersTable extends RevisionsLoyers
         ),
       );
     }
+    if (data.containsKey('courrier_inclus')) {
+      context.handle(
+        _courrierInclusMeta,
+        courrierInclus.isAcceptableOrUnknown(
+          data['courrier_inclus']!,
+          _courrierInclusMeta,
+        ),
+      );
+    }
     if (data.containsKey('cree_le')) {
       context.handle(
         _creeLeMeta,
@@ -5122,6 +5147,10 @@ class $RevisionsLoyersTable extends RevisionsLoyers
         DriftSqlType.string,
         data['${effectivePrefix}courrier_chemin'],
       ),
+      courrierInclus: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}courrier_inclus'],
+      )!,
       creeLe: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}cree_le'],
@@ -5150,6 +5179,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
   final Value<int> nouvelIrlAnnee;
   final Value<double> nouvelIrlValeur;
   final Value<String?> courrierChemin;
+  final Value<bool> courrierInclus;
   final Value<DateTime> creeLe;
   final Value<int> rowid;
   const RevisionsLoyersCompanion({
@@ -5167,6 +5197,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     this.nouvelIrlAnnee = const Value.absent(),
     this.nouvelIrlValeur = const Value.absent(),
     this.courrierChemin = const Value.absent(),
+    this.courrierInclus = const Value.absent(),
     this.creeLe = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -5185,6 +5216,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     required int nouvelIrlAnnee,
     required double nouvelIrlValeur,
     this.courrierChemin = const Value.absent(),
+    this.courrierInclus = const Value.absent(),
     required DateTime creeLe,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -5215,6 +5247,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     Expression<int>? nouvelIrlAnnee,
     Expression<double>? nouvelIrlValeur,
     Expression<String>? courrierChemin,
+    Expression<bool>? courrierInclus,
     Expression<DateTime>? creeLe,
     Expression<int>? rowid,
   }) {
@@ -5237,6 +5270,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
       if (nouvelIrlAnnee != null) 'nouvel_irl_annee': nouvelIrlAnnee,
       if (nouvelIrlValeur != null) 'nouvel_irl_valeur': nouvelIrlValeur,
       if (courrierChemin != null) 'courrier_chemin': courrierChemin,
+      if (courrierInclus != null) 'courrier_inclus': courrierInclus,
       if (creeLe != null) 'cree_le': creeLe,
       if (rowid != null) 'rowid': rowid,
     });
@@ -5257,6 +5291,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     Value<int>? nouvelIrlAnnee,
     Value<double>? nouvelIrlValeur,
     Value<String?>? courrierChemin,
+    Value<bool>? courrierInclus,
     Value<DateTime>? creeLe,
     Value<int>? rowid,
   }) {
@@ -5275,6 +5310,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
       nouvelIrlAnnee: nouvelIrlAnnee ?? this.nouvelIrlAnnee,
       nouvelIrlValeur: nouvelIrlValeur ?? this.nouvelIrlValeur,
       courrierChemin: courrierChemin ?? this.courrierChemin,
+      courrierInclus: courrierInclus ?? this.courrierInclus,
       creeLe: creeLe ?? this.creeLe,
       rowid: rowid ?? this.rowid,
     );
@@ -5325,6 +5361,9 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
     if (courrierChemin.present) {
       map['courrier_chemin'] = Variable<String>(courrierChemin.value);
     }
+    if (courrierInclus.present) {
+      map['courrier_inclus'] = Variable<bool>(courrierInclus.value);
+    }
     if (creeLe.present) {
       map['cree_le'] = Variable<DateTime>(creeLe.value);
     }
@@ -5351,6 +5390,7 @@ class RevisionsLoyersCompanion extends UpdateCompanion<RevisionLoyer> {
           ..write('nouvelIrlAnnee: $nouvelIrlAnnee, ')
           ..write('nouvelIrlValeur: $nouvelIrlValeur, ')
           ..write('courrierChemin: $courrierChemin, ')
+          ..write('courrierInclus: $courrierInclus, ')
           ..write('creeLe: $creeLe, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -5378,6 +5418,7 @@ class _$RevisionLoyerInsertable implements Insertable<RevisionLoyer> {
       nouvelIrlAnnee: Value(_object.nouvelIrlAnnee),
       nouvelIrlValeur: Value(_object.nouvelIrlValeur),
       courrierChemin: Value(_object.courrierChemin),
+      courrierInclus: Value(_object.courrierInclus),
       creeLe: Value(_object.creeLe),
     ).toColumns(false);
   }
@@ -11260,6 +11301,7 @@ typedef $$RevisionsLoyersTableCreateCompanionBuilder =
       required int nouvelIrlAnnee,
       required double nouvelIrlValeur,
       Value<String?> courrierChemin,
+      Value<bool> courrierInclus,
       required DateTime creeLe,
       Value<int> rowid,
     });
@@ -11279,6 +11321,7 @@ typedef $$RevisionsLoyersTableUpdateCompanionBuilder =
       Value<int> nouvelIrlAnnee,
       Value<double> nouvelIrlValeur,
       Value<String?> courrierChemin,
+      Value<bool> courrierInclus,
       Value<DateTime> creeLe,
       Value<int> rowid,
     });
@@ -11393,6 +11436,11 @@ class $$RevisionsLoyersTableFilterComposer
 
   ColumnFilters<String> get courrierChemin => $composableBuilder(
     column: $table.courrierChemin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get courrierInclus => $composableBuilder(
+    column: $table.courrierInclus,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11517,6 +11565,11 @@ class $$RevisionsLoyersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get courrierInclus => $composableBuilder(
+    column: $table.courrierInclus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get creeLe => $composableBuilder(
     column: $table.creeLe,
     builder: (column) => ColumnOrderings(column),
@@ -11634,6 +11687,11 @@ class $$RevisionsLoyersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get courrierInclus => $composableBuilder(
+    column: $table.courrierInclus,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get creeLe =>
       $composableBuilder(column: $table.creeLe, builder: (column) => column);
 
@@ -11728,6 +11786,7 @@ class $$RevisionsLoyersTableTableManager
                 Value<int> nouvelIrlAnnee = const Value.absent(),
                 Value<double> nouvelIrlValeur = const Value.absent(),
                 Value<String?> courrierChemin = const Value.absent(),
+                Value<bool> courrierInclus = const Value.absent(),
                 Value<DateTime> creeLe = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RevisionsLoyersCompanion(
@@ -11745,6 +11804,7 @@ class $$RevisionsLoyersTableTableManager
                 nouvelIrlAnnee: nouvelIrlAnnee,
                 nouvelIrlValeur: nouvelIrlValeur,
                 courrierChemin: courrierChemin,
+                courrierInclus: courrierInclus,
                 creeLe: creeLe,
                 rowid: rowid,
               ),
@@ -11764,6 +11824,7 @@ class $$RevisionsLoyersTableTableManager
                 required int nouvelIrlAnnee,
                 required double nouvelIrlValeur,
                 Value<String?> courrierChemin = const Value.absent(),
+                Value<bool> courrierInclus = const Value.absent(),
                 required DateTime creeLe,
                 Value<int> rowid = const Value.absent(),
               }) => RevisionsLoyersCompanion.insert(
@@ -11781,6 +11842,7 @@ class $$RevisionsLoyersTableTableManager
                 nouvelIrlAnnee: nouvelIrlAnnee,
                 nouvelIrlValeur: nouvelIrlValeur,
                 courrierChemin: courrierChemin,
+                courrierInclus: courrierInclus,
                 creeLe: creeLe,
                 rowid: rowid,
               ),

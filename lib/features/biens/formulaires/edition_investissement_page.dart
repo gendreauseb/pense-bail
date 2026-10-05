@@ -5,6 +5,7 @@ import '../../../app/design/design.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/widgets/composants.dart';
 import '../../../core/widgets/formulaires.dart';
+import '../../../core/widgets/verrou.dart';
 import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
 
@@ -76,20 +77,25 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     if (!validerEtMontrerErreur(_cle)) return;
     setState(() => _enCours = true);
     final navigateur = Navigator.of(context);
-    await ref
-        .read(bienRepositoryProvider)
-        .enregistrer(
-          _b.copyWith(
-            prixAchatCentimes: _v(_prix),
-            fraisNotaireCentimes: _v(_notaire),
-            travauxInitiauxCentimes: _v(_travaux),
-            mensualiteCreditCentimes: _v(_credit),
-            taxeFonciereCentimes: _v(_taxe),
-            assuranceCentimes: _v(_assurance),
-            chargesNonRecuperablesCentimes: _v(_copro),
-            fraisDiversCentimes: _v(_divers),
-          ),
-        );
+    final gestion = ref.read(gestionFinancesProvider);
+    final bien = _b.copyWith(
+      prixAchatCentimes: _v(_prix),
+      fraisNotaireCentimes: _v(_notaire),
+      travauxInitiauxCentimes: _v(_travaux),
+      mensualiteCreditCentimes: _v(_credit),
+      taxeFonciereCentimes: _v(_taxe),
+      assuranceCentimes: _v(_assurance),
+      chargesNonRecuperablesCentimes: _v(_copro),
+      fraisDiversCentimes: _v(_divers),
+    );
+    final enregistre = await executerSiAutorise(
+      context,
+      () => gestion.enregistrerInvestissement(bien),
+    );
+    if (!enregistre) {
+      if (mounted) setState(() => _enCours = false);
+      return;
+    }
     navigateur.pop();
   }
 

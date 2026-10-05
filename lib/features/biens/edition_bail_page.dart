@@ -14,6 +14,7 @@ import '../../core/widgets/choix_cartes.dart';
 import '../../core/widgets/choix_trimestre.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/formulaires.dart';
+import '../../core/widgets/verrou.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 
@@ -105,13 +106,20 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     );
     final navigateur = Navigator.of(context);
     final messager = ScaffoldMessenger.of(context);
-    await ref
-        .read(gestionBiensProvider)
-        .enregistrerBail(
-          bien: widget.bien,
-          bail: bail,
-          aujourdhui: ref.read(aujourdhuiProvider),
-        );
+    final gestion = ref.read(gestionBiensProvider);
+    final aujourdhui = ref.read(aujourdhuiProvider);
+    final enregistre = await executerSiAutorise(
+      context,
+      () => gestion.enregistrerBail(
+        bien: widget.bien,
+        bail: bail,
+        aujourdhui: aujourdhui,
+      ),
+    );
+    if (!enregistre) {
+      if (mounted) setState(() => _enCours = false);
+      return;
+    }
     navigateur.pop();
     messager.showSnackBar(
       const SnackBar(

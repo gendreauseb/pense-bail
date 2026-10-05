@@ -1,5 +1,5 @@
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/services/tableau_de_bord.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/services/tableau_de_bord.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fabriques.dart';

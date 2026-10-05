@@ -51,7 +51,9 @@ l'utilisateur s'est arrêté).
    Validation email, téléphone français, code postal. Phrase expliquant que
    ces données sont l'expéditeur des courriers.
 2. **Nombre de biens** : boutons + et − (1 à 20), « Vous pourrez en ajouter
-   ou en retirer plus tard. »
+   ou en retirer plus tard. » En version gratuite, au-delà d'un bien : note
+   expliquant que les suivants seront enregistrés et consultables, en
+   lecture seule.
 3. **Fiche de chaque bien** (« Bien 2 sur 3 ») : nom libre (affiché
    partout), type de logement (appartement, maison, immeuble, local
    professionnel), type de location (longue, moyenne, courte durée,
@@ -136,14 +138,38 @@ Chaque année, le bailleur peut réviser le loyer selon l'IRL (INSEE).
 Profil du bailleur ; rappels (délais par défaut, notifications par type
 d'échéance) ; biens (ajout, accès aux fiches) ; sauvegarde et restauration
 (fichier) ; suppression complète ; mentions légales et confidentialité
-(données sur l'appareil).
+(données sur l'appareil). En version bêta uniquement : section « Mode
+bêta » (voir 8).
 
-## 8. Modèle de données
+## 8. Version gratuite et Premium
+
+Détail des règles : [decisions.md](decisions.md).
+- **Gratuit** : un bien actif ; onboarding, fiche, bail, locataires,
+  échéances et rappels, alerte DPE, calcul et enregistrement de la
+  révision.
+- **Premium** : biens illimités, courrier de révision, rentabilité
+  (journal, loyers reçus, investissement, récapitulatif annuel), carnet
+  d'artisans et interventions.
+- **Passage en gratuit** : rien n'est supprimé. Le bien le plus ancien
+  reste actif ; les autres restent visibles en lecture seule, leurs
+  échéances et rappels continuent (« faite » et « reporter » possibles).
+  Ce qui a été produit (courriers, rentabilité, artisans) reste
+  consultable. Un message unique sur l'accueil l'explique.
+- **Verrous** : bandeau avec cadenas expliquant en une phrase ce que
+  débloque Premium, lien vers l'écran « Pense-Bail Premium » (contenu de
+  l'offre, abonnement bientôt disponible).
+- **Bêta** (`--dart-define=BETA=true`) : interrupteur gratuit / Premium et
+  « Simuler la fin de l'abonnement » dans les réglages, badge du mode sur
+  l'accueil. Premium par défaut. Aucun achat.
+
+## 9. Modèle de données
 
 Bailleur, Bien, Bail, Locataire, Echeance, Rappel, Artisan, Intervention,
 MouvementFinancier, EncaissementLoyer, RevisionLoyer, IndiceIRL, Reglages.
+Droits (version gratuite ou Premium) : calculés, jamais stockés avec les
+données.
 
-## 9. Hors périmètre V1
+## 10. Hors périmètre V1
 
 Quittances de loyer, états des lieux, guide en cas d'impayé, calendrier des
 obligations DPE, gestion d'un immeuble lot par lot, synchronisation cloud et

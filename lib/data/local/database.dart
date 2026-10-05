@@ -31,7 +31,7 @@ class AppDatabase extends _$AppDatabase {
   static const nomFichier = 'bailleur';
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -48,6 +48,10 @@ class AppDatabase extends _$AppDatabase {
       if (de < 3) {
         await m.addColumn(bailleurs, bailleurs.complementAdresse);
         await m.addColumn(biens, biens.complementAdresse);
+      }
+      // Version 4 : courrier de révision inclus (version gratuite).
+      if (de < 4) {
+        await m.addColumn(revisionsLoyers, revisionsLoyers.courrierInclus);
       }
     },
     beforeOpen: (details) async {

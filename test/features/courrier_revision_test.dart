@@ -1,6 +1,6 @@
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/features/biens/rentabilite/recapitulatif_annuel.dart';
-import 'package:bailleur_app/features/revision/courrier/courrier_revision.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/features/biens/rentabilite/recapitulatif_annuel.dart';
+import 'package:pense_bail/features/revision/courrier/courrier_revision.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fabriques.dart';

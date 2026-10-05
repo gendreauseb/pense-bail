@@ -1,5 +1,5 @@
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/services/generateur_echeances.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/services/generateur_echeances.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fabriques.dart';

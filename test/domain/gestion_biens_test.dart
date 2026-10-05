@@ -1,7 +1,8 @@
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/usecases/gestion_biens.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/services/acces_biens.dart';
+import 'package:pense_bail/domain/usecases/gestion_biens.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/base_memoire.dart';
@@ -21,6 +22,7 @@ void main() {
       biens: DriftBienRepository(db),
       baux: DriftBailRepository(db),
       echeances: echeances,
+      droits: () async => Droits.premium,
     );
   });
 
@@ -108,5 +110,167 @@ void main() {
     expect(await DriftBailRepository(db).bailActif('bien-1'), isNull);
     expect(await echeances.aFaire(), isEmpty);
     expect(await echeances.tousLesRappels(), isEmpty);
+  });
+
+  group('limite de la version gratuite', () {
+    GestionBiens avec(Droits droits) => GestionBiens(
+      transactions: DriftTransactions(db),
+      biens: DriftBienRepository(db),
+      baux: DriftBailRepository(db),
+      echeances: echeances,
+      droits: () async => droits,
+    );
+
+    test('premier bien accepté, deuxième refusé sans rien créer', () async {
+      final gratuit = avec(Droits.gratuit);
+      await gratuit.creer(bien: unBien(), aujourdhui: aujourdhui);
+
+      await expectLater(
+        gratuit.creer(
+          bien: unBien(id: 'bien-2', nom: 'T2 Belleville'),
+          bail: unBail(id: 'bail-2', bienId: 'bien-2', debut: DateTime(2024)),
+          aujourdhui: aujourdhui,
+        ),
+        throwsA(isA<LimiteBiensAtteinte>()),
+      );
+      expect((await DriftBienRepository(db).tous()).map((b) => b.id), [
+        'bien-1',
+      ]);
+      expect(await DriftBailRepository(db).bailActif('bien-2'), isNull);
+      expect(
+        (await echeances.aFaire()).where((e) => e.bienId == 'bien-2'),
+        isEmpty,
+      );
+    });
+
+    test('Premium : plusieurs biens', () async {
+      final premium = avec(Droits.premium);
+      await premium.creer(bien: unBien(), aujourdhui: aujourdhui);
+      await premium.creer(
+        bien: unBien(id: 'bien-2'),
+        aujourdhui: aujourdhui,
+      );
+      expect(await DriftBienRepository(db).tous(), hasLength(2));
+    });
+
+    test('déjà plusieurs biens (ancien Premium) : ajout refusé', () async {
+      await avec(Droits.premium).creer(bien: unBien(), aujourdhui: aujourdhui);
+      await avec(Droits.premium).creer(
+        bien: unBien(id: 'bien-2'),
+        aujourdhui: aujourdhui,
+      );
+
+      await expectLater(
+        avec(Droits.gratuit).creer(
+          bien: unBien(id: 'bien-3'),
+          aujourdhui: aujourdhui,
+        ),
+        throwsA(isA<LimiteBiensAtteinte>()),
+      );
+      expect(await DriftBienRepository(db).tous(), hasLength(2));
+    });
+  });
+
+  group('bien en lecture seule (version gratuite)', () {
+    late GestionBiens gratuit;
+
+    setUp(() async {
+      await creerStudio();
+      await gestion.creer(
+        bien: unBien(id: 'bien-2', nom: 'T2', creeLe: DateTime(2026, 6, 1)),
+        bail: unBail(id: 'bail-2', bienId: 'bien-2', debut: DateTime(2024)),
+        aujourdhui: aujourdhui,
+      );
+      gratuit = GestionBiens(
+        transactions: DriftTransactions(db),
+        biens: DriftBienRepository(db),
+        baux: DriftBailRepository(db),
+        echeances: echeances,
+        droits: () async => Droits.gratuit,
+      );
+    });
+
+    Locataire locataire(String bailId) => Locataire(
+      id: 'loc-$bailId',
+      bailId: bailId,
+      prenom: 'Paul',
+      nom: 'Martin',
+      creeLe: aujourdhui,
+      modifieLe: aujourdhui,
+    );
+
+    test('modifier, bail, locataires : refusés, rien ne change', () async {
+      final t2 = (await DriftBienRepository(db).parId('bien-2'))!;
+      final bail2 = (await DriftBailRepository(db).bailActif('bien-2'))!;
+
+      await expectLater(
+        gratuit.modifier(
+          bien: t2.copyWith(nom: 'Renommé', photoChemin: 'photos/x.jpg'),
+          aujourdhui: aujourdhui,
+        ),
+        throwsA(isA<BienVerrouille>()),
+      );
+      await expectLater(
+        gratuit.enregistrerBail(
+          bien: t2,
+          bail: bail2.copyWith(dureeMois: 48),
+          aujourdhui: aujourdhui,
+        ),
+        throwsA(isA<BienVerrouille>()),
+      );
+      await expectLater(
+        gratuit.enregistrerLocataire(
+          bienId: 'bien-2',
+          locataire: locataire('bail-2'),
+        ),
+        throwsA(isA<BienVerrouille>()),
+      );
+      await expectLater(
+        gratuit.supprimerLocataire(bienId: 'bien-2', locataireId: 'x'),
+        throwsA(isA<BienVerrouille>()),
+      );
+
+      final apres = (await DriftBienRepository(db).parId('bien-2'))!;
+      expect((apres.nom, apres.photoChemin), ('T2', null));
+      expect(
+        (await DriftBailRepository(db).bailActif('bien-2'))!.dureeMois,
+        isNull,
+      );
+      expect(await DriftBailRepository(db).locataires('bail-2'), isEmpty);
+    });
+
+    test('le bien actif reste modifiable', () async {
+      await gratuit.modifier(
+        bien: unBien().copyWith(nom: 'Studio rénové'),
+        aujourdhui: aujourdhui,
+      );
+      await gratuit.enregistrerLocataire(
+        bienId: 'bien-1',
+        locataire: locataire('bail-1'),
+      );
+      expect(
+        (await DriftBienRepository(db).parId('bien-1'))!.nom,
+        'Studio rénové',
+      );
+      expect(await DriftBailRepository(db).locataires('bail-1'), hasLength(1));
+    });
+
+    test('supprimer un bien en lecture seule reste possible', () async {
+      await gratuit.supprimer('bien-2');
+      expect((await DriftBienRepository(db).tous()).map((b) => b.id), [
+        'bien-1',
+      ]);
+    });
+
+    test('le bien actif supprimé : le suivant devient modifiable', () async {
+      await gratuit.supprimer('bien-1');
+      await gratuit.modifier(
+        bien: (await DriftBienRepository(
+          db,
+        ).parId('bien-2'))!.copyWith(nom: 'T2 rénové'),
+        aujourdhui: aujourdhui,
+      );
+      expect((await DriftBienRepository(db).parId('bien-2'))!.nom, 'T2 rénové');
+    });
   });
 }

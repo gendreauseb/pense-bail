@@ -9,6 +9,7 @@ import '../../core/widgets/listes.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 import '../echeances/textes_echeances.dart';
+import '../premium/premium_page.dart';
 import 'actions_donnees.dart';
 
 /// Onglet « Réglages » : profil, rappels, biens, données, mentions légales.
@@ -21,6 +22,7 @@ class ReglagesPage extends ConsumerWidget {
     final bailleur = ref.watch(bailleurFluxProvider).value;
     final biens = ref.watch(biensFluxProvider).value ?? const <Bien>[];
     final preferences = ref.watch(preferencesRappelsProvider).value;
+    final estBeta = ref.watch(estBetaProvider);
 
     Widget section(String titre, List<Widget> contenu) => Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sectionLarge),
@@ -47,6 +49,35 @@ class ReglagesPage extends ConsumerWidget {
           children: [
             Semantics(header: true, child: Text('Réglages', style: t.headline)),
             const SizedBox(height: AppSpacing.section),
+            if (estBeta)
+              section('Mode bêta', [
+                Text(
+                  "Réservé aux testeurs. Passez d'une version à l'autre pour "
+                  'voir les différences : aucun achat, aucune donnée '
+                  'supprimée.',
+                  style: t.secondary,
+                ),
+                const SizedBox(height: AppSpacing.bloc),
+                CarteListe(
+                  enfants: [
+                    const _InterrupteurPremium(),
+                    LigneNavigation(
+                      icone: AppIcons.verrou,
+                      titre: "Simuler la fin de l'abonnement",
+                      sousTitre:
+                          'Repasse en version gratuite et affiche le message '
+                          'prévu pour les abonnés',
+                      onTap: () async {
+                        final routeur = GoRouter.of(context);
+                        await ref
+                            .read(droitsBetaProvider)
+                            .simulerFinAbonnement();
+                        routeur.go(Routes.accueil);
+                      },
+                    ),
+                  ],
+                ),
+              ]),
             section('Profil', [
               CarteListe(
                 enfants: [
@@ -81,7 +112,9 @@ class ReglagesPage extends ConsumerWidget {
                       LigneNavigation(
                         icone: AppIcons.typeLogement(bien.typeLogement),
                         titre: bien.nom,
-                        sousTitre: bien.typeLocation.libelle,
+                        sousTitre: ref.watch(bienVerrouilleProvider(bien.id))
+                            ? '${bien.typeLocation.libelle}, lecture seule'
+                            : bien.typeLocation.libelle,
                         onTap: () => context.push(Routes.ficheBien(bien.id)),
                       ),
                   ],
@@ -95,7 +128,7 @@ class ReglagesPage extends ConsumerWidget {
               ],
               BoutonPointille(
                 libelle: 'Ajouter un bien',
-                onPressed: () => context.push(Routes.nouveauBien),
+                onPressed: () => ouvrirAjoutBien(context, ref),
               ),
             ]),
             section('Mes données', [
@@ -155,5 +188,31 @@ class ReglagesPage extends ConsumerWidget {
     return coupes == 0
         ? texte
         : '$texte. $coupes type${coupes > 1 ? 's' : ''} sans notification';
+  }
+}
+
+/// Bascule gratuit / Premium de la version bêta.
+class _InterrupteurPremium extends ConsumerWidget {
+  const _InterrupteurPremium();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.textes;
+    final droits = ref.watch(droitsProvider).value;
+    final premium = droits?.estPremium ?? false;
+    return SwitchListTile(
+      title: Text('Pense-Bail Premium', style: t.rowTitle),
+      subtitle: Text(
+        premium
+            ? 'Activé : toutes les fonctionnalités'
+            : 'Désactivé : version gratuite',
+        style: t.secondary,
+      ),
+      value: premium,
+      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.ligne),
+      onChanged: droits == null
+          ? null
+          : (actif) => ref.read(droitsBetaProvider).definirPremium(actif),
+    );
   }
 }

@@ -4,6 +4,7 @@ import '../entities/entities.dart';
 import '../repositories/repositories.dart';
 import '../services/calculateur_revision.dart';
 import 'gestion_echeances.dart';
+import 'verrou_biens.dart';
 
 /// Confirmation d'une révision de loyer.
 class ReviserLoyer {
@@ -14,6 +15,7 @@ class ReviserLoyer {
     required this.revisions,
     required this.echeances,
     required this.gestionEcheances,
+    required this.verrou,
   });
 
   final Transactions transactions;
@@ -22,16 +24,24 @@ class ReviserLoyer {
   final RevisionRepository revisions;
   final EcheanceRepository echeances;
   final GestionEcheances gestionEcheances;
+  final VerrouBiens verrou;
 
   /// Met à jour le loyer du bien et l'IRL de référence du bail (le nouvel
   /// indice sert d'ancien indice l'an prochain), enregistre la révision dans
   /// l'historique et passe l'échéance de révision à l'année suivante.
+  ///
+  /// Lève [BienVerrouille] si le bien est en lecture seule (le calcul reste
+  /// possible, pas son enregistrement).
   Future<RevisionLoyer> confirmer({
     required Bien bien,
     required Bail bail,
     required ResultatRevision resultat,
     DateTime? maintenant,
-  }) {
+  }) async {
+    await verrou.verifierModifiable(bien.id);
+    final courrierInclus = await verrou.autorise(
+      Fonctionnalite.courrierRevision,
+    );
     final t = maintenant ?? DateTime.now();
     final cycle = resultat.cycle;
     final revision = RevisionLoyer(
@@ -48,6 +58,7 @@ class ReviserLoyer {
       nouvelIrlTrimestre: resultat.nouveau.trimestre,
       nouvelIrlAnnee: resultat.nouveau.annee,
       nouvelIrlValeur: resultat.nouveau.valeur,
+      courrierInclus: courrierInclus,
       creeLe: t,
     );
 

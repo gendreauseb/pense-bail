@@ -15,6 +15,7 @@ import '../features/biens/formulaires/edition_locataire_page.dart';
 import '../features/biens/formulaires/edition_mouvement_page.dart';
 import '../features/echeances/edition_echeance_page.dart';
 import '../features/onboarding/onboarding_page.dart';
+import '../features/premium/premium_page.dart';
 import '../features/reglages/edition_profil_page.dart';
 import '../features/reglages/mentions_legales_page.dart';
 import '../features/reglages/rappels_page.dart';
@@ -74,6 +75,10 @@ final routeurProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.mentionsLegales,
         builder: (context, state) => const MentionsLegalesPage(),
+      ),
+      GoRoute(
+        path: Routes.premium,
+        builder: (context, state) => const PremiumPage(),
       ),
       GoRoute(
         path: Routes.modifierEcheance(':id'),

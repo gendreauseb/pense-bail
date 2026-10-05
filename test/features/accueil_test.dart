@@ -1,10 +1,10 @@
-import 'package:bailleur_app/app/design/design.dart';
-import 'package:bailleur_app/app/shell.dart';
-import 'package:bailleur_app/core/widgets/listes.dart';
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/usecases/finaliser_onboarding.dart';
+import 'package:pense_bail/app/design/design.dart';
+import 'package:pense_bail/app/shell.dart';
+import 'package:pense_bail/core/widgets/listes.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/usecases/finaliser_onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

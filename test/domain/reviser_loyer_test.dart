@@ -1,10 +1,12 @@
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/services/calculateur_revision.dart';
-import 'package:bailleur_app/domain/usecases/gestion_biens.dart';
-import 'package:bailleur_app/domain/usecases/gestion_echeances.dart';
-import 'package:bailleur_app/domain/usecases/reviser_loyer.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/services/acces_biens.dart';
+import 'package:pense_bail/domain/services/calculateur_revision.dart';
+import 'package:pense_bail/domain/usecases/gestion_biens.dart';
+import 'package:pense_bail/domain/usecases/gestion_echeances.dart';
+import 'package:pense_bail/domain/usecases/reviser_loyer.dart';
+import 'package:pense_bail/domain/usecases/verrou_biens.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/base_memoire.dart';
@@ -14,6 +16,7 @@ void main() {
   late AppDatabase db;
   late ReviserLoyer reviser;
   late DriftEcheanceRepository echeances;
+  var droits = Droits.premium;
 
   const ancien = IndiceIrl(
     annee: 2025,
@@ -30,8 +33,13 @@ void main() {
 
   setUp(() {
     db = baseDeTest();
+    droits = Droits.premium;
     echeances = DriftEcheanceRepository(db);
     final transactions = DriftTransactions(db);
+    final verrou = VerrouBiens(
+      biens: DriftBienRepository(db),
+      droits: () async => droits,
+    );
     reviser = ReviserLoyer(
       transactions: transactions,
       biens: DriftBienRepository(db),
@@ -41,7 +49,9 @@ void main() {
       gestionEcheances: GestionEcheances(
         transactions: transactions,
         echeances: echeances,
+        verrou: verrou,
       ),
+      verrou: verrou,
     );
   });
   tearDown(() => db.close());
@@ -53,6 +63,7 @@ void main() {
       biens: DriftBienRepository(db),
       baux: DriftBailRepository(db),
       echeances: echeances,
+      droits: () async => Droits.premium,
     ).creer(
       bien: unBien(),
       bail: bail ?? unBail(debut: DateTime(2023, 9, 1)),
@@ -111,6 +122,7 @@ void main() {
     expect(enregistree.datePrevue, DateTime(2026, 9, 1));
     expect(enregistree.dateEffet, DateTime(2026, 9, 1));
     expect(enregistree.demandeeEnRetard, isFalse);
+    expect(enregistree.courrierInclus, isTrue);
 
     // L'échéance de 2026 est faite, celle de 2027 est créée.
     expect((await revisionsAFaire()).single.date, DateTime(2027, 9, 1));
@@ -142,4 +154,70 @@ void main() {
     expect(revision.demandeeEnRetard, isTrue);
     expect((await revisionsAFaire()).single.id, avant.id);
   });
+
+  test("bien en lecture seule : la révision n'est pas enregistrée", () async {
+    final aujourdhui = DateTime(2026, 8, 10);
+    final (bien, bail) = await studio(
+      aujourdhui,
+      bail: unBail(
+        debut: DateTime(2023, 9, 1),
+      ).copyWith(irlTrimestre: 2, irlAnnee: 2025, irlValeur: 146.68),
+    );
+    // Un bien plus ancien devient le bien actif de la version gratuite.
+    await DriftBienRepository(
+      db,
+    ).enregistrer(unBien(id: 'ancien', creeLe: DateTime(2020)));
+    droits = Droits.gratuit;
+    final cycle = CalculateurRevision.cycle(bail, aujourdhui: aujourdhui)!;
+
+    await expectLater(
+      reviser.confirmer(
+        bien: bien,
+        bail: bail,
+        resultat: resultat(cycle),
+        maintenant: aujourdhui,
+      ),
+      throwsA(isA<BienVerrouille>()),
+    );
+    expect(
+      (await DriftBienRepository(db).parId('bien-1'))!.loyerHcCentimes,
+      65000,
+    );
+    expect(
+      await DriftRevisionRepository(db).surveillerHistorique('bien-1').first,
+      isEmpty,
+    );
+    expect((await revisionsAFaire()).single.date, DateTime(2026, 9, 1));
+  });
+
+  test(
+    'version gratuite : révision enregistrée, courrier non inclus',
+    () async {
+      final aujourdhui = DateTime(2026, 8, 10);
+      final (bien, bail) = await studio(
+        aujourdhui,
+        bail: unBail(
+          debut: DateTime(2023, 9, 1),
+        ).copyWith(irlTrimestre: 2, irlAnnee: 2025, irlValeur: 146.68),
+      );
+      droits = Droits.gratuit;
+      final cycle = CalculateurRevision.cycle(bail, aujourdhui: aujourdhui)!;
+
+      final revision = await reviser.confirmer(
+        bien: bien,
+        bail: bail,
+        resultat: resultat(cycle),
+        maintenant: aujourdhui,
+      );
+
+      expect(
+        (await DriftBienRepository(db).parId('bien-1'))!.loyerHcCentimes,
+        65749,
+      );
+      final enregistree = (await DriftRevisionRepository(
+        db,
+      ).parId(revision.id))!;
+      expect(enregistree.courrierInclus, isFalse);
+    },
+  );
 }

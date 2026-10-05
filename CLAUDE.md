@@ -35,9 +35,9 @@ lib/core/config/regles_legales.dart   seule source des règles légales
 lib/core/config/config_app.dart       réglages produit (rappels, seuils, INSEE…)
 lib/core/{format,validation,utils,widgets,pdf}/
 lib/domain/   Dart pur : entities, repositories (interfaces), services (calculs), usecases
-lib/data/     drift (local/), repositories, notifications, photos, irl, sauvegarde, providers.dart
+lib/data/     drift (local/), repositories, droits, notifications, photos, irl, sauvegarde, providers.dart
 lib/app/      design/ (tokens, thème), routes, routeur, coque, état global
-lib/features/ écrans : onboarding, accueil, echeances, biens, artisans, revision, reglages
+lib/features/ écrans : onboarding, accueil, echeances, biens, artisans, revision, reglages, premium
 ```
 
 Stack : Riverpod 3, go_router, drift (SQLite), flutter_local_notifications,
@@ -57,6 +57,10 @@ pdf + printing, file_picker, http (INSEE uniquement).
 - **Rédaction** : vouvoiement, phrases courtes, terme juridique toujours
   expliqué, pas de tiret cadratin, boutons qui disent ce qu'ils font (jamais
   « OK » seul). Dates JJ/MM/AAAA.
+- **Gratuit / Premium** : demander ce qui est disponible
+  (`Droits.autorise`), jamais « a-t-il payé ? » ; écritures via les cas
+  d'usage qui contrôlent les droits (voir conventions). Rien n'est jamais
+  supprimé par un changement de version.
 - **Montants** en centimes (`int`), affichés via `Formats` (centimes seulement
   si non nuls ; courriers : toujours).
 - **Schéma de base** modifié → `schemaVersion` + étape `onUpgrade` ; les

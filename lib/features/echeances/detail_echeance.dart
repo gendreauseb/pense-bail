@@ -57,6 +57,12 @@ class _PanneauEcheance extends ConsumerWidget {
     final notes = echeance.notes;
     final estRevision =
         echeance.type == TypeEcheance.revisionLoyer && echeance.bienId != null;
+    // Bien en lecture seule : faite et reporter restent possibles (sinon les
+    // rappels continueraient sans fin), pas la modification.
+    final modifiable = switch (echeance.bienId) {
+      final id? => !ref.watch(bienVerrouilleProvider(id)),
+      null => true,
+    };
 
     Widget info(IconData icone, String texte) => Padding(
       padding: const EdgeInsets.only(top: AppSpacing.s),
@@ -154,14 +160,16 @@ class _PanneauEcheance extends ConsumerWidget {
                   label: const Text('Reporter'),
                 ),
               ),
-              const SizedBox(width: AppSpacing.blocSerre),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _modifier(context),
-                  icon: const Icon(AppIcons.modifier),
-                  label: const Text('Modifier'),
+              if (modifiable) ...[
+                const SizedBox(width: AppSpacing.blocSerre),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _modifier(context),
+                    icon: const Icon(AppIcons.modifier),
+                    label: const Text('Modifier'),
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ],

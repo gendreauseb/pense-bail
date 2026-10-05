@@ -45,6 +45,7 @@ class RevisionLoyer {
     required this.nouvelIrlAnnee,
     required this.nouvelIrlValeur,
     this.courrierChemin,
+    this.courrierInclus = true,
     required this.creeLe,
   });
 
@@ -69,6 +70,12 @@ class RevisionLoyer {
 
   /// PDF du courrier généré, s'il a été enregistré.
   final String? courrierChemin;
+
+  /// Le courrier fait partie de ce qui a été produit : révision confirmée
+  /// avec le courrier disponible (Premium). Il reste alors consultable en
+  /// version gratuite. Vrai pour les révisions antérieures à la version
+  /// gratuite.
+  final bool courrierInclus;
   final DateTime creeLe;
 
   int get augmentationMensuelleCentimes =>

@@ -1,4 +1,4 @@
-import 'package:bailleur_app/data/local/database.dart';
+import 'package:pense_bail/data/local/database.dart';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 

@@ -8,8 +8,10 @@ import '../../../core/format/formats.dart';
 import '../../../core/services/contact.dart';
 import '../../../core/widgets/composants.dart';
 import '../../../core/widgets/listes.dart';
+import '../../../core/widgets/verrou.dart';
 import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
+import '../../premium/premium_page.dart';
 
 /// Interventions sur le bien et accès rapide aux artisans concernés.
 class OngletArtisans extends ConsumerWidget {
@@ -24,10 +26,35 @@ class OngletArtisans extends ConsumerWidget {
       for (final a in ref.watch(artisansFluxProvider).value ?? const [])
         a.id: a,
     };
+    final disponible = ref.watch(
+      fonctionnaliteDisponibleProvider(Fonctionnalite.artisans),
+    );
+    final modifiable =
+        disponible && !ref.watch(bienVerrouilleProvider(bien.id));
+
+    // Version gratuite : bandeau seul s'il n'y a rien à consulter.
+    if (!disponible && interventions.isEmpty) {
+      return BandeauVerrou(
+        texte:
+            "Le carnet d'artisans et le suivi des interventions sont inclus "
+            'dans Pense-Bail Premium.',
+        onDecouvrir: () => ouvrirPremium(context),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (!disponible) ...[
+          BandeauVerrou(
+            texte:
+                "Le carnet d'artisans et le suivi des interventions sont "
+                'inclus dans Pense-Bail Premium. Les interventions déjà '
+                'enregistrées restent consultables.',
+            onDecouvrir: () => ouvrirPremium(context),
+          ),
+          const SizedBox(height: AppSpacing.sectionLarge),
+        ],
         const EnTeteSection(titre: 'Interventions'),
         if (interventions.isEmpty)
           const EtatVide(
@@ -43,14 +70,17 @@ class OngletArtisans extends ConsumerWidget {
                 _LigneIntervention(
                   intervention: i,
                   artisan: artisans[i.artisanId],
+                  modifiable: modifiable,
                 ),
             ],
           ),
-        const SizedBox(height: AppSpacing.bloc),
-        BoutonPointille(
-          libelle: 'Ajouter une intervention',
-          onPressed: () => context.push(Routes.intervention(bien.id)),
-        ),
+        if (modifiable) ...[
+          const SizedBox(height: AppSpacing.bloc),
+          BoutonPointille(
+            libelle: 'Ajouter une intervention',
+            onPressed: () => context.push(Routes.intervention(bien.id)),
+          ),
+        ],
         const SizedBox(height: AppSpacing.sectionLarge),
         CarteAction(
           icone: AppIcons.artisans,
@@ -67,9 +97,16 @@ class OngletArtisans extends ConsumerWidget {
 }
 
 class _LigneIntervention extends StatelessWidget {
-  const _LigneIntervention({required this.intervention, required this.artisan});
+  const _LigneIntervention({
+    required this.intervention,
+    required this.artisan,
+    required this.modifiable,
+  });
   final Intervention intervention;
   final Artisan? artisan;
+
+  /// Faux : la ligne n'ouvre pas le formulaire.
+  final bool modifiable;
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +116,13 @@ class _LigneIntervention extends StatelessWidget {
     final telephone = artisan?.telephone;
     final cout = i.coutCentimes;
     return InkWell(
-      onTap: () => context.push(
-        Routes.avec(Routes.intervention(i.bienId), {'intervention': i.id}),
-      ),
+      onTap: modifiable
+          ? () => context.push(
+              Routes.avec(Routes.intervention(i.bienId), {
+                'intervention': i.id,
+              }),
+            )
+          : null,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.ligne,

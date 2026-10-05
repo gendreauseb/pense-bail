@@ -1,4 +1,4 @@
-import 'package:bailleur_app/core/validation/validateurs.dart';
+import 'package:pense_bail/core/validation/validateurs.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

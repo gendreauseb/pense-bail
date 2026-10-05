@@ -1,6 +1,6 @@
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

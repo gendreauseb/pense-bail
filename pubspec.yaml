@@ -1,4 +1,4 @@
-name: bailleur_app
+name: pense_bail
 description: "Pense-Bail, boîte à outils pour propriétaires bailleurs particuliers."
 publish_to: 'none'
 version: 1.0.0+1

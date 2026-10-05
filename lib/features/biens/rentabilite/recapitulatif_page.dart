@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/pdf/apercu_pdf_page.dart';
+import '../../../core/widgets/verrou.dart';
 import '../../../data/providers.dart';
+import '../../../domain/entities/entities.dart';
+import '../../premium/premium_page.dart';
 import 'recapitulatif_annuel.dart';
 
 /// Export PDF du récapitulatif annuel d'un bien.
@@ -18,6 +21,17 @@ class RecapitulatifPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (!ref.watch(
+      fonctionnaliteDisponibleProvider(Fonctionnalite.rentabilite),
+    )) {
+      return PageVerrouillee(
+        titre: 'Récapitulatif $annee',
+        texte:
+            "Le récapitulatif de l'année est inclus dans Pense-Bail "
+            'Premium.',
+        onDecouvrir: () => ouvrirPremium(context),
+      );
+    }
     final cle = (bienId, annee);
     final bien = ref.watch(bienFluxProvider(bienId)).value;
     final bailleur = ref.watch(bailleurFluxProvider).value;

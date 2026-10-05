@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 
+import '../../core/config/cles_reglages.dart';
 import '../local/database.dart';
 
 /// Fichier illisible, d'une autre application ou d'une version plus récente.
@@ -68,7 +69,10 @@ class ServiceSauvegarde {
       final lignes = await _db
           .customSelect('SELECT * FROM "${table.actualTableName}"')
           .get();
-      tables[table.actualTableName] = [for (final l in lignes) l.data];
+      tables[table.actualTableName] = [
+        for (final l in lignes)
+          if (!_reglagePropreAuTelephone(table.actualTableName, l.data)) l.data,
+      ];
     }
 
     final photos = <String, String>{};
@@ -145,14 +149,14 @@ class ServiceSauvegarde {
       }
       tables[nom] = [
         for (final ligne in lignes)
-          if (ligne is Map<String, Object?> &&
-              ligne.keys.every(colonnes.contains) &&
-              ligne.values.every(_valeurSimple))
-            ligne
-          else
+          if (ligne is! Map<String, Object?> ||
+              !ligne.keys.every(colonnes.contains) ||
+              !ligne.values.every(_valeurSimple))
             throw SauvegardeInvalide(
               'Contenu inattendu dans la sauvegarde : $nom.',
-            ),
+            )
+          else if (!_reglagePropreAuTelephone(nom, ligne))
+            ligne,
       ];
     }
 
@@ -174,6 +178,7 @@ class ServiceSauvegarde {
   }
 
   /// Remplace toutes les données actuelles par celles de la [sauvegarde].
+  /// Les réglages propres au téléphone sont conservés.
   Future<void> restaurer(Sauvegarde sauvegarde) async {
     await _db.transaction(() async {
       await _viderTables();
@@ -201,17 +206,24 @@ class ServiceSauvegarde {
     }
   }
 
-  /// Supprime toutes les données et les photos.
+  /// Supprime toutes les données et les photos, sauf les réglages propres
+  /// au téléphone.
   Future<void> effacerTout() async {
     await _db.transaction(_viderTables);
     await _supprimerPhotos();
   }
 
   Future<void> _viderTables() async {
+    final conserves = await (_db.select(
+      _db.reglages,
+    )..where((r) => r.cle.isIn(ClesReglages.propresAuTelephone))).get();
     // Tables dépendantes d'abord (les suppressions en cascade feraient de
     // toute façon le reste).
     for (final table in _db.allTables.toList().reversed) {
       await _db.delete(table).go();
+    }
+    for (final reglage in conserves) {
+      await _db.into(_db.reglages).insert(reglage);
     }
   }
 
@@ -228,6 +240,10 @@ class ServiceSauvegarde {
         parties.first == _dossierPhotos &&
         RegExp(r'^[\w-]+\.[a-z0-9]{2,5}$').hasMatch(parties.last);
   }
+
+  bool _reglagePropreAuTelephone(String table, Map<String, Object?> ligne) =>
+      table == _db.reglages.actualTableName &&
+      ClesReglages.propresAuTelephone.contains(ligne['cle']);
 
   static bool _valeurSimple(Object? v) =>
       v == null || v is String || v is num || v is bool;

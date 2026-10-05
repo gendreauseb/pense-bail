@@ -223,6 +223,9 @@ class RevisionsLoyers extends Table {
   IntColumn get nouvelIrlAnnee => integer()();
   RealColumn get nouvelIrlValeur => real()();
   TextColumn get courrierChemin => text().nullable()();
+  // Ajoutée en version 4 du schéma.
+  BoolColumn get courrierInclus =>
+      boolean().withDefault(const Constant(true))();
   DateTimeColumn get creeLe => dateTime()();
 
   @override

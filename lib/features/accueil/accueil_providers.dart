@@ -32,6 +32,9 @@ final donneesAccueilProvider = Provider<AsyncValue<DonneesAccueil>>((ref) {
   final biens = ref.watch(biensFluxProvider);
   final baux = ref.watch(bauxActifsFluxProvider);
   final echeances = ref.watch(echeancesAFaireFluxProvider);
+  // Pas d'invitation à compléter un bien en lecture seule : l'action
+  // proposée serait refusée.
+  final actifs = ref.watch(biensActifsProvider).value;
 
   for (final flux in [bailleur, biens, baux, echeances]) {
     if (flux case AsyncError(:final error, :final stackTrace)) {
@@ -47,10 +50,13 @@ final donneesAccueilProvider = Provider<AsyncValue<DonneesAccueil>>((ref) {
       biens: biens.requireValue,
       echeances: echeances.requireValue,
       synthese: TableauDeBord.synthese(biens.requireValue),
-      invitations: TableauDeBord.invitations(
-        biens.requireValue,
-        baux.requireValue,
-      ),
+      invitations: [
+        for (final i in TableauDeBord.invitations(
+          biens.requireValue,
+          baux.requireValue,
+        ))
+          if (actifs == null || actifs.contains(i.bien.id)) i,
+      ],
       prochaineParBien: TableauDeBord.prochaineParBien(echeances.requireValue),
     ),
   );

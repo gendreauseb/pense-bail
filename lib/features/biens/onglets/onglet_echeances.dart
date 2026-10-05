@@ -29,6 +29,7 @@ class OngletEcheances extends ConsumerWidget {
     final toutes =
         ref.watch(echeancesBienFluxProvider(bien.id)).value ?? const [];
     final aFaire = toutes.where((e) => !e.estFaite).toList();
+    final verrouille = ref.watch(bienVerrouilleProvider(bien.id));
     final faites = toutes.where((e) => e.estFaite).toList().reversed.toList();
 
     final groupes = <String, List<Echeance>>{
@@ -76,10 +77,11 @@ class OngletEcheances extends ConsumerWidget {
             CarteListe(enfants: [for (final e in groupe.value) ligne(e)]),
             const SizedBox(height: AppSpacing.section),
           ],
-        BoutonPointille(
-          libelle: 'Ajouter un rappel',
-          onPressed: () => _ajouter(context),
-        ),
+        if (!verrouille)
+          BoutonPointille(
+            libelle: 'Ajouter un rappel',
+            onPressed: () => _ajouter(context),
+          ),
         if (faites.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.sectionLarge),
           Text('DÉJÀ FAITES', style: context.textes.overline),

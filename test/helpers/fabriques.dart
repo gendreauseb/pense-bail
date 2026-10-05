@@ -1,4 +1,4 @@
-import 'package:bailleur_app/domain/entities/entities.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
 
 final _t0 = DateTime(2026, 1, 1);
 
@@ -8,6 +8,8 @@ Bien unBien({
   TypeLocation typeLocation = TypeLocation.longueDuree,
   ClasseDpe? classeDpe,
   int loyerHcCentimes = 65000,
+  int ordre = 0,
+  DateTime? creeLe,
 }) => Bien(
   id: id,
   nom: nom,
@@ -19,9 +21,9 @@ Bien unBien({
   loyerHcCentimes: loyerHcCentimes,
   chargesCentimes: 5000,
   classeDpe: classeDpe,
-  ordre: 0,
-  creeLe: _t0,
-  modifieLe: _t0,
+  ordre: ordre,
+  creeLe: creeLe ?? _t0,
+  modifieLe: creeLe ?? _t0,
 );
 
 Bail unBail({

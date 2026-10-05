@@ -9,6 +9,7 @@ import '../../../core/utils/identifiants.dart';
 import '../../../core/widgets/choix_cartes.dart';
 import '../../../core/widgets/composants.dart';
 import '../../../core/widgets/formulaires.dart';
+import '../../../core/widgets/verrou.dart';
 import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
 
@@ -103,7 +104,15 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
             note: note.isEmpty ? null : note,
           );
     final navigateur = Navigator.of(context);
-    await ref.read(financeRepositoryProvider).enregistrerMouvement(mouvement);
+    final gestion = ref.read(gestionFinancesProvider);
+    final enregistre = await executerSiAutorise(
+      context,
+      () => gestion.enregistrerMouvement(mouvement),
+    );
+    if (!enregistre) {
+      if (mounted) setState(() => _enCours = false);
+      return;
+    }
     navigateur.pop();
   }
 
@@ -115,9 +124,12 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     );
     if (!ok || !mounted) return;
     final navigateur = Navigator.of(context);
-    await ref
-        .read(financeRepositoryProvider)
-        .supprimerMouvement(widget.existant!.id);
+    final gestion = ref.read(gestionFinancesProvider);
+    final supprime = await executerSiAutorise(
+      context,
+      () => gestion.supprimerMouvement(widget.existant!),
+    );
+    if (!supprime) return;
     navigateur.pop();
   }
 

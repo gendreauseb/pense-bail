@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:bailleur_app/app/app.dart';
-import 'package:bailleur_app/app/design/design.dart';
-import 'package:bailleur_app/app/shell.dart';
-import 'package:bailleur_app/app/etat_app.dart';
-import 'package:bailleur_app/core/format/formats.dart';
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/providers.dart';
+import 'package:pense_bail/app/app.dart';
+import 'package:pense_bail/app/design/design.dart';
+import 'package:pense_bail/app/shell.dart';
+import 'package:pense_bail/app/etat_app.dart';
+import 'package:pense_bail/core/format/formats.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

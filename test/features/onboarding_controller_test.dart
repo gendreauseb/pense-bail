@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:bailleur_app/app/etat_app.dart';
-import 'package:bailleur_app/core/config/cles_reglages.dart';
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/providers.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/features/onboarding/brouillon_onboarding.dart';
-import 'package:bailleur_app/features/onboarding/onboarding_controller.dart';
+import 'package:pense_bail/app/etat_app.dart';
+import 'package:pense_bail/core/config/cles_reglages.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/providers.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/features/onboarding/brouillon_onboarding.dart';
+import 'package:pense_bail/features/onboarding/onboarding_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

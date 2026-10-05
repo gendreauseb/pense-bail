@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/data/sauvegarde/service_sauvegarde.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/usecases/gestion_biens.dart';
+import 'package:pense_bail/core/config/cles_reglages.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/data/sauvegarde/service_sauvegarde.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/usecases/gestion_biens.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/base_memoire.dart';
@@ -57,6 +58,7 @@ void main() {
       biens: DriftBienRepository(db),
       baux: DriftBailRepository(db),
       echeances: DriftEcheanceRepository(db),
+      droits: () async => Droits.premium,
     ).creer(
       bien: bien,
       bail: unBail(debut: DateTime(2023, 9, 1)),
@@ -127,6 +129,87 @@ void main() {
     ).enregistrer(unBien(id: 'autre', nom: 'Autre bien'));
     await service.restaurer(service.lire(fichier));
     expect((await DriftBienRepository(db).tous()).map((b) => b.id), ['bien-1']);
+  });
+
+  test(
+    'sauvegarde du schéma 3 : révisions restaurées avec leur courrier',
+    () async {
+      await remplir();
+      await DriftRevisionRepository(db).enregistrer(
+        RevisionLoyer(
+          id: 'r1',
+          bienId: 'bien-1',
+          bailId: 'bail-1',
+          dateEffet: DateTime(2025, 9, 1),
+          ancienLoyerCentimes: 64000,
+          nouveauLoyerCentimes: 65000,
+          ancienIrlTrimestre: 2,
+          ancienIrlAnnee: 2024,
+          ancienIrlValeur: 145.17,
+          nouvelIrlTrimestre: 2,
+          nouvelIrlAnnee: 2025,
+          nouvelIrlValeur: 146.68,
+          creeLe: DateTime(2025, 8, 20),
+        ),
+      );
+      // Fichier d'une version précédente : ni le schéma 4 ni sa colonne.
+      final json =
+          jsonDecode(utf8.decode(await service.exporter()))
+              as Map<String, Object?>;
+      json['schema'] = 3;
+      final revisions =
+          (json['tables']! as Map<String, Object?>)['revisions_loyers']!
+              as List;
+      for (final r in revisions) {
+        (r as Map<String, Object?>).remove('courrier_inclus');
+      }
+
+      await service.restaurer(service.lire(utf8.encode(jsonEncode(json))));
+
+      final restauree = (await DriftRevisionRepository(db).parId('r1'))!;
+      expect(restauree.nouveauLoyerCentimes, 65000);
+      expect(restauree.courrierInclus, isTrue);
+    },
+  );
+
+  group('mode Premium simulé : propre au téléphone', () {
+    late DriftReglagesRepository reglages;
+    setUp(() => reglages = DriftReglagesRepository(db));
+
+    test('jamais exporté', () async {
+      await remplir();
+      await reglages.ecrire(ClesReglages.modePremiumBeta, 'premium');
+      await reglages.ecrire(ClesReglages.finAbonnementAAnnoncer, 'true');
+      final lignes = (await tables())['reglages']! as List<Object?>;
+      expect(lignes, [
+        {'cle': 'onboarding.termine', 'valeur': 'true'},
+      ]);
+    });
+
+    test('ignoré dans un fichier, conservé à la restauration', () async {
+      await remplir();
+      final json =
+          jsonDecode(utf8.decode(await service.exporter()))
+              as Map<String, Object?>;
+      ((json['tables']! as Map<String, Object?>)['reglages']! as List).add({
+        'cle': ClesReglages.modePremiumBeta,
+        'valeur': 'premium',
+      });
+      await reglages.ecrire(ClesReglages.modePremiumBeta, 'gratuit');
+
+      await service.restaurer(service.lire(utf8.encode(jsonEncode(json))));
+
+      expect(await reglages.lire(ClesReglages.modePremiumBeta), 'gratuit');
+      expect(await reglages.lire('onboarding.termine'), 'true');
+    });
+
+    test('conservé par « Tout effacer »', () async {
+      await remplir();
+      await reglages.ecrire(ClesReglages.modePremiumBeta, 'gratuit');
+      await service.effacerTout();
+      expect(await reglages.lire(ClesReglages.modePremiumBeta), 'gratuit');
+      expect(await reglages.lire('onboarding.termine'), isNull);
+    });
   });
 
   group('fichiers refusés', () {

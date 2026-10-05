@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bailleur_app/core/format/formats.dart';
+import 'package:pense_bail/core/format/formats.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 

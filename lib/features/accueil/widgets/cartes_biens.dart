@@ -8,6 +8,8 @@ import '../../../app/routes.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/widgets/photo_bien.dart';
 import '../../../core/widgets/statut_echeance.dart';
+import '../../../core/widgets/verrou.dart';
+import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/services/proximite.dart';
 
@@ -38,6 +40,7 @@ class CartesBiens extends ConsumerWidget {
                 bien: bien,
                 prochaine: prochaineParBien[bien.id],
                 aujourdhui: aujourdhui,
+                verrouille: ref.watch(bienVerrouilleProvider(bien.id)),
               ),
             ],
           ],
@@ -52,11 +55,15 @@ class _CarteBien extends StatelessWidget {
     required this.bien,
     required this.prochaine,
     required this.aujourdhui,
+    required this.verrouille,
   });
 
   final Bien bien;
   final Echeance? prochaine;
   final DateTime aujourdhui;
+
+  /// Lecture seule (version gratuite).
+  final bool verrouille;
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +103,10 @@ class _CarteBien extends StatelessWidget {
                       Formats.parMois(bien.loyerHcCentimes),
                       style: t.secondary,
                     ),
+                    if (verrouille) ...[
+                      const SizedBox(height: AppSpacing.xxs),
+                      const MentionLectureSeule(),
+                    ],
                     if (prochaine != null) ...[
                       const SizedBox(height: AppSpacing.s),
                       Text(

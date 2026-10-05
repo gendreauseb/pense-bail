@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:bailleur_app/core/config/cles_reglages.dart';
-import 'package:bailleur_app/data/irl/lecteur_indices.dart';
-import 'package:bailleur_app/data/irl/service_indices_irl.dart';
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
+import 'package:pense_bail/core/config/cles_reglages.dart';
+import 'package:pense_bail/data/irl/lecteur_indices.dart';
+import 'package:pense_bail/data/irl/service_indices_irl.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

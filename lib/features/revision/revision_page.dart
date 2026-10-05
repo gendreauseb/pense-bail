@@ -11,10 +11,12 @@ import '../../core/widgets/choix_trimestre.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/formulaires.dart';
 import '../../core/widgets/listes.dart';
+import '../../core/widgets/verrou.dart';
 import '../../data/irl/service_indices_irl.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/services/calculateur_revision.dart';
+import '../premium/premium_page.dart';
 import 'indices/sheets_indices.dart';
 
 /// Outil de révision de loyer : vos données, indices IRL, résultat.
@@ -237,15 +239,36 @@ class _AssistantState extends ConsumerState<_Assistant> {
     });
     final routeur = GoRouter.of(context);
     final messager = ScaffoldMessenger.of(context);
-    final revision = await ref
-        .read(reviserLoyerProvider)
-        .confirmer(bien: widget.bien, bail: widget.bail, resultat: resultat);
-    routeur.pushReplacement(Routes.courrierRevision(revision.id));
+    final reviser = ref.read(reviserLoyerProvider);
+    RevisionLoyer? revision;
+    final confirme = await executerSiAutorise(
+      context,
+      () async => revision = await reviser.confirmer(
+        bien: widget.bien,
+        bail: widget.bail,
+        resultat: resultat,
+      ),
+    );
+    if (!confirme) {
+      if (mounted) {
+        setState(() {
+          _enCours = false;
+          _resultatConfirme = null;
+        });
+      }
+      return;
+    }
+    final enregistree = revision!;
+    if (enregistree.courrierInclus) {
+      routeur.pushReplacement(Routes.courrierRevision(enregistree.id));
+    } else {
+      routeur.pop();
+    }
     messager.showSnackBar(
       SnackBar(
         content: Text(
           'Révision enregistrée : le loyer passe à '
-          '${Formats.parMois(revision.nouveauLoyerCentimes)}.',
+          '${Formats.parMois(enregistree.nouveauLoyerCentimes)}.',
         ),
       ),
     );
@@ -272,17 +295,32 @@ class _AssistantState extends ConsumerState<_Assistant> {
         indices.nouveau == null &&
         nouvelAttendu.isAfter(ref.watch(aujourdhuiProvider));
 
+    // Bien en lecture seule : le calcul reste visible, pas son enregistrement.
+    final verrouille = ref.watch(bienVerrouilleProvider(widget.bien.id));
+    // Version gratuite : la révision s'enregistre, sans le courrier.
+    final courrierDisponible = ref.watch(
+      fonctionnaliteDisponibleProvider(Fonctionnalite.courrierRevision),
+    );
+
     final (libelleAction, peutContinuer, legende) = switch (_etape) {
       _Etape.donnees => ('Continuer', true, null),
       _Etape.indices => ('Calculer le nouveau loyer', indices.complets, null),
+      _Etape.resultat when verrouille => (
+        'Confirmer la révision',
+        false,
+        'Bien en lecture seule : ce calcul est indicatif.',
+      ),
       _Etape.resultat => (
         'Confirmer la révision',
         resultat != null,
         resultat == null
             ? null
-            : 'Le loyer du bien passera à '
+            : courrierDisponible
+            ? 'Le loyer du bien passera à '
                   '${Formats.parMois(resultat.nouveauLoyerCentimes)}, puis '
-                  'le courrier sera prêt à envoyer.',
+                  'le courrier sera prêt à envoyer.'
+            : 'Le loyer du bien passera à '
+                  '${Formats.parMois(resultat.nouveauLoyerCentimes)}.',
       ),
     };
 
@@ -328,7 +366,29 @@ class _AssistantState extends ConsumerState<_Assistant> {
                     nouvelPasEncorePublie: nouvelPasEncorePublie,
                     nouvelAttendu: nouvelAttendu,
                   ),
-                  _Etape.resultat => _etapeResultat(context, resultat!),
+                  _Etape.resultat => [
+                    if (verrouille) ...[
+                      BandeauVerrou(
+                        texte:
+                            'Ce bien est en lecture seule dans la version '
+                            "gratuite. Pense-Bail Premium permet d'enregistrer "
+                            'la révision et de mettre à jour le loyer.',
+                        onDecouvrir: () => ouvrirPremium(context),
+                      ),
+                      const SizedBox(height: AppSpacing.section),
+                    ] else if (!courrierDisponible) ...[
+                      BandeauVerrou(
+                        texte:
+                            'Le courrier prêt à envoyer à votre locataire est '
+                            'inclus dans Pense-Bail Premium. Vous pouvez '
+                            'enregistrer la révision : le loyer du bien sera '
+                            'mis à jour.',
+                        onDecouvrir: () => ouvrirPremium(context),
+                      ),
+                      const SizedBox(height: AppSpacing.section),
+                    ],
+                    ..._etapeResultat(context, resultat!),
+                  ],
                 },
               ],
             ),
@@ -587,6 +647,14 @@ class _AssistantState extends ConsumerState<_Assistant> {
     final t = context.textes;
     final locataires =
         ref.watch(locatairesFluxProvider(widget.bail.id)).value ?? const [];
+    // L'invitation n'a de sens que si un courrier sera produit et que le
+    // locataire peut être ajouté.
+    final inviterLocataire =
+        locataires.isEmpty &&
+        !ref.watch(bienVerrouilleProvider(widget.bien.id)) &&
+        ref.watch(
+          fonctionnaliteDisponibleProvider(Fonctionnalite.courrierRevision),
+        );
     String signe(int centimes) =>
         '${centimes < 0 ? '−' : '+'}${Formats.montant(centimes.abs())}';
 
@@ -674,7 +742,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
         'centime.',
         style: t.caption,
       ),
-      if (locataires.isEmpty) ...[
+      if (inviterLocataire) ...[
         const SizedBox(height: AppSpacing.sectionLarge),
         BanniereInformation(
           texte: 'Ajoutez le locataire pour qu\'il figure sur le courrier.',

@@ -1,4 +1,4 @@
-package fr.bailleurapp.bailleur_app
+package fr.pensebail.app
 
 import io.flutter.embedding.android.FlutterActivity
 

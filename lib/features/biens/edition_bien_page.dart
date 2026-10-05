@@ -17,6 +17,7 @@ import '../../core/widgets/choix_cartes.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/formulaires.dart';
 import '../../core/widgets/listes.dart';
+import '../../core/widgets/verrou.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 
@@ -165,27 +166,41 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     final messager = ScaffoldMessenger.of(context);
     if (existant == null) {
       final avecBail = bien.typeLocation == TypeLocation.longueDuree;
-      await gestion.creer(
-        bien: bien,
-        bail: avecBail
-            ? Bail(
-                id: Identifiants.nouveau(),
-                bienId: bien.id,
-                typeBail: _typeBail!,
-                dateDebut: _debutBail!,
-                actif: true,
-                creeLe: maintenant,
-                modifieLe: maintenant,
-              )
-            : null,
-        aujourdhui: aujourdhui,
+      final cree = await executerSiAutorise(
+        context,
+        () => gestion.creer(
+          bien: bien,
+          bail: avecBail
+              ? Bail(
+                  id: Identifiants.nouveau(),
+                  bienId: bien.id,
+                  typeBail: _typeBail!,
+                  dateDebut: _debutBail!,
+                  actif: true,
+                  creeLe: maintenant,
+                  modifieLe: maintenant,
+                )
+              : null,
+          aujourdhui: aujourdhui,
+        ),
       );
+      if (!cree) {
+        if (mounted) setState(() => _enCours = false);
+        return;
+      }
       routeur.pushReplacement(Routes.ficheBien(bien.id));
       messager.showSnackBar(
         SnackBar(content: Text('« ${bien.nom} » a été ajouté.')),
       );
     } else {
-      await gestion.modifier(bien: bien, aujourdhui: aujourdhui);
+      final modifie = await executerSiAutorise(
+        context,
+        () => gestion.modifier(bien: bien, aujourdhui: aujourdhui),
+      );
+      if (!modifie) {
+        if (mounted) setState(() => _enCours = false);
+        return;
+      }
       routeur.pop();
       messager.showSnackBar(
         const SnackBar(content: Text('Modifications enregistrées.')),

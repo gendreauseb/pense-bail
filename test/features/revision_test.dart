@@ -1,9 +1,9 @@
-import 'package:bailleur_app/app/routes.dart';
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/usecases/finaliser_onboarding.dart';
-import 'package:bailleur_app/features/accueil/accueil_page.dart';
+import 'package:pense_bail/app/routes.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/usecases/finaliser_onboarding.dart';
+import 'package:pense_bail/features/accueil/accueil_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,7 +56,12 @@ void main() {
           bail: unBail(bienId: 'studio', debut: DateTime(2023, 9, 1)),
         ),
         BienInitial(
-          bien: unBien(id: 'maison', nom: 'Maison', classeDpe: ClasseDpe.g),
+          bien: unBien(
+            id: 'maison',
+            nom: 'Maison',
+            classeDpe: ClasseDpe.g,
+            ordre: 1,
+          ),
           bail: unBail(
             id: 'bail-2',
             bienId: 'maison',
@@ -82,12 +87,18 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
   }
 
-  Future<void> ouvrir(WidgetTester tester, String chemin) async {
+  Future<void> ouvrir(
+    WidgetTester tester,
+    String chemin, {
+    Droits droits = Droits.premium,
+  }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     await preparer(tester);
-    await tester.pumpWidget(appDeTest(db: db, aujourdhui: aujourdhui));
+    await tester.pumpWidget(
+      appDeTest(db: db, aujourdhui: aujourdhui, droits: droits),
+    );
     await tester.pumpAndSettle();
     GoRouter.of(tester.element(find.byType(AccueilPage))).push(chemin);
     await attendre(tester);
@@ -190,6 +201,36 @@ void main() {
     await ouvrir(tester, Routes.revision('maison'));
     expect(find.textContaining('classé F ou G'), findsOneWidget);
     expect(find.text('Modifier le bien'), findsOneWidget);
+    await fermer(tester);
+  });
+
+  testWidgets('version gratuite : révision enregistrée, sans courrier', (
+    tester,
+  ) async {
+    await ouvrir(tester, Routes.revision('studio'), droits: Droits.gratuit);
+    await suivant(tester, 'Continuer');
+    await suivant(tester, 'Calculer le nouveau loyer');
+    expect(
+      find.textContaining('Le courrier prêt à envoyer à votre locataire'),
+      findsOneWidget,
+    );
+    // Pas d'invitation à ajouter le locataire « pour le courrier ».
+    expect(find.textContaining('figure sur le courrier'), findsNothing);
+    await tester.tap(
+      find.widgetWithText(FilledButton, 'Confirmer la révision'),
+    );
+    await attendre(tester);
+
+    final bien = await tester.runAsync(
+      () => DriftBienRepository(db).parId('studio'),
+    );
+    expect(bien!.loyerHcCentimes, 65749);
+    expect(find.text('Courrier au locataire'), findsNothing);
+    expect(find.textContaining('Révision enregistrée'), findsOneWidget);
+    final revisions = await tester.runAsync(
+      () => DriftRevisionRepository(db).surveillerHistorique('studio').first,
+    );
+    expect(revisions!.single.courrierInclus, isFalse);
     await fermer(tester);
   });
 }

@@ -95,10 +95,11 @@ abstract interface class FinanceRepository {
   Future<void> enregistrerMouvement(MouvementFinancier mouvement);
   Future<void> supprimerMouvement(String id);
 
+  /// Cases « Loyer reçu » d'un bien, pour une année ou toutes.
   Stream<List<EncaissementLoyer>> surveillerEncaissements(
-    String bienId,
-    int annee,
-  );
+    String bienId, {
+    int? annee,
+  });
   Future<void> definirEncaissement(EncaissementLoyer encaissement);
 }
 
@@ -119,6 +120,13 @@ abstract interface class IndiceIrlRepository {
   /// Ajoute ou met à jour. Une valeur INSEE remplace une saisie manuelle,
   /// jamais l'inverse.
   Future<void> enregistrerTout(List<IndiceIrl> indices);
+}
+
+/// Source du statut gratuit / Premium. Seule l'implémentation change
+/// (simulation bêta aujourd'hui, boutique d'applications plus tard) : le
+/// reste de l'application ne connaît que les [Droits].
+abstract interface class SourceDroits {
+  Stream<Droits> surveiller();
 }
 
 /// Petits réglages clé / valeur (préférences, brouillon d'onboarding...).

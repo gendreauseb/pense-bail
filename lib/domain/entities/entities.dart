@@ -5,6 +5,7 @@ export 'bail.dart';
 export 'bailleur.dart';
 export 'bien.dart';
 export 'copie.dart' show inchange;
+export 'droits.dart';
 export 'echeance.dart';
 export 'finance.dart';
 export 'preferences.dart';

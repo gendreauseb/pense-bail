@@ -7,6 +7,7 @@ import '../../core/validation/validateurs.dart';
 import '../../core/widgets/choix_cartes.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/formulaires.dart';
+import '../../core/widgets/verrou.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 
@@ -74,7 +75,15 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       modifieLe: maintenant,
     );
     final navigateur = Navigator.of(context);
-    await ref.read(artisanRepositoryProvider).enregistrer(artisan);
+    final gestion = ref.read(gestionArtisansProvider);
+    final enregistre = await executerSiAutorise(
+      context,
+      () => gestion.enregistrer(artisan),
+    );
+    if (!enregistre) {
+      if (mounted) setState(() => _enCours = false);
+      return;
+    }
     navigateur.pop(artisan.id);
   }
 
@@ -89,7 +98,12 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     );
     if (!ok || !mounted) return;
     final navigateur = Navigator.of(context);
-    await ref.read(artisanRepositoryProvider).supprimer(_a!.id);
+    final gestion = ref.read(gestionArtisansProvider);
+    final supprime = await executerSiAutorise(
+      context,
+      () => gestion.supprimer(_a!.id),
+    );
+    if (!supprime) return;
     navigateur.pop();
   }
 

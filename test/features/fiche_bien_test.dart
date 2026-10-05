@@ -1,9 +1,9 @@
-import 'package:bailleur_app/app/routes.dart';
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/usecases/finaliser_onboarding.dart';
-import 'package:bailleur_app/features/accueil/accueil_page.dart';
+import 'package:pense_bail/app/routes.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/usecases/finaliser_onboarding.dart';
+import 'package:pense_bail/features/accueil/accueil_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';

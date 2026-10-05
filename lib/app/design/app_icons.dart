@@ -60,6 +60,7 @@ abstract final class AppIcons {
   static const enregistrer = LucideIcons.download;
   static const actualiser = LucideIcons.refreshCw;
   static const historique = LucideIcons.history;
+  static const beta = LucideIcons.flaskConical;
 
   static IconData metier(MetierArtisan m) => switch (m) {
     MetierArtisan.plombier => LucideIcons.droplet,

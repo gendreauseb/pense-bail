@@ -11,6 +11,7 @@ import '../../core/validation/validateurs.dart';
 import '../../core/widgets/choix_cartes.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/listes.dart';
+import '../../core/widgets/verrou.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 import 'textes_echeances.dart';
@@ -239,9 +240,15 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
 
     final messager = ScaffoldMessenger.of(context);
     final navigateur = Navigator.of(context);
-    await ref
-        .read(gestionEcheancesProvider)
-        .enregistrer(echeance, _rappels.toList());
+    final gestion = ref.read(gestionEcheancesProvider);
+    final enregistre = await executerSiAutorise(
+      context,
+      () => gestion.enregistrer(echeance, _rappels.toList()),
+    );
+    if (!enregistre) {
+      if (mounted) setState(() => _enCours = false);
+      return;
+    }
     navigateur.pop();
     messager.showSnackBar(
       SnackBar(
@@ -282,7 +289,12 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     if (confirme != true || !mounted) return;
     final messager = ScaffoldMessenger.of(context);
     final navigateur = Navigator.of(context);
-    await ref.read(gestionEcheancesProvider).supprimer(existante.id);
+    final gestion = ref.read(gestionEcheancesProvider);
+    final supprime = await executerSiAutorise(
+      context,
+      () => gestion.supprimer(existante.id),
+    );
+    if (!supprime) return;
     navigateur.pop();
     messager.showSnackBar(const SnackBar(content: Text('Échéance supprimée.')));
   }
@@ -290,7 +302,11 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   @override
   Widget build(BuildContext context) {
     final t = context.textes;
-    final biens = ref.watch(biensFluxProvider).value ?? const <Bien>[];
+    // Une nouvelle échéance ne peut concerner qu'un bien modifiable.
+    final biens = [
+      for (final b in ref.watch(biensFluxProvider).value ?? const <Bien>[])
+        if (!ref.watch(bienVerrouilleProvider(b.id))) b,
+    ];
     final recurrences = {
       ..._recurrences,
       if (!_recurrences.containsKey(_recurrence))

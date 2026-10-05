@@ -1,4 +1,4 @@
-import 'package:bailleur_app/domain/services/proximite.dart';
+import 'package:pense_bail/domain/services/proximite.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

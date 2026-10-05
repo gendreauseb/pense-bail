@@ -1,9 +1,9 @@
-import 'package:bailleur_app/core/config/cles_reglages.dart';
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/domain/entities/entities.dart';
-import 'package:bailleur_app/domain/usecases/gestion_biens.dart';
-import 'package:bailleur_app/domain/usecases/preferences_rappels.dart';
+import 'package:pense_bail/core/config/cles_reglages.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/domain/entities/entities.dart';
+import 'package:pense_bail/domain/usecases/gestion_biens.dart';
+import 'package:pense_bail/domain/usecases/preferences_rappels.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/base_memoire.dart';
@@ -72,6 +72,7 @@ void main() {
         biens: DriftBienRepository(db),
         baux: DriftBailRepository(db),
         echeances: echeances,
+        droits: () async => Droits.premium,
         rappelsParDefaut: () async => (await gestion.lire()).delaisParDefaut,
       ).creer(
         bien: unBien(),

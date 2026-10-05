@@ -46,6 +46,23 @@ anglais restent tels quels (`build`, `copyWith`, `Provider`).
 - Après un `await`, vérifier `context.mounted`, ou récupérer
   `Navigator.of(context)` / `ScaffoldMessenger.of(context)` avant l'appel.
 
+## Version gratuite et Premium
+
+- Un écran demande ce qui est disponible, jamais si l'utilisateur a payé :
+  `fonctionnaliteDisponibleProvider(Fonctionnalite.x)`,
+  `bienVerrouilleProvider(bienId)`, `peutAjouterBienProvider`. Pendant le
+  chargement des droits, ils laissent passer : les cas d'usage refusent de
+  toute façon.
+- Toute écriture sur un bien, une échéance, la rentabilité ou les artisans
+  passe par un cas d'usage qui contrôle les droits (`VerrouBiens`), jamais
+  par un repository depuis un écran. À l'écran : `executerSiAutorise()`
+  affiche le message du refus (`AccesRefuse`).
+- Widgets : `BandeauVerrou` (cadenas, phrase, lien vers Premium),
+  `MentionLectureSeule`, `PageVerrouillee` (accès direct à un écran
+  réservé) ; `ouvrirPremium()`, `ouvrirAjoutBien()`.
+- Statut : `SourceDroits` (`sourceDroitsProvider`) est le seul point à
+  remplacer pour l'abonnement réel.
+
 ## Base de données (drift)
 
 - Tables dans `data/local/tables.dart`, liées aux entités par
@@ -100,7 +117,10 @@ anglais restent tels quels (`build`, `copyWith`, `Provider`).
   - `unBien()`, `unBail()` : fabriques ;
   - `appDeTest(db:, aujourdhui:)` : l'app complète, date figée
     (`AujourdhuiFixe`), notifications inactives, réseau simulé
-    indisponible.
+    indisponible ; Premium par défaut (`droits: Droits.gratuit` pour la
+    version gratuite, `estBeta: true` pour la vraie simulation bêta).
+  - cas d'usage construits à la main : `VerrouBiens(biens:, droits:)` avec
+    des droits fixés par le test.
 - `test/flutter_test_config.dart` initialise les formats français.
 - Tests de widgets :
   - taille d'écran réaliste : `tester.view.physicalSize = Size(1080, 2400)`,
@@ -118,9 +138,10 @@ anglais restent tels quels (`build`, `copyWith`, `Provider`).
 ## Vérification sur appareil
 
 Émulateur Android `Medium_Phone_API_35` (navigation par gestes : penser aux
-téléphones à 3 boutons). Construire avec `flutter build apk --debug`,
+téléphones à 3 boutons). Construire avec `flutter build apk --debug`
+(ajouter `--dart-define=BETA=true` pour basculer gratuit / Premium),
 installer avec `adb install -r`, lancer l'identifiant
-`fr.bailleurapp.bailleur_app`, capturer l'écran avec `adb shell screencap`.
+`fr.pensebail.app`, capturer l'écran avec `adb shell screencap`.
 Les données présentes sur l'émulateur peuvent appartenir à l'utilisateur :
 ne rien modifier sans son accord, supprimer les fichiers de test créés.
 

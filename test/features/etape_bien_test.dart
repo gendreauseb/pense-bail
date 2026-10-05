@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bailleur_app/app/app.dart';
-import 'package:bailleur_app/app/design/design.dart';
-import 'package:bailleur_app/app/etat_app.dart';
-import 'package:bailleur_app/core/config/cles_reglages.dart';
-import 'package:bailleur_app/core/format/formats.dart';
-import 'package:bailleur_app/data/local/database.dart';
-import 'package:bailleur_app/data/providers.dart';
-import 'package:bailleur_app/data/repositories/drift_repositories.dart';
-import 'package:bailleur_app/features/onboarding/brouillon_onboarding.dart';
+import 'package:pense_bail/app/app.dart';
+import 'package:pense_bail/app/design/design.dart';
+import 'package:pense_bail/app/etat_app.dart';
+import 'package:pense_bail/core/config/cles_reglages.dart';
+import 'package:pense_bail/core/format/formats.dart';
+import 'package:pense_bail/data/local/database.dart';
+import 'package:pense_bail/data/providers.dart';
+import 'package:pense_bail/data/repositories/drift_repositories.dart';
+import 'package:pense_bail/features/onboarding/brouillon_onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

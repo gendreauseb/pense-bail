@@ -10,12 +10,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
+import '../core/config/cles_reglages.dart';
+import '../core/config/config_app.dart';
 import '../domain/entities/entities.dart';
 import '../domain/repositories/repositories.dart';
+import '../domain/services/acces_biens.dart';
+import '../domain/usecases/gestion_artisans.dart';
 import '../domain/usecases/gestion_biens.dart';
 import '../domain/usecases/gestion_echeances.dart';
+import '../domain/usecases/gestion_finances.dart';
 import '../domain/usecases/preferences_rappels.dart';
 import '../domain/usecases/reviser_loyer.dart';
+import '../domain/usecases/verrou_biens.dart';
+import 'droits/droits_beta.dart';
 import 'irl/service_indices_irl.dart';
 import 'local/database.dart';
 import 'notifications/service_notifications.dart';
@@ -79,6 +86,80 @@ final reglagesRepositoryProvider = Provider<ReglagesRepository>(
 );
 
 // ---------------------------------------------------------------------------
+// Droits (version gratuite / Premium)
+// ---------------------------------------------------------------------------
+
+/// Version bêta (`--dart-define=BETA=true`) ; surchargé dans les tests.
+final estBetaProvider = Provider<bool>((ref) => ConfigApp.estBeta);
+
+/// Simulation de la bêta (bascule dans les réglages).
+final droitsBetaProvider = Provider<DroitsBeta>(
+  (ref) => DroitsBeta(
+    reglages: ref.watch(reglagesRepositoryProvider),
+    estBeta: ref.watch(estBetaProvider),
+  ),
+);
+
+/// Source du statut. L'abonnement réel remplacera uniquement ce provider.
+final sourceDroitsProvider = Provider<SourceDroits>(
+  (ref) => ref.watch(droitsBetaProvider),
+);
+
+/// La fin de l'abonnement doit-elle être annoncée sur l'accueil ?
+final finAbonnementAAnnoncerProvider = StreamProvider<bool>(
+  (ref) => ref
+      .watch(reglagesRepositoryProvider)
+      .surveiller(ClesReglages.finAbonnementAAnnoncer)
+      .map((valeur) => valeur != null),
+);
+
+/// Droits actuels, mis à jour à chaque changement de statut.
+final droitsProvider = StreamProvider<Droits>(
+  (ref) => ref.watch(sourceDroitsProvider).surveiller(),
+);
+
+/// Identifiants des biens actifs (modifiables) ; les autres sont en lecture
+/// seule.
+final biensActifsProvider = FutureProvider<Set<String>>((ref) async {
+  final biens = await ref.watch(biensFluxProvider.future);
+  final droits = await ref.watch(droitsProvider.future);
+  return AccesBiens.actifs(biens, droits);
+});
+
+/// Le bien est-il en lecture seule ? Faux tant que le calcul n'est pas
+/// prêt (les cas d'usage refusent de toute façon les écritures interdites).
+final bienVerrouilleProvider = Provider.family<bool, String>((ref, bienId) {
+  final actifs = ref.watch(biensActifsProvider).value;
+  return actifs != null && !actifs.contains(bienId);
+});
+
+/// Un bien de plus peut-il être ajouté ? Vrai tant que le calcul n'est pas
+/// prêt (GestionBiens.creer refuse de toute façon au-delà de la limite).
+final peutAjouterBienProvider = Provider<bool>((ref) {
+  final biens = ref.watch(biensFluxProvider).value;
+  final droits = ref.watch(droitsProvider).value;
+  return biens == null ||
+      droits == null ||
+      AccesBiens.peutAjouter(biens, droits);
+});
+
+/// La fonctionnalité Premium est-elle disponible ? Vrai tant que les droits
+/// ne sont pas chargés (les cas d'usage refusent de toute façon les
+/// écritures interdites).
+final fonctionnaliteDisponibleProvider = Provider.family<bool, Fonctionnalite>(
+  (ref, fonctionnalite) =>
+      ref.watch(droitsProvider).value?.autorise(fonctionnalite) ?? true,
+);
+
+/// Contrôle des écritures sur un bien en lecture seule.
+final verrouBiensProvider = Provider<VerrouBiens>(
+  (ref) => VerrouBiens(
+    biens: ref.watch(bienRepositoryProvider),
+    droits: () => ref.read(sourceDroitsProvider).surveiller().first,
+  ),
+);
+
+// ---------------------------------------------------------------------------
 // Cas d'usage
 // ---------------------------------------------------------------------------
 
@@ -86,6 +167,7 @@ final gestionEcheancesProvider = Provider<GestionEcheances>(
   (ref) => GestionEcheances(
     transactions: ref.watch(transactionsProvider),
     echeances: ref.watch(echeanceRepositoryProvider),
+    verrou: ref.watch(verrouBiensProvider),
   ),
 );
 
@@ -95,9 +177,25 @@ final gestionBiensProvider = Provider<GestionBiens>(
     biens: ref.watch(bienRepositoryProvider),
     baux: ref.watch(bailRepositoryProvider),
     echeances: ref.watch(echeanceRepositoryProvider),
+    droits: () => ref.read(sourceDroitsProvider).surveiller().first,
     rappelsParDefaut: () async =>
         (await ref.read(gestionPreferencesRappelsProvider).lire())
             .delaisParDefaut,
+  ),
+);
+
+final gestionFinancesProvider = Provider<GestionFinances>(
+  (ref) => GestionFinances(
+    biens: ref.watch(bienRepositoryProvider),
+    finances: ref.watch(financeRepositoryProvider),
+    verrou: ref.watch(verrouBiensProvider),
+  ),
+);
+
+final gestionArtisansProvider = Provider<GestionArtisans>(
+  (ref) => GestionArtisans(
+    artisans: ref.watch(artisanRepositoryProvider),
+    verrou: ref.watch(verrouBiensProvider),
   ),
 );
 
@@ -122,6 +220,7 @@ final reviserLoyerProvider = Provider<ReviserLoyer>(
     revisions: ref.watch(revisionRepositoryProvider),
     echeances: ref.watch(echeanceRepositoryProvider),
     gestionEcheances: ref.watch(gestionEcheancesProvider),
+    verrou: ref.watch(verrouBiensProvider),
   ),
 );
 
@@ -243,7 +342,14 @@ final encaissementsFluxProvider = StreamProvider.autoDispose
     .family<List<EncaissementLoyer>, (String, int)>(
       (ref, cle) => ref
           .watch(financeRepositoryProvider)
-          .surveillerEncaissements(cle.$1, cle.$2),
+          .surveillerEncaissements(cle.$1, annee: cle.$2),
+    );
+
+/// Toutes les cases « Loyer reçu » d'un bien (toutes années).
+final encaissementsBienFluxProvider = StreamProvider.autoDispose
+    .family<List<EncaissementLoyer>, String>(
+      (ref, bienId) =>
+          ref.watch(financeRepositoryProvider).surveillerEncaissements(bienId),
     );
 
 final artisansFluxProvider = StreamProvider<List<Artisan>>(

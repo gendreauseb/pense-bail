@@ -10,10 +10,12 @@ import '../../core/widgets/composants.dart';
 import '../../core/widgets/listes.dart';
 import '../../core/widgets/photo_bien.dart';
 import '../../core/widgets/statut_echeance.dart';
+import '../../core/widgets/verrou.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/services/proximite.dart';
 import '../../domain/services/tableau_de_bord.dart';
+import '../premium/premium_page.dart';
 
 /// Onglet « Biens » : tous les biens, et ajout d'un bien.
 class BiensPage extends ConsumerWidget {
@@ -50,13 +52,14 @@ class BiensPage extends ConsumerWidget {
                       bien: bien,
                       prochaine: prochaines[bien.id],
                       aujourdhui: aujourdhui,
+                      verrouille: ref.watch(bienVerrouilleProvider(bien.id)),
                     ),
                 ],
               ),
             const SizedBox(height: AppSpacing.bloc),
             BoutonPointille(
               libelle: 'Ajouter un bien',
-              onPressed: () => context.push(Routes.nouveauBien),
+              onPressed: () => ouvrirAjoutBien(context, ref),
             ),
           ],
         ),
@@ -70,11 +73,15 @@ class _LigneBien extends StatelessWidget {
     required this.bien,
     required this.prochaine,
     required this.aujourdhui,
+    required this.verrouille,
   });
 
   final Bien bien;
   final Echeance? prochaine;
   final DateTime aujourdhui;
+
+  /// Lecture seule (version gratuite).
+  final bool verrouille;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +117,10 @@ class _LigneBien extends StatelessWidget {
                     Formats.parMois(bien.loyerHcCentimes),
                     style: t.secondary,
                   ),
+                  if (verrouille) ...[
+                    const SizedBox(height: AppSpacing.xxs),
+                    const MentionLectureSeule(),
+                  ],
                   if (prochaine != null) ...[
                     const SizedBox(height: AppSpacing.xs),
                     Wrap(

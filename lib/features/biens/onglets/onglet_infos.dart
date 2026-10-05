@@ -19,6 +19,7 @@ class OngletInfos extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final surface = bien.surfaceM2;
     final dateDpe = bien.dateDpe;
+    final verrouille = ref.watch(bienVerrouilleProvider(bien.id));
     const nonRenseigne = 'Non renseigné';
 
     return Column(
@@ -64,12 +65,14 @@ class OngletInfos extends ConsumerWidget {
               ),
           ],
         ),
-        const SizedBox(height: AppSpacing.bloc),
-        OutlinedButton.icon(
-          onPressed: () => context.push(Routes.modifierBien(bien.id)),
-          icon: const Icon(AppIcons.modifier),
-          label: const Text('Modifier les informations'),
-        ),
+        if (!verrouille) ...[
+          const SizedBox(height: AppSpacing.bloc),
+          OutlinedButton.icon(
+            onPressed: () => context.push(Routes.modifierBien(bien.id)),
+            icon: const Icon(AppIcons.modifier),
+            label: const Text('Modifier les informations'),
+          ),
+        ],
         const SizedBox(height: AppSpacing.sectionLarge),
         Center(
           child: TextButton.icon(

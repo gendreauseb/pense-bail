@@ -62,6 +62,85 @@ Données
   base64), restauration après vérification (tables et colonnes connues,
   chemins de photos sûrs, schéma pas plus récent).
 
+Version gratuite et Premium
+- Gratuit : un seul bien actif ; onboarding, fiche, bail, locataires,
+  échéances et rappels, alerte DPE, calcul de la révision de loyer
+  (confirmation comprise : le loyer est mis à jour).
+- Premium : biens illimités, courrier de révision (PDF), rentabilité
+  (onglet, journal, cases « Loyer reçu », investissement, récapitulatif
+  annuel), carnet d'artisans et interventions.
+- Les écrans demandent `Droits.autorise(Fonctionnalite)`, jamais « a-t-il
+  payé ? ». Le statut vient uniquement de `SourceDroits` (aujourd'hui
+  `DroitsBeta`, simulation ; plus tard l'abonnement réel).
+- Chaque écriture concernée passe par un cas d'usage qui contrôle les
+  droits (`VerrouBiens`) : les écrans masquent les actions, les cas
+  d'usage les refusent quel que soit le chemin (`BienVerrouille`,
+  `LimiteBiensAtteinte`, `FonctionnaliteReservee`, message prêt à
+  afficher).
+- Bien actif en gratuit : le plus ancien (`creeLe`, puis `ordre`, puis
+  `id`). S'il est supprimé, le plus ancien des restants le remplace.
+- Perte du Premium : rien n'est supprimé ni modifié.
+  - Autres biens : visibles partout avec la mention « Lecture seule »,
+    bandeau sur la fiche. Pas de modification, de photo, de bail, de
+    locataire, ni d'invitation à compléter. Suppression possible.
+  - Leurs échéances restent affichées et notifiées ; « faite » et
+    « reporter » restent possibles, pas l'ajout, la modification ni la
+    suppression (ni le déplacement vers le bien actif). Les échéances
+    communes à tous les biens ne sont pas concernées.
+  - Révision sur un bien verrouillé : calcul visible, confirmation refusée.
+  - Rentabilité et artisans : ce qui est déjà saisi reste consultable, en
+    lecture seule (appeler et écrire restent possibles) ; sans données,
+    seul le bandeau Premium s'affiche.
+- Courrier de révision : chaque révision mémorise si son courrier était
+  inclus à la confirmation (`courrierInclus`, schéma 4 ; vrai pour les
+  révisions antérieures). En gratuit, la révision s'enregistre sans
+  courrier ; les courriers déjà produits restent consultables ; repasser en
+  Premium les rend tous disponibles.
+- Ajout d'un bien au-delà de la limite : refusé dans `GestionBiens` ; le
+  « + », la liste des biens et les réglages mènent à l'écran Premium.
+  L'onboarding crée tous les biens déclarés ; en gratuit, une note
+  prévient dès plus d'un bien que les suivants seront en lecture seule.
+- Écran « Pense-Bail Premium » : ce qui est inclus, ce qui reste gratuit,
+  « L'abonnement sera bientôt disponible » ; en bêta, bouton d'activation.
+- Fin d'abonnement : message unique sur l'accueil (bien qui reste actif,
+  autres biens en lecture seule, ce qui reste gratuit et consultable, rien
+  n'est supprimé). Déclenché par le réglage `premium.fin_a_annoncer`, effacé
+  une fois le message fermé.
+- Bêta (`--dart-define=BETA=true`) : section « Mode bêta » en tête des
+  réglages (interrupteur Premium, « Simuler la fin de l'abonnement »),
+  badge « Bêta : gratuit / Premium » sur l'accueil, Premium par défaut.
+  L'interrupteur seul n'affiche pas le message de fin. Sans le drapeau, la
+  section n'existe pas et l'app est en gratuit.
+- Réglages propres au téléphone (`ClesReglages.propresAuTelephone` : mode
+  bêta, message de fin à annoncer) : jamais exportés, ignorés dans une
+  sauvegarde restaurée, conservés par « Tout effacer ».
+
+Biens vendus ou retirés de la location (étape après la monétisation)
+- « Supprimer ce bien » propose : « Je l'ai vendu », « Je ne le loue plus »
+  (réversible : « Remettre en location »), « Supprimer définitivement ».
+- Vendu : date (obligatoire), prix de vente, frais de vente facultatifs.
+  Lecture seule dans les deux modes, section « Biens vendus » repliée ;
+  « Annuler la vente » possible sans limite de temps.
+- Les biens vendus ou retirés ne comptent pas dans la limite du gratuit.
+  Contournement accepté (déclarer vendu le plus ancien pour activer le
+  suivant). Remettre en location un bien plus ancien que le bien actif :
+  avertissement (« ce bien redeviendra votre bien actif, X passera en
+  lecture seule »).
+- Échéances : arrêtées (masquées, pas effacées) selon le cas, liste
+  montrée avant de confirmer. Vente : révision, fin de bail, congé, PNO,
+  chaudière, diagnostics, taxes foncières suivantes arrêtées ; taxe
+  foncière de l'année gardée ; régularisation des charges gardée si vendu
+  libre. Retrait : seules les échéances du bail s'arrêtent (régularisation
+  gardée). Règles dans `regles_legales.dart`, marquées `aVerifier`. La
+  déclaration des revenus fonciers est générale et n'est pas touchée.
+- Bilan de vente (Premium ; déclarer une vente ou un retrait est gratuit) :
+  plus-value brute = prix de vente − frais de vente − (achat + notaire +
+  travaux initiaux) ; bilan = plus-value brute + loyers encaissés −
+  dépenses du journal hors catégorie « Crédit ». Jamais les charges
+  estimées de la fiche. Travaux initiaux et travaux du journal affichés sur
+  deux lignes (aide : « avant la première location » / « depuis »).
+  Mention « hors impôt sur la plus-value et crédit ».
+
 ## Points ouverts (à trancher par l'utilisateur)
 
 - Chiffrer la sauvegarde par mot de passe ? (elle contient les données des
@@ -72,6 +151,10 @@ Données
 - Règles marquées `aVerifier` dans `regles_legales.dart` (calcul du délai de
   congé, gel F/G quelle que soit la date du bail, validité des anciens DPE,
   amiante, dates fiscales).
+- Abonnement réel : si l'expiration est constatée pendant que l'utilisateur
+  est sur un autre onglet, le message de fin s'affiche par-dessus (l'accueil
+  reste chargé). À décider au branchement : attendre le retour sur
+  l'accueil ?
 
 ## Avant publication
 
@@ -81,3 +164,9 @@ Données
   légales).
 - Régénérer `assets/irl/irl.json` (voir `assets/irl/LISEZMOI.md`).
 - Tester sur iOS (jamais fait) et sur un Android à navigation 3 boutons.
+- Brancher l'abonnement réel (RevenueCat) : nouvelle implémentation de
+  `SourceDroits` à la place de `DroitsBeta` dans `sourceDroitsProvider`. À
+  l'expiration constatée, écrire `ClesReglages.finAbonnementAAnnoncer` (le
+  message de l'accueil fait le reste). Remplacer « bientôt disponible » de
+  l'écran Premium par l'achat et la restauration des achats.
+- Construire la version publiée sans `--dart-define=BETA=true`.

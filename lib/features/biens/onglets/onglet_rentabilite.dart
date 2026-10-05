@@ -8,9 +8,11 @@ import '../../../app/routes.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/widgets/composants.dart';
 import '../../../core/widgets/listes.dart';
+import '../../../core/widgets/verrou.dart';
 import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/services/rentabilite.dart';
+import '../../premium/premium_page.dart';
 
 class OngletRentabilite extends ConsumerStatefulWidget {
   const OngletRentabilite({super.key, required this.bien});
@@ -23,8 +25,60 @@ class OngletRentabilite extends ConsumerStatefulWidget {
 class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
   late int _annee = ref.read(aujourdhuiProvider).year;
 
+  /// Des chiffres de rentabilité ont-ils déjà été saisis pour ce bien ?
+  static bool _investissementSaisi(Bien b) => [
+    b.prixAchatCentimes,
+    b.fraisNotaireCentimes,
+    b.travauxInitiauxCentimes,
+    b.mensualiteCreditCentimes,
+    b.taxeFonciereCentimes,
+    b.assuranceCentimes,
+    b.chargesNonRecuperablesCentimes,
+    b.fraisDiversCentimes,
+  ].any((v) => v != null);
+
   @override
   Widget build(BuildContext context) {
+    final bien = widget.bien;
+    final disponible = ref.watch(
+      fonctionnaliteDisponibleProvider(Fonctionnalite.rentabilite),
+    );
+    if (disponible) {
+      return _contenu(
+        context,
+        modifiable: !ref.watch(bienVerrouilleProvider(bien.id)),
+      );
+    }
+
+    // Version gratuite : ce qui est déjà saisi reste consultable.
+    final aDesDonnees =
+        _investissementSaisi(bien) ||
+        (ref.watch(mouvementsBienFluxProvider(bien.id)).value ?? const [])
+            .isNotEmpty ||
+        (ref.watch(encaissementsBienFluxProvider(bien.id)).value ?? const [])
+            .any((e) => e.recu);
+    final bandeau = BandeauVerrou(
+      texte: aDesDonnees
+          ? 'Le suivi de la rentabilité est inclus dans Pense-Bail '
+                'Premium. Ce que vous avez déjà saisi reste consultable.'
+          : 'Rendement, journal des dépenses, loyers reçus et '
+                "récapitulatif de l'année sont inclus dans Pense-Bail "
+                'Premium.',
+      onDecouvrir: () => ouvrirPremium(context),
+    );
+    if (!aDesDonnees) return bandeau;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        bandeau,
+        const SizedBox(height: AppSpacing.sectionLarge),
+        _contenu(context, modifiable: false),
+      ],
+    );
+  }
+
+  /// [modifiable] faux : lecture seule (ni saisie, ni cases, ni export).
+  Widget _contenu(BuildContext context, {required bool modifiable}) {
     final bien = widget.bien;
     final t = context.textes;
     final aujourdhui = ref.watch(aujourdhuiProvider);
@@ -43,22 +97,29 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
       mouvements: mouvements,
       revisions: revisions,
     );
-    final retard = Rentabilite.moisEnRetard(
-      annee: _annee,
-      encaissements: encaissements,
-      aujourdhui: aujourdhui,
-      debutBail: bail?.dateDebut,
-    );
+    // En lecture seule, pas d'alerte « en retard » : rien ne peut être
+    // coché.
+    final retard = modifiable
+        ? Rentabilite.moisEnRetard(
+            annee: _annee,
+            encaissements: encaissements,
+            aujourdhui: aujourdhui,
+            debutBail: bail?.dateDebut,
+          )
+        : const <int>[];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        EnTeteSection(
-          titre: 'Ce que le bien rapporte',
-          action: 'Compléter',
-          onAction: () => context.push(Routes.investissement(bien.id)),
-        ),
-        _Indicateurs(indicateurs: indicateurs),
+        if (modifiable)
+          EnTeteSection(
+            titre: 'Ce que le bien rapporte',
+            action: 'Compléter',
+            onAction: () => context.push(Routes.investissement(bien.id)),
+          )
+        else
+          const EnTeteSection(titre: 'Ce que le bien rapporte'),
+        _Indicateurs(indicateurs: indicateurs, modifiable: modifiable),
         const SizedBox(height: AppSpacing.sectionLarge),
         _SelecteurAnnee(
           annee: _annee,
@@ -68,7 +129,9 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
         const SizedBox(height: AppSpacing.bloc),
         const EnTeteSection(titre: 'Loyers reçus'),
         Text(
-          retard.isEmpty
+          !modifiable
+              ? 'Mois indiqués comme reçus.'
+              : retard.isEmpty
               ? 'Touchez un mois quand le loyer est arrivé.'
               : '${retard.length} ${retard.length > 1 ? 'mois' : 'mois'} '
                     'sans loyer indiqué comme reçu.',
@@ -86,6 +149,7 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
           encaissements: encaissements,
           retard: retard,
           aujourdhui: aujourdhui,
+          modifiable: modifiable,
         ),
         const SizedBox(height: AppSpacing.sectionLarge),
         EnTeteSection(titre: 'Bilan $_annee'),
@@ -114,40 +178,53 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
           'Loyers des mois cochés, au montant en vigueur chaque mois.',
           style: t.caption,
         ),
-        const SizedBox(height: AppSpacing.bloc),
-        OutlinedButton.icon(
-          onPressed: () => context.push(Routes.recapitulatif(bien.id, _annee)),
-          icon: const Icon(AppIcons.document),
-          label: Text('Exporter le récapitulatif $_annee (PDF)'),
-        ),
+        if (modifiable) ...[
+          const SizedBox(height: AppSpacing.bloc),
+          OutlinedButton.icon(
+            onPressed: () =>
+                context.push(Routes.recapitulatif(bien.id, _annee)),
+            icon: const Icon(AppIcons.document),
+            label: Text('Exporter le récapitulatif $_annee (PDF)'),
+          ),
+        ],
         const SizedBox(height: AppSpacing.sectionLarge),
         EnTeteSection(titre: 'Journal $_annee'),
         if (mouvements.isNotEmpty) ...[
           CarteListe(
             enfants: [
-              for (final m in mouvements) _LigneMouvement(mouvement: m),
+              for (final m in mouvements)
+                _LigneMouvement(mouvement: m, modifiable: modifiable),
             ],
           ),
           const SizedBox(height: AppSpacing.bloc),
-        ],
-        BoutonPointille(
-          libelle: 'Ajouter une dépense ou une recette',
-          onPressed: () => context.push(Routes.mouvement(bien.id)),
-        ),
+        ] else if (!modifiable)
+          const EtatVide(
+            icone: AppIcons.argent,
+            texte: 'Aucune dépense ni recette cette année.',
+          ),
+        if (modifiable)
+          BoutonPointille(
+            libelle: 'Ajouter une dépense ou une recette',
+            onPressed: () => context.push(Routes.mouvement(bien.id)),
+          ),
       ],
     );
   }
 }
 
 class _Indicateurs extends StatelessWidget {
-  const _Indicateurs({required this.indicateurs});
+  const _Indicateurs({required this.indicateurs, required this.modifiable});
   final IndicateursRentabilite indicateurs;
+
+  /// Faux : pas d'invitation à saisir le prix d'achat.
+  final bool modifiable;
 
   @override
   Widget build(BuildContext context) {
     final i = indicateurs;
     final brut = i.rendementBrut;
     final net = i.rendementNet;
+    final manquant = modifiable ? "Prix d'achat à renseigner" : 'Non calculé';
     return CarteListe(
       enfants: [
         LigneInfo(
@@ -160,15 +237,11 @@ class _Indicateurs extends StatelessWidget {
         ),
         LigneInfo(
           libelle: 'Rendement brut',
-          valeur: brut == null
-              ? 'Prix d\'achat à renseigner'
-              : Formats.pourcentage(brut),
+          valeur: brut == null ? manquant : Formats.pourcentage(brut),
         ),
         LigneInfo(
           libelle: 'Rendement net de charges',
-          valeur: net == null
-              ? 'Prix d\'achat à renseigner'
-              : Formats.pourcentage(net),
+          valeur: net == null ? manquant : Formats.pourcentage(net),
         ),
         Padding(
           padding: const EdgeInsets.all(AppSpacing.ligne),
@@ -230,6 +303,7 @@ class _GrilleMois extends ConsumerWidget {
     required this.encaissements,
     required this.retard,
     required this.aujourdhui,
+    required this.modifiable,
   });
 
   final String bienId;
@@ -237,6 +311,7 @@ class _GrilleMois extends ConsumerWidget {
   final List<EncaissementLoyer> encaissements;
   final List<int> retard;
   final DateTime aujourdhui;
+  final bool modifiable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -264,17 +339,25 @@ class _GrilleMois extends ConsumerWidget {
                   futur:
                       annee > aujourdhui.year ||
                       (annee == aujourdhui.year && mois > aujourdhui.month),
-                  onTap: () => ref
-                      .read(financeRepositoryProvider)
-                      .definirEncaissement(
-                        EncaissementLoyer(
-                          bienId: bienId,
-                          annee: annee,
-                          mois: mois,
-                          recu: !recus.contains(mois),
-                          recuLe: recus.contains(mois) ? null : aujourdhui,
-                        ),
-                      ),
+                  onTap: !modifiable
+                      ? null
+                      : () {
+                          final gestion = ref.read(gestionFinancesProvider);
+                          executerSiAutorise(
+                            context,
+                            () => gestion.definirEncaissement(
+                              EncaissementLoyer(
+                                bienId: bienId,
+                                annee: annee,
+                                mois: mois,
+                                recu: !recus.contains(mois),
+                                recuLe: recus.contains(mois)
+                                    ? null
+                                    : aujourdhui,
+                              ),
+                            ),
+                          );
+                        },
                 ),
               ),
           ],
@@ -297,7 +380,9 @@ class _CaseMois extends StatelessWidget {
   final bool recu;
   final bool enRetard;
   final bool futur;
-  final VoidCallback onTap;
+
+  /// Nul : lecture seule.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +403,7 @@ class _CaseMois extends StatelessWidget {
     final nomMois = Formats.dateLongue(mois).split(' ')[1];
 
     return Semantics(
-      button: !futur,
+      button: !futur && onTap != null,
       checked: recu,
       label: '$nomMois ${mois.year} : $etat',
       excludeSemantics: true,
@@ -374,8 +459,9 @@ class _CaseMois extends StatelessWidget {
 }
 
 class _LigneMouvement extends StatelessWidget {
-  const _LigneMouvement({required this.mouvement});
+  const _LigneMouvement({required this.mouvement, required this.modifiable});
   final MouvementFinancier mouvement;
+  final bool modifiable;
 
   @override
   Widget build(BuildContext context) {
@@ -384,9 +470,11 @@ class _LigneMouvement extends StatelessWidget {
     final recette = m.sens == SensMouvement.recette;
     final note = m.note;
     return InkWell(
-      onTap: () => context.push(
-        Routes.avec(Routes.mouvement(m.bienId), {'mouvement': m.id}),
-      ),
+      onTap: modifiable
+          ? () => context.push(
+              Routes.avec(Routes.mouvement(m.bienId), {'mouvement': m.id}),
+            )
+          : null,
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.ligne),
         child: Row(
