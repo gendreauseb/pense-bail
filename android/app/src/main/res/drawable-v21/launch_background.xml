@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Écran de lancement d'Android 7 à 11 : fond ivoire et logo centré.
+     Android 12 et plus : voir values-v31/styles.xml. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="?android:colorBackground" />
-
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/launch_image" />
-    </item> -->
+    <item android:drawable="@color/fond_lancement" />
+    <item
+        android:width="96dp"
+        android:height="96dp"
+        android:drawable="@drawable/logo_lancement"
+        android:gravity="center" />
 </layer-list>

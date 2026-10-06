@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 et avant : mêmes règles que regles_extraction.xml. -->
+<full-backup-content>
+    <include domain="root" path="app_flutter/" />
+    <exclude domain="root" path="app_flutter/flutter_assets/" />
+</full-backup-content>

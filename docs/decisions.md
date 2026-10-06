@@ -141,6 +141,21 @@ Biens vendus ou retirés de la location (étape après la monétisation)
   deux lignes (aide : « avant la première location » / « depuis »).
   Mention « hors impôt sur la plus-value et crédit ».
 
+Publication
+- Distribution de la bêta par le test fermé de la Play Console (lien
+  d'inscription, installation depuis le Play Store), pas par un APK.
+- Icône : le logo de l'application (calendrier coché blanc sur bleu canard),
+  remplaçable plus tard par une icône de graphiste. Écran de lancement
+  ivoire avec ce logo, clair aussi en mode sombre.
+- Sauvegarde automatique du téléphone conservée (Google sur Android, iCloud
+  sur iPhone) : base et photos seulement (`res/xml/regles_*.xml`) ; dit dans
+  les mentions légales et la politique de confidentialité.
+- Politique de confidentialité publiée sur le site de l'éditeur
+  (`docs/publication/politique-confidentialite.html`).
+- Build bêta : numéro de version contenant « beta » (contrôlé par Gradle),
+  jamais promu en production ; la version publique est reconstruite sans le
+  drapeau.
+
 ## Points ouverts (à trancher par l'utilisateur)
 
 - Chiffrer la sauvegarde par mot de passe ? (elle contient les données des
@@ -156,17 +171,30 @@ Biens vendus ou retirés de la location (étape après la monétisation)
   reste chargé). À décider au branchement : attendre le retour sur
   l'accueil ?
 
+## Avant le test fermé
+
+Voir `docs/publication/README.md` (procédure complète).
+
+- Créer la clé d'importation et `android/key.properties` (hors du dépôt,
+  sauvegardés en lieu sûr).
+- Renseigner `ConfigApp.editeur` et `ConfigApp.contactEditeur`, compléter
+  la politique de confidentialité et la publier sur le site.
+- Play Console : fiche Store (captures d'écran à faire), sécurité des
+  données, classification du contenu, statut de professionnel.
+
 ## Avant publication
 
 - Vérifier chaque règle de `regles_legales.dart` sur les sources officielles,
   puis renseigner `ReglesLegales.derniereVerification`.
-- Renseigner `ConfigApp.editeur` et `ConfigApp.contactEditeur` (mentions
-  légales).
 - Régénérer `assets/irl/irl.json` (voir `assets/irl/LISEZMOI.md`).
 - Tester sur iOS (jamais fait) et sur un Android à navigation 3 boutons.
+  iOS : icône et écran de lancement encore ceux de Flutter, région de
+  développement à passer en `fr` (audit A5-01, A5-04).
 - Brancher l'abonnement réel (RevenueCat) : nouvelle implémentation de
   `SourceDroits` à la place de `DroitsBeta` dans `sourceDroitsProvider`. À
   l'expiration constatée, écrire `ClesReglages.finAbonnementAAnnoncer` (le
   message de l'accueil fait le reste). Remplacer « bientôt disponible » de
   l'écran Premium par l'achat et la restauration des achats.
+- Mettre à jour la politique de confidentialité et le formulaire « Sécurité
+  des données » (achats : identifiant et historique d'achat).
 - Construire la version publiée sans `--dart-define=BETA=true`.

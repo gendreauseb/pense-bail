@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 et plus : sauvegarde automatique dans le compte Google de
+     l'utilisateur et transfert vers un nouveau téléphone. Seules la base
+     (biens, baux, échéances…) et les photos sont copiées ; les rappels sont
+     reprogrammés au premier lancement. Garder identique à
+     regles_sauvegarde.xml (Android 11 et avant). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="root" path="app_flutter/" />
+        <exclude domain="root" path="app_flutter/flutter_assets/" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="root" path="app_flutter/" />
+        <exclude domain="root" path="app_flutter/flutter_assets/" />
+    </device-transfer>
+</data-extraction-rules>

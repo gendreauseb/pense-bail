@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Couleurs du design system (docs/design-system.md) utilisées avant le
+     démarrage de Flutter. -->
+<resources>
+    <!-- primary : fond de l'icône. -->
+    <color name="ic_launcher_background">#0E4F58</color>
+    <!-- background : fond ivoire de l'écran de lancement (aussi en mode
+         sombre, l'application restant claire). -->
+    <color name="fond_lancement">#F5F3EE</color>
+</resources>

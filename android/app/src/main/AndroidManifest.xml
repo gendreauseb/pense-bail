@@ -7,7 +7,10 @@
     <application
         android:label="Pense-Bail"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/regles_extraction"
+        android:fullBackupContent="@xml/regles_sauvegarde">
         <activity
             android:name=".MainActivity"
             android:exported="true"

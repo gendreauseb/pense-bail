@@ -78,6 +78,11 @@ class MentionsLegalesPage extends StatelessWidget {
             'Les courriers, récapitulatifs et sauvegardes ne quittent le '
                 'téléphone que lorsque vous choisissez de les partager, de '
                 'les imprimer ou de les enregistrer.',
+            'Si la sauvegarde de votre téléphone est activée (sauvegarde '
+                'Google sur Android, iCloud sur iPhone), le système copie '
+                'les données de l\'application dans votre compte, comme pour '
+                'vos autres applications : vous les retrouvez en changeant de '
+                'téléphone. Pense-Bail n\'a pas accès à cette copie.',
           ]),
           section('Les données de vos locataires', [
             'Vous êtes responsable des informations que vous saisissez sur '
