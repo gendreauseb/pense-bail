@@ -179,8 +179,9 @@ Voir `docs/publication/README.md` (procédure complète).
   sauvegardés en lieu sûr).
 - Renseigner `ConfigApp.editeur` et `ConfigApp.contactEditeur`, compléter
   la politique de confidentialité et la publier sur le site.
-- Play Console : fiche Store (captures d'écran à faire), sécurité des
-  données, classification du contenu, statut de professionnel.
+- Play Console : fiche Store (textes, icône, bannière et captures prêts dans
+  `docs/publication/`), sécurité des données, classification du contenu,
+  statut de professionnel.
 
 ## Avant publication
 

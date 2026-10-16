@@ -104,9 +104,12 @@ flutter build appbundle --release --build-name=1.0.0 --build-number=10
   > ou fiscal.
 
 - Icône : `icone-512.png` ; bannière : `banniere-1024x500.png`.
-- Captures d'écran (2 au moins, téléphone) : **à faire** sur l'émulateur
-  avec des données d'exemple (accueil, fiche d'un bien, révision,
-  courrier).
+- Captures d'écran : `captures/` (7 captures 1080 × 1920, format 9:16
+  accepté par Google). Données fictives, version Premium de la bêta sans
+  le badge « Bêta ». À refaire si l'écran change, en particulier le
+  courrier (phrases sur la clause de révision à revoir, audit A2-02).
+  Méthode : base d'exemple poussée dans l'émulateur, `adb shell wm size
+  1080x1920`, barre d'état en mode démo, puis tout remettre en état.
 - Catégorie : Productivité. Email de contact **[à compléter]**.
 - Politique de confidentialité : adresse de la page publiée
   **[à compléter]**.
