@@ -203,7 +203,19 @@ Publication
   (tracé identique, icône sans transparence).
 - iOS : français par défaut (`CFBundleDevelopmentRegion`,
   `CFBundleLocalizations`), iOS 15 minimum (exigé par image_picker),
-  iPhone et iPad.
+  iPhone seulement (sur iPad, l'application tourne au format téléphone ;
+  pas de captures iPad à fournir) ; décidé le 02/11/2026.
+- Portrait seulement, sur Android et iOS (écrans pensés pour le portrait).
+  Android 16 ignore ce verrou sur les grands écrans (tablettes) : sans
+  importance pour un téléphone.
+- Compilation iOS sans Mac : GitHub Actions (`.github/workflows/ios.yml`),
+  gratuit tant que le dépôt est public (Codemagic : 500 minutes gratuites
+  par mois). Aujourd'hui sans signature : vérifie seulement que
+  l'application se compile.
+- Android sur GitHub Actions (`.github/workflows/android.yml`) : analyse,
+  tests et APK debug à chaque envoi. La version signée pour le Play Store
+  reste compilée sur l'ordinateur de développement : la clé de
+  publication n'est pas déposée sur GitHub.
 - Sauvegarde automatique du téléphone conservée (Google sur Android, iCloud
   sur iPhone) : base et photos seulement (`res/xml/regles_*.xml`) ; dit dans
   les mentions légales et la politique de confidentialité.

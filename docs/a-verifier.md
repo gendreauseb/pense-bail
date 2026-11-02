@@ -171,19 +171,23 @@ Procédure détaillée : `docs/publication/README.md`.
   l'écran Premium par l'achat et la restauration des achats.
 - [ ] Politique de confidentialité et formulaire « Sécurité des données »
   mis à jour pour les achats.
-- [ ] iOS : préparé sous Windows, jamais compilé (il faut un Mac avec
-  Xcode, ou un service de compilation en ligne). Fichiers prêts : icône,
-  écran de lancement, français par défaut, iOS 15 minimum, rappels
-  affichés aussi application ouverte. À faire sur Mac :
-  - `flutter build ios` sans erreur ; dans Xcode, équipe de signature
-    (compte Apple Developer, 99 €/an) et identifiant `fr.pensebail.app` ;
-  - icône (écran d'accueil, réglages, recherche) et écran de lancement ;
-  - dialogues système en français (autorisations des notifications, de
-    l'appareil photo et de la galerie, choix de fichier, impression) ;
-  - essais complets de la section 2 sur un iPhone : notifications reçues
-    à 9 h et toucher qui ouvre l'échéance, photos, courrier PDF (partage
-    et impression), sauvegarde et restauration, appel et email depuis une
-    fiche ;
+- [ ] iOS : préparé sous Windows. Fichiers prêts : icône, écran de
+  lancement, français par défaut, iOS 15 minimum, iPhone seulement,
+  portrait, rappels affichés aussi application ouverte. Compilation sur un
+  Mac de GitHub (onglet « Actions » du dépôt, workflow « iOS ») :
+  - vérifier que le workflow « iOS » passe (le lancer à la main la
+    première fois : « Run workflow ») ;
+  - compte Apple Developer (99 €/an), puis signature et envoi vers
+    TestFlight depuis le workflow (à préparer à ce moment-là : certificat,
+    profil et clé d'API App Store Connect en secrets du dépôt, jamais dans
+    le code) ;
+  - sur un iPhone, avec TestFlight : icône (écran d'accueil, réglages,
+    recherche) et écran de lancement ; dialogues système en français
+    (autorisations des notifications, de l'appareil photo et de la
+    galerie, choix de fichier, impression) ; essais complets de la
+    section 2 : notifications reçues à 9 h et toucher qui ouvre
+    l'échéance, photos, courrier PDF (partage et impression), sauvegarde
+    et restauration, appel et email depuis une fiche ;
   - App Store Connect : fiche, captures, « App Privacy », politique de
     confidentialité.
 - [ ] Version publique reconstruite **sans** `--dart-define=BETA=true` ;

@@ -1,0 +1,51 @@
+# Analyse, tests et compilation Android sur une machine Linux de GitHub
+# (gratuit pour un dépôt public). Sans signature : la version publiée sur le
+# Play Store reste compilée sur l'ordinateur de développement, avec la clé
+# de publication (android/key.properties), qui ne quitte pas cet ordinateur.
+
+name: Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
+      - ".github/workflows/ios.yml"
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifier:
+    name: Analyse, tests et APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      # Même version de Java que celle d'Android Studio.
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          # Même version que sur l'ordinateur de développement.
+          flutter-version: 3.47.5
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Analyse
+        run: flutter analyze
+
+      - name: Tests
+        run: flutter test
+
+      - name: Compiler l'APK (debug, version bêta)
+        run: flutter build apk --debug --dart-define=BETA=true

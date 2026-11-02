@@ -1,0 +1,52 @@
+# Compilation iOS sur un Mac de GitHub (gratuit pour un dépôt public).
+# Sans signature : vérifie que l'application se compile pour iPhone. La
+# signature et l'envoi vers TestFlight demanderont un compte Apple
+# Developer (voir docs/a-verifier.md §4).
+
+name: iOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "ios/**"
+      - "lib/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/ios.yml"
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compiler:
+    name: Compiler pour iPhone
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          # Même version que sur l'ordinateur de développement.
+          flutter-version: 3.47.5
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Compiler (sans signature)
+        run: flutter build ios --release --no-codesign
+
+      - name: Vérifier les réglages de l'application compilée
+        run: |
+          plist=build/ios/iphoneos/Runner.app/Info.plist
+          plutil -p "$plist" | grep -E 'CFBundleDevelopmentRegion|CFBundleLocalizations|MinimumOSVersion|UIDeviceFamily|UISupportedInterfaceOrientations' -A3
+          test "$(plutil -extract CFBundleDevelopmentRegion raw "$plist")" = fr
+          test "$(plutil -extract MinimumOSVersion raw "$plist")" = 15.0
+          # iPhone seulement (famille 1), portrait seulement.
+          test "$(plutil -extract UIDeviceFamily json -o - "$plist")" = "[1]"
+          test "$(plutil -extract UISupportedInterfaceOrientations json -o - "$plist")" = '["UIInterfaceOrientationPortrait"]'
