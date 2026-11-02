@@ -215,7 +215,11 @@ void main() {
     (tester) async {
       // En août 2027, l'IRL du 2e trimestre 2027 devrait être publié mais
       // manque dans l'application (réseau indisponible) : saisie manuelle.
-      await ouvrir(tester, Routes.revision('studio'), le: DateTime(2027, 8, 10));
+      await ouvrir(
+        tester,
+        Routes.revision('studio'),
+        le: DateTime(2027, 8, 10),
+      );
       await tester.tap(find.text('J\'ai déjà révisé le loyer au 01/09/2026'));
       await tester.pumpAndSettle();
       await suivant(tester, 'Continuer');
@@ -253,9 +257,7 @@ void main() {
     FilledButton bouton(WidgetTester tester, String libelle) =>
         tester.widget<FilledButton>(find.widgetWithText(FilledButton, libelle));
 
-    testWidgets('« Oui » : retenu sur le bail, puis le calcul', (
-      tester,
-    ) async {
+    testWidgets('« Oui » : retenu sur le bail, puis le calcul', (tester) async {
       await ouvrir(tester, Routes.revision('appart'));
       expect(
         find.text('Votre bail prévoit-il la révision du loyer ?'),

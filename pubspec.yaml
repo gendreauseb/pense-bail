@@ -29,7 +29,7 @@ dependencies:
   # Photos des biens
   image_picker: ^1.2.3
 
-  # Icônes au trait (UI.md §5)
+  # Icônes au trait (docs/design-system.md §5)
   lucide_icons_flutter: ^3.1.20
 
   # Rappels (notifications locales)

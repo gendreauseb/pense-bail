@@ -136,8 +136,10 @@ Tokens (`lib/app/design/`, importés via `design.dart`) :
 - Textes : `AppTextStyles` (`context.textes`) : `displayLarge`,
   `headline`, `title`, `figure`, `body`, `rowTitle`, `button`, `label`,
   `secondary`, `caption`, `overline`, `nav`.
-- Espacements, rayons, tailles, ombres : `AppSpacing`, `AppRadius`,
-  `AppSizes`, `AppShadows` (`app_dimensions.dart`).
+- Espacements, rayons, tailles, opacités, ombres : `AppSpacing`,
+  `AppRadius`, `AppSizes`, `AppOpacites`, `AppShadows`
+  (`app_dimensions.dart`). Un élément indisponible est atténué à
+  `AppOpacites.indisponible`, toujours avec une explication.
 - Icônes Lucide : `AppIcons` (jamais `LucideIcons` directement dans un
   écran).
 - Thème unique : `AppTheme.clair()`.

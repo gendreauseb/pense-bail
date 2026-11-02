@@ -62,7 +62,11 @@ class OnboardingController extends AsyncNotifier<BrouillonOnboarding> {
           jsonDecode(json) as Map<String, dynamic>,
         );
       } catch (e) {
-        debugPrint('Brouillon d\'onboarding illisible, ignoré : $e');
+        // Le type seul : le message de l'erreur peut citer un extrait du
+        // brouillon (nom, adresse).
+        debugPrint(
+          'Brouillon d\'onboarding illisible, ignoré : ${e.runtimeType}',
+        );
       }
     }
     return _dernier = brouillon;

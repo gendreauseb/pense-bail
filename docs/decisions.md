@@ -214,18 +214,10 @@ Publication
 Les numéros A… renvoient à `docs/audit-2026-10-05.md`. Rayer ou retirer une
 ligne une fois faite.
 
-1. Ménage technique
-   - Correctifs de dépendances (`flutter pub upgrade`) (A1-03).
-   - Référence obsolète dans `pubspec.yaml` (A1-05).
-   - Trois lectures directes du statut Premium à documenter ou à faire
-     passer par `Droits` (A3-01).
-   - Dimensions locales à remplacer par des tokens (A4-03).
-   - Journal pouvant contenir des données personnelles (A5-05).
-   - Écritures hors cas d'usage ou sans transaction (A5-06).
-2. iOS, avant sa sortie : icône, écran de lancement, langue française par
+1. iOS, avant sa sortie : icône, écran de lancement, langue française par
    défaut (A5-04).
-3. Biens vendus ou retirés de la location (voir « Décisions prises »).
-4. Notifications limitées au bien actif en version gratuite, avant la
+2. Biens vendus ou retirés de la location (voir « Décisions prises »).
+3. Notifications limitées au bien actif en version gratuite, avant la
    production. Corriger en même temps les textes qui promettent les rappels
    pour tous les biens : écran Premium (« Toujours gratuit »), message de
    fin d'abonnement, cahier des charges.

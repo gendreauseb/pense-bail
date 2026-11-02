@@ -57,9 +57,7 @@ void main() {
     test('cash-flow annuel juste au centime (A2-05)', () {
       // 7 800 € − 10 € = 7 790 € par an ; 649,1666… € par mois.
       final i = Rentabilite.indicateurs(
-        unBien(
-          loyerHcCentimes: 65000,
-        ).copyWith(taxeFonciereCentimes: 1000),
+        unBien(loyerHcCentimes: 65000).copyWith(taxeFonciereCentimes: 1000),
       );
       expect(i.cashFlowMensuel, 64917);
       expect(i.cashFlowAnnuel, 779000);

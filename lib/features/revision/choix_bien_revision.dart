@@ -21,8 +21,6 @@ Future<void> ouvrirChoixBienRevision(BuildContext context) =>
 class _ChoixBien extends ConsumerWidget {
   const _ChoixBien();
 
-  static const _opaciteIndisponible = 0.5;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final biens = ref.watch(biensFluxProvider).value ?? const <Bien>[];
@@ -45,7 +43,7 @@ class _ChoixBien extends ConsumerWidget {
               for (final bien in biens)
                 _LigneBien(
                   bien: bien,
-                  opaciteIndisponible: _opaciteIndisponible,
+                  opaciteIndisponible: AppOpacites.indisponible,
                   onTap: bien.typeLocation.revisionDisponible
                       ? () {
                           final routeur = GoRouter.of(context);

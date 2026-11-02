@@ -7458,20 +7458,28 @@ class $$BiensTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (bauxRefs)
-                        await $_getPrefetchedData<Bien, $BiensTable, Bail>(
+                        await $_getPrefetchedDataByColumns<
+                          Bien,
+                          $BiensTable,
+                          Bail,
+                          $BauxTable
+                        >(
                           currentTable: table,
                           referencedTable: $$BiensTableReferences
                               ._bauxRefsTable(db),
                           managerFromTypedResult: (p0) =>
                               $$BiensTableReferences(db, table, p0).bauxRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bienId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'bien_id',
                           typedResults: items,
                         ),
                       if (echeancesRefs)
-                        await $_getPrefetchedData<Bien, $BiensTable, Echeance>(
+                        await $_getPrefetchedDataByColumns<
+                          Bien,
+                          $BiensTable,
+                          Echeance,
+                          $EcheancesTable
+                        >(
                           currentTable: table,
                           referencedTable: $$BiensTableReferences
                               ._echeancesRefsTable(db),
@@ -7481,17 +7489,16 @@ class $$BiensTableTableManager
                                 table,
                                 p0,
                               ).echeancesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bienId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'bien_id',
                           typedResults: items,
                         ),
                       if (interventionsRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           Bien,
                           $BiensTable,
-                          Intervention
+                          Intervention,
+                          $InterventionsTable
                         >(
                           currentTable: table,
                           referencedTable: $$BiensTableReferences
@@ -7502,17 +7509,16 @@ class $$BiensTableTableManager
                                 table,
                                 p0,
                               ).interventionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bienId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'bien_id',
                           typedResults: items,
                         ),
                       if (mouvementsFinanciersRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           Bien,
                           $BiensTable,
-                          MouvementFinancier
+                          MouvementFinancier,
+                          $MouvementsFinanciersTable
                         >(
                           currentTable: table,
                           referencedTable: $$BiensTableReferences
@@ -7523,17 +7529,16 @@ class $$BiensTableTableManager
                                 table,
                                 p0,
                               ).mouvementsFinanciersRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bienId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'bien_id',
                           typedResults: items,
                         ),
                       if (encaissementsLoyersRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           Bien,
                           $BiensTable,
-                          EncaissementLoyer
+                          EncaissementLoyer,
+                          $EncaissementsLoyersTable
                         >(
                           currentTable: table,
                           referencedTable: $$BiensTableReferences
@@ -7544,17 +7549,16 @@ class $$BiensTableTableManager
                                 table,
                                 p0,
                               ).encaissementsLoyersRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bienId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'bien_id',
                           typedResults: items,
                         ),
                       if (revisionsLoyersRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           Bien,
                           $BiensTable,
-                          RevisionLoyer
+                          RevisionLoyer,
+                          $RevisionsLoyersTable
                         >(
                           currentTable: table,
                           referencedTable: $$BiensTableReferences
@@ -7565,10 +7569,8 @@ class $$BiensTableTableManager
                                 table,
                                 p0,
                               ).revisionsLoyersRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bienId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'bien_id',
                           typedResults: items,
                         ),
                     ];
@@ -8228,7 +8230,12 @@ class $$BauxTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (locatairesRefs)
-                        await $_getPrefetchedData<Bail, $BauxTable, Locataire>(
+                        await $_getPrefetchedDataByColumns<
+                          Bail,
+                          $BauxTable,
+                          Locataire,
+                          $LocatairesTable
+                        >(
                           currentTable: table,
                           referencedTable: $$BauxTableReferences
                               ._locatairesRefsTable(db),
@@ -8237,17 +8244,16 @@ class $$BauxTableTableManager
                             table,
                             p0,
                           ).locatairesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bailId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'bail_id',
                           typedResults: items,
                         ),
                       if (revisionsLoyersRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           Bail,
                           $BauxTable,
-                          RevisionLoyer
+                          RevisionLoyer,
+                          $RevisionsLoyersTable
                         >(
                           currentTable: table,
                           referencedTable: $$BauxTableReferences
@@ -8257,10 +8263,8 @@ class $$BauxTableTableManager
                             table,
                             p0,
                           ).revisionsLoyersRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.bailId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'bail_id',
                           typedResults: items,
                         ),
                     ];
@@ -9216,18 +9220,19 @@ class $$EcheancesTableTableManager
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (rappelsRefs)
-                    await $_getPrefetchedData<
+                    await $_getPrefetchedDataByColumns<
                       Echeance,
                       $EcheancesTable,
-                      Rappel
+                      Rappel,
+                      $RappelsTable
                     >(
                       currentTable: table,
                       referencedTable: $$EcheancesTableReferences
                           ._rappelsRefsTable(db),
                       managerFromTypedResult: (p0) =>
                           $$EcheancesTableReferences(db, table, p0).rappelsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.echeanceId == item.id),
+                      currentColumn: 'id',
+                      referencedColumn: 'echeance_id',
                       typedResults: items,
                     ),
                 ];
@@ -9869,10 +9874,11 @@ class $$ArtisansTableTableManager
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (interventionsRefs)
-                    await $_getPrefetchedData<
+                    await $_getPrefetchedDataByColumns<
                       Artisan,
                       $ArtisansTable,
-                      Intervention
+                      Intervention,
+                      $InterventionsTable
                     >(
                       currentTable: table,
                       referencedTable: $$ArtisansTableReferences
@@ -9882,8 +9888,8 @@ class $$ArtisansTableTableManager
                         table,
                         p0,
                       ).interventionsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.artisanId == item.id),
+                      currentColumn: 'id',
+                      referencedColumn: 'artisan_id',
                       typedResults: items,
                     ),
                 ];
@@ -10448,10 +10454,11 @@ class $$InterventionsTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (mouvementsFinanciersRefs)
-                        await $_getPrefetchedData<
+                        await $_getPrefetchedDataByColumns<
                           Intervention,
                           $InterventionsTable,
-                          MouvementFinancier
+                          MouvementFinancier,
+                          $MouvementsFinanciersTable
                         >(
                           currentTable: table,
                           referencedTable: $$InterventionsTableReferences
@@ -10462,10 +10469,8 @@ class $$InterventionsTableTableManager
                                 table,
                                 p0,
                               ).mouvementsFinanciersRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.interventionId == item.id,
-                              ),
+                          currentColumn: 'id',
+                          referencedColumn: 'intervention_id',
                           typedResults: items,
                         ),
                     ];

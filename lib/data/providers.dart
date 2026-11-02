@@ -186,6 +186,7 @@ final gestionBiensProvider = Provider<GestionBiens>(
 
 final gestionFinancesProvider = Provider<GestionFinances>(
   (ref) => GestionFinances(
+    transactions: ref.watch(transactionsProvider),
     biens: ref.watch(bienRepositoryProvider),
     finances: ref.watch(financeRepositoryProvider),
     verrou: ref.watch(verrouBiensProvider),
@@ -194,6 +195,7 @@ final gestionFinancesProvider = Provider<GestionFinances>(
 
 final gestionArtisansProvider = Provider<GestionArtisans>(
   (ref) => GestionArtisans(
+    transactions: ref.watch(transactionsProvider),
     artisans: ref.watch(artisanRepositoryProvider),
     verrou: ref.watch(verrouBiensProvider),
   ),

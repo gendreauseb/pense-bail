@@ -84,8 +84,6 @@ class _ApercuPdfPageState extends State<ApercuPdfPage> {
       fileName: widget.nomFichier,
       bytes: pdf,
       mimeType: 'application/pdf',
-      type: FileType.custom,
-      allowedExtensions: const ['pdf'],
     );
     if (fichier != null) {
       messager.showSnackBar(

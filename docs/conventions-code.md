@@ -53,10 +53,18 @@ anglais restent tels quels (`build`, `copyWith`, `Provider`).
   `bienVerrouilleProvider(bienId)`, `peutAjouterBienProvider`. Pendant le
   chargement des droits, ils laissent passer : les cas d'usage refusent de
   toute façon.
+- Seule exception : les trois endroits qui affichent le statut lui-même
+  lisent `Droits.estPremium` (badge bêta de l'accueil, écran Pense-Bail
+  Premium, interrupteur du mode bêta dans les réglages). Ne pas en ajouter
+  d'autre pour décider de ce qui est disponible.
 - Toute écriture sur un bien, une échéance, la rentabilité ou les artisans
   passe par un cas d'usage qui contrôle les droits (`VerrouBiens`), jamais
-  par un repository depuis un écran. À l'écran : `executerSiAutorise()`
+  par un repository depuis un écran. Le contrôle et l'écriture sont dans
+  la même `transactions.executer`. À l'écran : `executerSiAutorise()`
   affiche le message du refus (`AccesRefuse`).
+- Exception : une écriture unique sans droits ni règle métier (profil du
+  bailleur, drapeaux techniques des réglages comme « notifications
+  demandées ») passe directement par le repository, via son provider.
 - Widgets : `BandeauVerrou` (cadenas, phrase, lien vers Premium),
   `MentionLectureSeule`, `PageVerrouillee` (accès direct à un écran
   réservé) ; `ouvrirPremium()`, `ouvrirAjoutBien()`.

@@ -246,11 +246,10 @@ void main() {
   });
 
   group('chiffres de rentabilité', () {
-    Future<Bien> studio(WidgetTester tester) async =>
-        (await lire<Bien?>(
-          tester,
-          () => DriftBienRepository(db).parId('studio'),
-        ))!;
+    Future<Bien> studio(WidgetTester tester) async => (await lire<Bien?>(
+      tester,
+      () => DriftBienRepository(db).parId('studio'),
+    ))!;
 
     testWidgets('saisie puis effacement d\'un montant', (tester) async {
       await lancer(tester);

@@ -97,6 +97,35 @@ abstract final class AppSizes {
 
   /// Barre de progression d'un outil en étapes (révision du loyer).
   static const progressionEtapes = 4.0;
+
+  /// Indicateur de chargement dans un bouton.
+  static const indicateurChargement = 24.0;
+  static const indicateurChargementEpaisseur = 3.0;
+
+  /// Bordure pointillée (bouton d'ajout) : longueur d'un trait et espace.
+  static const pointilleTrait = 6.0;
+  static const pointilleEspace = 4.0;
+
+  /// Cartes de choix (formulaires) : hauteur minimale, bordure de la carte
+  /// choisie, et conditions pour les présenter sur deux colonnes (largeur
+  /// disponible, texte pas trop agrandi).
+  static const carteChoixHauteurMin = 64.0;
+  static const bordureSelection = 2.0;
+  static const largeurMinDeuxColonnes = 320.0;
+  static const echelleTexteDeuxColonnesMax = 1.3;
+
+  /// Compteur du nombre de biens (onboarding).
+  static const largeurCompteur = 120.0;
+}
+
+/// Opacités (design-system.md §6).
+abstract final class AppOpacites {
+  /// Libellés de la carte de synthèse, sur fond primary.
+  static const libelleSurPrimary = 0.85;
+
+  /// Élément indisponible (carte d'action, bien non révisable), toujours
+  /// accompagné d'une explication.
+  static const indisponible = 0.55;
 }
 
 /// Ombres : quasiment absentes (design-system.md §4). Seuls le bouton central

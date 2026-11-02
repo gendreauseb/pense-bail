@@ -8,35 +8,40 @@ import 'verrou_biens.dart';
 /// consultables mais chaque écriture lève FonctionnaliteReservee (ou
 /// BienVerrouille pour une intervention sur un bien en lecture seule).
 class GestionArtisans {
-  GestionArtisans({required this.artisans, required this.verrou});
+  GestionArtisans({
+    required this.transactions,
+    required this.artisans,
+    required this.verrou,
+  });
 
+  final Transactions transactions;
   final ArtisanRepository artisans;
   final VerrouBiens verrou;
 
-  Future<void> _verifier() =>
-      verrou.verifierFonctionnalite(Fonctionnalite.artisans);
+  /// Contrôle des droits (et du bien concerné, s'il y en a un) puis
+  /// écriture, dans une même transaction.
+  Future<void> _ecrire(Future<void> Function() ecriture, {String? bienId}) =>
+      transactions.executer(() async {
+        await verrou.verifierFonctionnalite(Fonctionnalite.artisans);
+        await verrou.verifierModifiable(bienId);
+        await ecriture();
+      });
 
-  Future<void> enregistrer(Artisan artisan) async {
-    await _verifier();
-    await artisans.enregistrer(artisan);
-  }
+  Future<void> enregistrer(Artisan artisan) =>
+      _ecrire(() => artisans.enregistrer(artisan));
 
-  Future<void> supprimer(String artisanId) async {
-    await _verifier();
-    await artisans.supprimer(artisanId);
-  }
+  Future<void> supprimer(String artisanId) =>
+      _ecrire(() => artisans.supprimer(artisanId));
 
   /// Le coût éventuel alimente le journal du bien (voir
   /// ArtisanRepository.enregistrerIntervention).
-  Future<void> enregistrerIntervention(Intervention intervention) async {
-    await _verifier();
-    await verrou.verifierModifiable(intervention.bienId);
-    await artisans.enregistrerIntervention(intervention);
-  }
+  Future<void> enregistrerIntervention(Intervention intervention) => _ecrire(
+    () => artisans.enregistrerIntervention(intervention),
+    bienId: intervention.bienId,
+  );
 
-  Future<void> supprimerIntervention(Intervention intervention) async {
-    await _verifier();
-    await verrou.verifierModifiable(intervention.bienId);
-    await artisans.supprimerIntervention(intervention.id);
-  }
+  Future<void> supprimerIntervention(Intervention intervention) => _ecrire(
+    () => artisans.supprimerIntervention(intervention.id),
+    bienId: intervention.bienId,
+  );
 }

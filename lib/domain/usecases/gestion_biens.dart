@@ -116,10 +116,10 @@ class GestionBiens {
   Future<void> enregistrerLocataire({
     required String bienId,
     required Locataire locataire,
-  }) async {
+  }) => transactions.executer(() async {
     await _verrou.verifierModifiable(bienId);
     await baux.enregistrerLocataire(locataire);
-  }
+  });
 
   /// Retire un locataire du bail du bien [bienId].
   ///
@@ -127,10 +127,10 @@ class GestionBiens {
   Future<void> supprimerLocataire({
     required String bienId,
     required String locataireId,
-  }) async {
+  }) => transactions.executer(() async {
     await _verrou.verifierModifiable(bienId);
     await baux.supprimerLocataire(locataireId);
-  }
+  });
 
   /// Supprime le bien et tout ce qui s'y rattache (suppression en cascade).
   /// Toujours permis, même pour un bien en lecture seule : c'est

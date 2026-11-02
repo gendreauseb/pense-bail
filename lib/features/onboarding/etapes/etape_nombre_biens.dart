@@ -12,8 +12,6 @@ class EtapeNombreBiens extends ConsumerWidget {
   const EtapeNombreBiens({super.key, required this.brouillon});
   final BrouillonOnboarding brouillon;
 
-  static const _largeurCompteur = 120.0;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controleur = ref.read(onboardingControllerProvider.notifier);
@@ -54,7 +52,7 @@ class EtapeNombreBiens extends ConsumerWidget {
                     label: '$nombre $unite',
                     excludeSemantics: true,
                     child: SizedBox(
-                      width: _largeurCompteur,
+                      width: AppSizes.largeurCompteur,
                       child: Column(
                         children: [
                           Text(

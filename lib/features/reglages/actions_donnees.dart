@@ -25,8 +25,6 @@ Future<bool> sauvegarderDonnees(BuildContext context, WidgetRef ref) async {
       fileName: service.nomFichier(),
       bytes: await service.exporter(),
       mimeType: 'application/json',
-      type: FileType.custom,
-      allowedExtensions: const ['json'],
     );
     if (fichier == null) return false;
     _message(

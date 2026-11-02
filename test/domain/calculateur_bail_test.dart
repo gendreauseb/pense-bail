@@ -118,7 +118,10 @@ void main() {
         CalculateurBail.finPeriodeEnCours(bail, aujourdhui),
         DateTime(2026, 8, 31),
       );
-      expect(CalculateurBail.prochaineDateLimiteConge(bail, aujourdhui), isNull);
+      expect(
+        CalculateurBail.prochaineDateLimiteConge(bail, aujourdhui),
+        isNull,
+      );
       expect(CalculateurBail.prochaineRevision(bail, aujourdhui), isNull);
     });
 

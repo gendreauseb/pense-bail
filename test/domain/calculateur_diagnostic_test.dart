@@ -30,7 +30,10 @@ void main() {
 
   test('réalisé un 31 : dernier jour du mois quand il est plus court', () {
     expect(
-      CalculateurDiagnostic.expiration(TypeDiagnostic.erp, DateTime(2024, 8, 31)),
+      CalculateurDiagnostic.expiration(
+        TypeDiagnostic.erp,
+        DateTime(2024, 8, 31),
+      ),
       DateTime(2025, 2, 28),
     );
   });

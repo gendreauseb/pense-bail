@@ -27,11 +27,13 @@ void main() {
       droits: () async => droits,
     );
     finances = GestionFinances(
+      transactions: DriftTransactions(db),
       biens: DriftBienRepository(db),
       finances: DriftFinanceRepository(db),
       verrou: verrou,
     );
     artisans = GestionArtisans(
+      transactions: DriftTransactions(db),
       artisans: DriftArtisanRepository(db),
       verrou: verrou,
     );

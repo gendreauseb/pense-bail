@@ -55,7 +55,7 @@ pdf + printing, file_picker, http (INSEE uniquement).
   série IRL de l'INSEE.
 - **Interface** : aucune couleur, taille ou marge en dur ; tokens
   (`context.couleurs`, `context.textes`, `AppSpacing`, `AppRadius`,
-  `AppSizes`, `AppIcons`) et widgets partagés de `lib/core/widgets/`.
+  `AppSizes`, `AppOpacites`, `AppIcons`) et widgets partagés de `lib/core/widgets/`.
   Panneaux du bas via `ouvrirFeuille()`.
 - **Rédaction** : vouvoiement, phrases courtes, terme juridique toujours
   expliqué, pas de tiret cadratin, boutons qui disent ce qu'ils font (jamais

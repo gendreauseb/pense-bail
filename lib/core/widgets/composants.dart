@@ -77,14 +77,12 @@ class CarteAction extends StatelessWidget {
   /// `null` : action indisponible (carte atténuée).
   final VoidCallback? onTap;
 
-  static const _opaciteIndisponible = 0.55;
-
   @override
   Widget build(BuildContext context) {
     final t = context.textes;
     final c = context.couleurs;
     return Opacity(
-      opacity: onTap == null ? _opaciteIndisponible : 1,
+      opacity: onTap == null ? AppOpacites.indisponible : 1,
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -221,9 +219,6 @@ class BarreActionFixe extends StatelessWidget {
   final Widget? secondaire;
   final String? legende;
 
-  static const _tailleIndicateur = 24.0;
-  static const _epaisseurIndicateur = 3.0;
-
   @override
   Widget build(BuildContext context) {
     final c = context.couleurs;
@@ -255,9 +250,9 @@ class BarreActionFixe extends StatelessWidget {
                   onPressed: enCours ? null : onPressed,
                   child: enCours
                       ? SizedBox.square(
-                          dimension: _tailleIndicateur,
+                          dimension: AppSizes.indicateurChargement,
                           child: CircularProgressIndicator(
-                            strokeWidth: _epaisseurIndicateur,
+                            strokeWidth: AppSizes.indicateurChargementEpaisseur,
                             color: c.onPrimary,
                           ),
                         )
@@ -514,9 +509,6 @@ class _BordurePointillee extends CustomPainter {
   final double epaisseur;
   final double rayon;
 
-  static const _trait = 6.0;
-  static const _espace = 4.0;
-
   @override
   void paint(Canvas canvas, Size size) {
     final pinceau = Paint()
@@ -540,10 +532,10 @@ class _BordurePointillee extends CustomPainter {
       var distance = 0.0;
       while (distance < mesure.length) {
         canvas.drawPath(
-          mesure.extractPath(distance, distance + _trait),
+          mesure.extractPath(distance, distance + AppSizes.pointilleTrait),
           pinceau,
         );
-        distance += _trait + _espace;
+        distance += AppSizes.pointilleTrait + AppSizes.pointilleEspace;
       }
     }
   }

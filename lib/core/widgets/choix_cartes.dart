@@ -28,10 +28,6 @@ class ChoixCartes<T> extends StatelessWidget {
   /// 1 pour les options à libellé long (toujours une carte par ligne).
   final int colonnesMax;
 
-  /// Au-delà, le texte agrandi par l'utilisateur impose une seule colonne.
-  static const _echelleTexteMaxDeuxColonnes = 1.3;
-  static const _largeurMinDeuxColonnes = 320.0;
-
   @override
   Widget build(BuildContext context) {
     final erreur = this.erreur;
@@ -42,9 +38,10 @@ class ChoixCartes<T> extends StatelessWidget {
           builder: (context, contraintes) {
             final texteAgrandi =
                 MediaQuery.textScalerOf(context).scale(1) >
-                _echelleTexteMaxDeuxColonnes;
+                AppSizes.echelleTexteDeuxColonnesMax;
             final colonnes =
-                contraintes.maxWidth < _largeurMinDeuxColonnes || texteAgrandi
+                contraintes.maxWidth < AppSizes.largeurMinDeuxColonnes ||
+                    texteAgrandi
                 ? 1
                 : colonnesMax;
             const espace = AppSpacing.bloc;
@@ -106,15 +103,12 @@ class _Carte extends StatelessWidget {
   final bool enErreur;
   final VoidCallback onTap;
 
-  static const _hauteurMin = 64.0;
-  static const _bordureSelection = 2.0;
-
   @override
   Widget build(BuildContext context) {
     final c = context.couleurs;
     final t = context.textes;
     final bordure = selectionnee
-        ? BorderSide(color: c.primary, width: _bordureSelection)
+        ? BorderSide(color: c.primary, width: AppSizes.bordureSelection)
         : BorderSide(color: enErreur ? c.erreur : c.border);
     final precision = this.precision;
 
@@ -131,7 +125,9 @@ class _Carte extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: _hauteurMin),
+            constraints: const BoxConstraints(
+              minHeight: AppSizes.carteChoixHauteurMin,
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.ligne,

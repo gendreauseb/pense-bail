@@ -11,9 +11,6 @@ class CarteSynthese extends StatelessWidget {
   const CarteSynthese({super.key, required this.synthese});
   final Synthese synthese;
 
-  /// Libellés à 85 % d'opacité (design-system.md).
-  static const _opaciteLibelle = 0.85;
-
   @override
   Widget build(BuildContext context) {
     final c = context.couleurs;
@@ -29,7 +26,7 @@ class CarteSynthese extends StatelessWidget {
       child: ChiffresEnColonnes(
         styleValeur: t.figure.copyWith(color: c.onPrimary),
         styleLibelle: t.caption.copyWith(
-          color: c.onPrimary.withValues(alpha: _opaciteLibelle),
+          color: c.onPrimary.withValues(alpha: AppOpacites.libelleSurPrimary),
         ),
         // Chaque chiffre est lu séparément par les lecteurs d'écran.
         libelleSemantique: (valeur, libelle) => '$valeur $libelle',

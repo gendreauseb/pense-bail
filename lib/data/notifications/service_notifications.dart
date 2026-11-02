@@ -85,7 +85,9 @@ class NotificationsLocales implements ServiceNotifications {
       final fuseau = await FlutterTimezone.getLocalTimezone();
       tz.setLocalLocation(tz.getLocation(fuseau.identifier));
     } catch (e) {
-      debugPrint('Fuseau horaire introuvable, Europe/Paris utilisé : $e');
+      debugPrint(
+        'Fuseau horaire introuvable, Europe/Paris utilisé : ${e.runtimeType}',
+      );
       tz.setLocalLocation(tz.getLocation('Europe/Paris'));
     }
 
@@ -204,7 +206,7 @@ class NotificationsLocales implements ServiceNotifications {
         );
       }
     } catch (e) {
-      debugPrint('Programmation des rappels impossible : $e');
+      debugPrint('Programmation des rappels impossible : ${e.runtimeType}');
     }
   }
 
