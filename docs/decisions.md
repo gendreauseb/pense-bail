@@ -199,7 +199,11 @@ Publication
   d'inscription, installation depuis le Play Store), pas par un APK.
 - Icône : le logo de l'application (calendrier coché blanc sur bleu canard),
   remplaçable plus tard par une icône de graphiste. Écran de lancement
-  ivoire avec ce logo, clair aussi en mode sombre.
+  ivoire avec ce logo, clair aussi en mode sombre. Mêmes images sur iOS
+  (tracé identique, icône sans transparence).
+- iOS : français par défaut (`CFBundleDevelopmentRegion`,
+  `CFBundleLocalizations`), iOS 15 minimum (exigé par image_picker),
+  iPhone et iPad.
 - Sauvegarde automatique du téléphone conservée (Google sur Android, iCloud
   sur iPhone) : base et photos seulement (`res/xml/regles_*.xml`) ; dit dans
   les mentions légales et la politique de confidentialité.
@@ -226,8 +230,8 @@ Publication
 Les numéros A… renvoient à `docs/audit-2026-10-05.md`. Rayer ou retirer une
 ligne une fois faite.
 
-1. iOS, avant sa sortie : icône, écran de lancement, langue française par
-   défaut (A5-04).
+Rien côté code. iOS est préparé mais jamais compilé : voir
+`docs/a-verifier.md` §4.
 
 En attente de l'utilisateur
 - Bannière jaune pour les rappels désactivés : à confirmer, puis à inscrire

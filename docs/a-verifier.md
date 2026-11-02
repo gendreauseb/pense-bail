@@ -139,7 +139,7 @@ mention contraire.
   reviennent et que les rappels sont reprogrammés.
 - [ ] **Sauvegarde manuelle** : exporter un fichier, le restaurer sur un
   autre téléphone.
-- [ ] **iOS** : jamais testé (voir section 4).
+- [ ] **iOS** : jamais compilé ni testé (voir section 4).
 
 ## 3. Avant le test fermé
 
@@ -171,7 +171,20 @@ Procédure détaillée : `docs/publication/README.md`.
   l'écran Premium par l'achat et la restauration des achats.
 - [ ] Politique de confidentialité et formulaire « Sécurité des données »
   mis à jour pour les achats.
-- [ ] iOS : icône et écran de lancement, langue française par défaut
-  (audit A5-04), essais complets.
+- [ ] iOS : préparé sous Windows, jamais compilé (il faut un Mac avec
+  Xcode, ou un service de compilation en ligne). Fichiers prêts : icône,
+  écran de lancement, français par défaut, iOS 15 minimum, rappels
+  affichés aussi application ouverte. À faire sur Mac :
+  - `flutter build ios` sans erreur ; dans Xcode, équipe de signature
+    (compte Apple Developer, 99 €/an) et identifiant `fr.pensebail.app` ;
+  - icône (écran d'accueil, réglages, recherche) et écran de lancement ;
+  - dialogues système en français (autorisations des notifications, de
+    l'appareil photo et de la galerie, choix de fichier, impression) ;
+  - essais complets de la section 2 sur un iPhone : notifications reçues
+    à 9 h et toucher qui ouvre l'échéance, photos, courrier PDF (partage
+    et impression), sauvegarde et restauration, appel et email depuis une
+    fiche ;
+  - App Store Connect : fiche, captures, « App Privacy », politique de
+    confidentialité.
 - [ ] Version publique reconstruite **sans** `--dart-define=BETA=true` ;
   ne jamais promouvoir une version du test fermé.
