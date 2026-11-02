@@ -1,9 +1,10 @@
 {
   "source": "INSEE, série « Indice de référence des loyers (IRL) », idbank 001515333",
   "url": "https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/001515333",
-  "miseAJour": "2026-07-10",
-  "recupereLe": "2026-09-26",
+  "miseAJour": "2026-10-15",
+  "recupereLe": "2026-10-16",
   "indices": [
+    { "annee": 2026, "trimestre": 3, "valeur": 148.06 },
     { "annee": 2026, "trimestre": 2, "valeur": 148.37, "datePublicationJo": "2026-07-12" },
     { "annee": 2026, "trimestre": 1, "valeur": 146.6, "datePublicationJo": "2026-04-16" },
     { "annee": 2025, "trimestre": 4, "valeur": 145.78, "datePublicationJo": "2026-01-16" },

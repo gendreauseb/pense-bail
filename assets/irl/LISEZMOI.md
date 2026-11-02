@@ -13,8 +13,8 @@ Série « Indice de référence des loyers (IRL) », idbank `001515333`, banque 
 données macro-économiques de l'INSEE, en accès libre :
 <https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/001515333>
 
-La version actuelle (95 trimestres, du T4 2002 au T2 2026) a été générée le
-26/09/2026 à partir de cette réponse, sans retouche : chaque valeur, et sa
+La version actuelle (96 trimestres, du T4 2002 au T3 2026) a été générée le
+16/10/2026 à partir de cette réponse, sans retouche : chaque valeur, et sa
 date de parution au Journal officiel quand l'INSEE la fournit
 (`DATE_JO` → `datePublicationJo`), est recopiée telle quelle.
 
