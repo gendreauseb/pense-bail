@@ -133,6 +133,22 @@ final bienVerrouilleProvider = Provider.family<bool, String>((ref, bienId) {
   return actifs != null && !actifs.contains(bienId);
 });
 
+/// Biens dont les échéances ne sont pas notifiées (version gratuite, biens
+/// loués au-delà de la limite).
+final biensSansRappelProvider = FutureProvider<Set<String>>((ref) async {
+  final biens = await ref.watch(biensFluxProvider.future);
+  final droits = await ref.watch(droitsProvider.future);
+  return AccesBiens.sansRappel(biens, droits);
+});
+
+/// Les échéances de ce bien sont-elles privées de rappel par la version
+/// gratuite ? Toujours faux pour les échéances communes (`null`), et tant
+/// que le calcul n'est pas prêt.
+final sansRappelProvider = Provider.family<bool, String?>(
+  (ref, bienId) =>
+      ref.watch(biensSansRappelProvider).value?.contains(bienId) ?? false,
+);
+
 /// Un bien de plus peut-il être ajouté ? Vrai tant que le calcul n'est pas
 /// prêt (GestionBiens.creer refuse de toute façon au-delà de la limite).
 final peutAjouterBienProvider = Provider<bool>((ref) {

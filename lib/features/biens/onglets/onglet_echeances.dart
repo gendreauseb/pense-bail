@@ -31,6 +31,7 @@ class OngletEcheances extends ConsumerWidget {
         ref.watch(echeancesBienFluxProvider(bien.id)).value ?? const [];
     final aFaire = toutes.where((e) => e.estAFaire).toList();
     final verrouille = ref.watch(bienVerrouilleProvider(bien.id));
+    final sansRappel = ref.watch(sansRappelProvider(bien.id));
     final faites = toutes.where((e) => e.estFaite).toList().reversed.toList();
 
     final groupes = <String, List<Echeance>>{
@@ -57,6 +58,7 @@ class OngletEcheances extends ConsumerWidget {
       aujourdhui: aujourdhui,
       avecTuile: false,
       dense: false,
+      sansRappel: sansRappel,
       onTap: () => ouvrirDetailEcheance(context, e),
       onCalculer: e.type == TypeEcheance.revisionLoyer
           ? () => context.push(Routes.revision(bien.id))

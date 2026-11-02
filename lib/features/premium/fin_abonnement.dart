@@ -38,10 +38,12 @@ class TextesFinAbonnement {
     0 => null,
     1 =>
       'Votre autre bien reste consultable, en lecture seule. Ses échéances '
-          'et ses rappels continuent.',
+          'restent affichées, mais ne sont plus rappelées par une '
+          'notification.',
     _ =>
       'Vos $autres autres biens restent consultables, en lecture seule. '
-          'Leurs échéances et leurs rappels continuent.',
+          'Leurs échéances restent affichées, mais ne sont plus rappelées '
+          'par une notification.',
   };
 }
 
@@ -102,8 +104,9 @@ class _MessageFinAbonnement extends ConsumerWidget {
             paragraphe(AppIcons.verrou, texte),
           paragraphe(
             AppIcons.echeance,
-            "Toujours gratuit : les échéances et leurs rappels, le contrôle "
-            'du DPE (logements F et G) et le calcul de la révision du loyer.',
+            "Toujours gratuit : les échéances de votre bien actif et leurs "
+            'rappels, le contrôle du DPE (logements F et G) et le calcul de '
+            'la révision du loyer.',
           ),
           paragraphe(
             AppIcons.document,

@@ -63,7 +63,9 @@ class PremiumPage extends ConsumerWidget {
               _Inclus(
                 icone: AppIcons.biens,
                 titre: 'Tous vos biens',
-                detail: 'Gérez autant de logements que vous voulez.',
+                detail:
+                    'Gérez autant de logements que vous voulez, avec les '
+                    'rappels de toutes leurs échéances.',
               ),
               _Inclus(
                 icone: AppIcons.courrier,

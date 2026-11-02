@@ -8,6 +8,7 @@ import '../../../app/routes.dart';
 import '../../../core/config/config_app.dart';
 import '../../../core/widgets/composants.dart';
 import '../../../core/widgets/listes.dart';
+import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/services/tableau_de_bord.dart';
 import '../../echeances/detail_echeance.dart';
@@ -59,6 +60,7 @@ class _SectionEcheancesState extends ConsumerState<SectionEcheances> {
                   aujourdhui: aujourdhui,
                   onTap: () => ouvrirDetailEcheance(context, e),
                   onCalculer: _actionDirecte(context, e),
+                  sansRappel: ref.watch(sansRappelProvider(e.bienId)),
                 ),
             ],
           ),

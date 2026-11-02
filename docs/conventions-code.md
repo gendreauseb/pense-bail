@@ -118,8 +118,9 @@ anglais restent tels quels (`build`, `copyWith`, `Provider`).
 - Rappels par défaut : préférences de l'utilisateur
   (`GestionPreferencesRappels`), sinon `ConfigApp.rappelsParDefautJours`.
 - `NotificationsLocales` reprogramme tout à chaque changement des tables
-  échéances, rappels, biens ou réglages (60 notifications max, 9 h, heure
-  approximative).
+  échéances, rappels, biens ou réglages, et à chaque changement de droits
+  (60 notifications max, 9 h, heure approximative). Version gratuite :
+  rien pour les biens de `AccesBiens.sansRappel`.
 - Les échéances automatiques ne sont recalculées que si le type de location,
   le type de bail, les dates ou la durée changent (`GestionBiens`).
 

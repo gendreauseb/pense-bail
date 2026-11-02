@@ -109,4 +109,23 @@ void main() {
     );
     expect(plan, isEmpty);
   });
+
+  test('biens sans rappel : leurs échéances seulement', () {
+    final plan = PlanificationRappels.planifier(
+      echeances: [
+        _echeance('actif', DateTime(2026, 12, 1)),
+        _echeance('verrouille', DateTime(2026, 12, 1), bienId: 'b2'),
+        _echeance('commune', DateTime(2026, 12, 1), bienId: null),
+      ],
+      rappels: const [
+        Rappel(id: 1, echeanceId: 'actif', joursAvant: 7),
+        Rappel(id: 2, echeanceId: 'verrouille', joursAvant: 7),
+        Rappel(id: 3, echeanceId: 'commune', joursAvant: 7),
+      ],
+      nomsBiens: const {},
+      maintenant: maintenant,
+      biensSansRappel: const {'b2'},
+    );
+    expect(plan.map((r) => r.echeanceId), ['actif', 'commune']);
+  });
 }

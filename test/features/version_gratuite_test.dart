@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:pense_bail/app/routes.dart';
 import 'package:pense_bail/core/config/cles_reglages.dart';
+import 'package:pense_bail/core/widgets/listes.dart';
 import 'package:pense_bail/data/local/database.dart';
 import 'package:pense_bail/data/repositories/drift_repositories.dart';
 import 'package:pense_bail/domain/entities/entities.dart';
@@ -135,6 +136,52 @@ void main() {
       findsOneWidget,
     );
     await fermer(tester);
+  });
+
+  group('échéances du bien en lecture seule : « Sans rappel »', () {
+    Future<List<LigneEcheance>> lignes(WidgetTester tester) async {
+      // Toutes les échéances de l'accueil.
+      final plus = find.textContaining('Afficher les');
+      await tester.ensureVisible(plus);
+      await tester.pumpAndSettle();
+      await tester.tap(plus);
+      await attendre(tester);
+      return tester
+          .widgetList<LigneEcheance>(find.byType(LigneEcheance))
+          .toList();
+    }
+
+    testWidgets('version gratuite : mention et explication', (tester) async {
+      await lancer(tester, droits: Droits.gratuit);
+      final toutes = await lignes(tester);
+      expect(toutes.where((l) => l.echeance.bienId == 't2'), isNotEmpty);
+      for (final l in toutes) {
+        expect(l.sansRappel, l.echeance.bienId == 't2', reason: l.echeance.id);
+      }
+
+      final t2 = find
+          .ancestor(
+            of: find.text('T2 Belleville'),
+            matching: find.byType(LigneEcheance),
+          )
+          .first;
+      await tester.ensureVisible(t2);
+      await tester.pumpAndSettle();
+      await tester.tap(t2);
+      await attendre(tester);
+      expect(find.textContaining('Pas de rappel pour ce bien'), findsOneWidget);
+      await fermer(tester);
+    });
+
+    testWidgets('Premium : aucune mention', (tester) async {
+      await lancer(tester, droits: Droits.premium);
+      expect((await lignes(tester)).where((l) => l.sansRappel), isEmpty);
+      expect(
+        find.textContaining('Sans rappel', findRichText: true),
+        findsNothing,
+      );
+      await fermer(tester);
+    });
   });
 
   testWidgets("accueil : pas d'invitation à compléter un bien verrouillé", (

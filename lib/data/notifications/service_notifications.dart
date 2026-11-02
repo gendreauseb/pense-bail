@@ -10,6 +10,7 @@ import 'package:timezone/timezone.dart' as tz;
 import '../../app/design/app_colors.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
+import '../../domain/services/acces_biens.dart';
 import '../../domain/services/planification_rappels.dart';
 import '../local/database.dart';
 
@@ -47,6 +48,7 @@ class NotificationsLocales implements ServiceNotifications {
     required this._echeances,
     required this._biens,
     required this._preferences,
+    required this._droits,
     FlutterLocalNotificationsPlugin? plugin,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
@@ -54,9 +56,13 @@ class NotificationsLocales implements ServiceNotifications {
   final EcheanceRepository _echeances;
   final BienRepository _biens;
   final Future<PreferencesRappels> Function() _preferences;
+
+  /// Version gratuite : pas de rappel pour les biens en lecture seule.
+  final SourceDroits Function() _droits;
   final FlutterLocalNotificationsPlugin _plugin;
 
   StreamSubscription<void>? _abonnement;
+  StreamSubscription<Droits>? _abonnementDroits;
   Timer? _minuterie;
 
   static final _canal = AndroidNotificationDetails(
@@ -118,6 +124,10 @@ class NotificationsLocales implements ServiceNotifications {
           ]),
         )
         .listen((_) => _planifierSynchronisation());
+    // Et à chaque changement de droits (fin ou reprise de l'abonnement).
+    _abonnementDroits = _droits().surveiller().listen(
+      (_) => _planifierSynchronisation(),
+    );
     unawaited(synchroniser());
 
     final lancement = await _plugin.getNotificationAppLaunchDetails();
@@ -176,12 +186,14 @@ class NotificationsLocales implements ServiceNotifications {
       final rappels = await _echeances.tousLesRappels();
       final biens = await _biens.tous();
       final preferences = await _preferences();
+      final droits = await _droits().surveiller().first;
       final plan = PlanificationRappels.planifier(
         echeances: echeances,
         rappels: rappels,
         nomsBiens: {for (final b in biens) b.id: b.nom},
         maintenant: DateTime.now(),
         typesSansRappel: preferences.typesDesactives,
+        biensSansRappel: AccesBiens.sansRappel(biens, droits),
       );
 
       await _plugin.cancelAllPendingNotifications();
@@ -213,5 +225,6 @@ class NotificationsLocales implements ServiceNotifications {
   void fermer() {
     _minuterie?.cancel();
     _abonnement?.cancel();
+    _abonnementDroits?.cancel();
   }
 }

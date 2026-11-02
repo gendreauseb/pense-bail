@@ -111,6 +111,7 @@ class _PanneauNotifications extends ConsumerWidget {
                     echeance: e,
                     sousTitre: nomBienEcheance(e, biens),
                     aujourdhui: aujourdhui,
+                    sansRappel: ref.watch(sansRappelProvider(e.bienId)),
                     onTap: () {
                       // Le contexte du panneau disparaît à sa fermeture :
                       // on ouvre le détail depuis celui du navigateur.

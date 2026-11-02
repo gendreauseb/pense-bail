@@ -26,13 +26,15 @@ class RappelAProgrammer {
 /// Calcule les notifications à programmer (fonction pure, testable).
 abstract final class PlanificationRappels {
   /// [nomsBiens] : nom de chaque bien par identifiant. Aucune notification
-  /// pour les types de [typesSansRappel] (désactivés dans les réglages).
+  /// pour les types de [typesSansRappel] (désactivés dans les réglages) ni
+  /// pour les biens de [biensSansRappel] (AccesBiens.sansRappel).
   static List<RappelAProgrammer> planifier({
     required List<Echeance> echeances,
     required List<Rappel> rappels,
     required Map<String, String> nomsBiens,
     required DateTime maintenant,
     Set<TypeEcheance> typesSansRappel = const {},
+    Set<String> biensSansRappel = const {},
     int maximum = ConfigApp.maxRappelsProgrammes,
   }) {
     final parId = {for (final e in echeances) e.id: e};
@@ -42,7 +44,8 @@ abstract final class PlanificationRappels {
       final echeance = parId[rappel.echeanceId];
       if (echeance == null ||
           !echeance.estAFaire ||
-          typesSansRappel.contains(echeance.type)) {
+          typesSansRappel.contains(echeance.type) ||
+          biensSansRappel.contains(echeance.bienId)) {
         continue;
       }
 

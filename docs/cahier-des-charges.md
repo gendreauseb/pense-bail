@@ -152,7 +152,9 @@ Détail des règles : [decisions.md](decisions.md).
   d'artisans et interventions.
 - **Passage en gratuit** : rien n'est supprimé. Le bien le plus ancien
   reste actif ; les autres restent visibles en lecture seule, leurs
-  échéances et rappels continuent (« faite » et « reporter » possibles).
+  échéances restent affichées mais ne sont plus notifiées (mention « Sans
+  rappel » ; « faite » et « reporter » possibles). Les échéances communes
+  à tous les biens restent notifiées.
   Ce qui a été produit (courriers, rentabilité, artisans) reste
   consultable. Un message unique sur l'accueil l'explique.
 - **Verrous** : bandeau avec cadenas expliquant en une phrase ce que

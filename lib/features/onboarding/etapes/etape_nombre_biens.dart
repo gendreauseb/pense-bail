@@ -83,12 +83,13 @@ class EtapeNombreBiens extends ConsumerWidget {
               icone: AppIcons.verrou,
               texte: maxGratuit == 1
                   ? 'La version gratuite permet de gérer un bien. Les autres '
-                        'seront enregistrés et consultables, en lecture seule. '
-                        'Pense-Bail Premium permet de tous les gérer.'
+                        'seront enregistrés et consultables, en lecture seule '
+                        'et sans rappel. Pense-Bail Premium permet de tous '
+                        'les gérer.'
                   : 'La version gratuite permet de gérer $maxGratuit biens. '
                         'Les autres seront enregistrés et consultables, en '
-                        'lecture seule. Pense-Bail Premium permet de tous '
-                        'les gérer.',
+                        'lecture seule et sans rappel. Pense-Bail Premium '
+                        'permet de tous les gérer.',
             )
           else
             const Note(

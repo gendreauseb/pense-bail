@@ -23,6 +23,18 @@ abstract final class AccesBiens {
     return {for (final b in tries.take(max)) b.id};
   }
 
+  /// Biens loués au-delà de la limite (en lecture seule du fait des droits) :
+  /// leurs échéances ne sont pas notifiées. Les échéances restantes d'un
+  /// bien vendu ou retiré, et celles communes à tous les biens, le sont
+  /// toujours.
+  static Set<String> sansRappel(List<Bien> biens, Droits droits) {
+    final actifs = AccesBiens.actifs(biens, droits);
+    return {
+      for (final b in biens)
+        if (b.enLocation && !actifs.contains(b.id)) b.id,
+    };
+  }
+
   /// Un nouveau bien peut-il être ajouté ?
   static bool peutAjouter(List<Bien> biens, Droits droits) {
     final max = droits.maxBiensActifs;

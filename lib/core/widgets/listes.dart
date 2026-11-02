@@ -125,6 +125,7 @@ class LigneEcheance extends StatelessWidget {
     this.avecTuile = true,
     this.dense = true,
     this.onCalculer,
+    this.sansRappel = false,
   });
 
   final Echeance echeance;
@@ -132,6 +133,9 @@ class LigneEcheance extends StatelessWidget {
   final DateTime aujourdhui;
   final VoidCallback onTap;
   final bool avecTuile;
+
+  /// Mention « Sans rappel » (bien en lecture seule, version gratuite).
+  final bool sansRappel;
 
   /// Pastille « 4 j » (liste dense) ou « Dans 4 j » (fiche).
   final bool dense;
@@ -155,7 +159,8 @@ class LigneEcheance extends StatelessWidget {
 
     final libelle =
         '${echeance.titre}, $sousTitre, le ${Formats.date(echeance.date)}, '
-        '${textePastille(echeance.date, aujourdhui: aujourdhui, dense: false)}';
+        '${textePastille(echeance.date, aujourdhui: aujourdhui, dense: false)}'
+        '${sansRappel ? ', sans rappel' : ''}';
 
     // Le contenu visuel est remplacé par un libellé complet ; le bouton
     // « Calculer » reste accessible séparément.
@@ -171,6 +176,23 @@ class LigneEcheance extends StatelessWidget {
             children: [
               Text(echeance.titre, style: t.rowTitle),
               Text(sousTitre, style: t.secondary),
+              if (sansRappel)
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: Icon(
+                          AppIcons.notificationsCoupees,
+                          size: AppSizes.iconePetite,
+                          color: context.couleurs.textMuted,
+                        ),
+                      ),
+                      const TextSpan(text: ' Sans rappel'),
+                    ],
+                  ),
+                  style: t.caption.copyWith(color: context.couleurs.textMuted),
+                ),
             ],
           ),
         ),

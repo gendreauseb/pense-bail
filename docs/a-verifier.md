@@ -113,7 +113,7 @@ mention contraire.
   courrier réel généré par l'application.
 - [ ] Écran de révision : textes des étapes 1 à 3.
 - [ ] Vente et retrait d'un bien : choix, formulaire, confirmations, bilan
-  de la vente (lib/features/biens/sortie/, entabilite/bilan_vente.dart).
+  de la vente (`lib/features/biens/sortie/`, `rentabilite/bilan_vente.dart`).
 - [ ] Mentions légales de l'application et politique de confidentialité
   (`docs/publication/politique-confidentialite.html`).
 
@@ -130,6 +130,9 @@ mention contraire.
 - [ ] **Accueil sans aucun bien** (après suppression du dernier).
 - [ ] **Bien vendu puis vente annulée** : les rappels arrêtés reprennent
   (notifications reprogrammées).
+- [ ] **Passage en version gratuite avec deux biens** (bascule de la bêta) :
+  le second n'envoie plus de notification, le premier et la déclaration
+  des revenus fonciers continuent ; de retour en Premium, tout reprend.
 - [ ] **Message « … est faite. Annuler »** : durée d'affichage acceptable ?
 - [ ] **Sauvegarde Google** : installer l'application sur un second
   téléphone avec le même compte, vérifier que les biens et les photos

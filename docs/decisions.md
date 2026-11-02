@@ -112,10 +112,17 @@ Version gratuite et Premium
   - Autres biens : visibles partout avec la mention « Lecture seule »,
     bandeau sur la fiche. Pas de modification, de photo, de bail, de
     locataire, ni d'invitation à compléter. Suppression possible.
-  - Leurs échéances restent affichées et notifiées ; « faite » et
-    « reporter » restent possibles, pas l'ajout, la modification ni la
-    suppression (ni le déplacement vers le bien actif). Les échéances
-    communes à tous les biens ne sont pas concernées.
+  - Leurs échéances restent affichées (accueil compris) mais ne sont plus
+    notifiées (décidé le 25/10/2026, précisé le 02/11/2026) : sinon on
+    pourrait saisir tous ses biens pendant l'essai, résilier et garder
+    tous ses rappels. Mention « Sans rappel » sur chaque ligne,
+    explication dans le détail et sur le bandeau de la fiche
+    (`AccesBiens.sansRappel`). Les échéances communes à tous les biens et
+    celles qui restent à un bien vendu ou retiré sont toujours notifiées.
+    Reprogrammation à chaque changement de droits.
+  - « Faite » et « reporter » restent possibles, pas l'ajout, la
+    modification ni la suppression (ni le déplacement vers le bien actif).
+    Les échéances communes à tous les biens ne sont pas concernées.
   - Révision sur un bien verrouillé : calcul visible, confirmation refusée.
   - Rentabilité et artisans : ce qui est déjà saisi reste consultable, en
     lecture seule (appeler et écrire restent possibles) ; sans données,
@@ -202,20 +209,8 @@ Publication
   jamais promu en production ; la version publique est reconstruite sans le
   drapeau.
 
-## Décidé, à implémenter
-
-- **Notifications limitées au bien actif en version gratuite** (décidé le
-  25/10/2026). Les échéances des biens en lecture seule ne sont plus
-  notifiées (sinon on peut saisir tous ses biens pendant l'essai, résilier
-  et garder tous ses rappels gratuitement). Remplacera « Leurs échéances
-  restent affichées et notifiées » dans « Perte du Premium » une fois
-  implémenté. Questions restantes : voir les points ouverts.
-
 ## Points ouverts (à trancher par l'utilisateur)
 
-- Notifications limitées au bien actif : les échéances des biens en
-  lecture seule restent-elles affichées sur l'accueil ? Les échéances
-  communes à tous les biens restent-elles notifiées ?
 - Chiffrer la sauvegarde par mot de passe ? (elle contient les données des
   locataires en clair).
 - Interprétations juridiques incertaines (révision demandée en retard,
@@ -233,10 +228,6 @@ ligne une fois faite.
 
 1. iOS, avant sa sortie : icône, écran de lancement, langue française par
    défaut (A5-04).
-2. Notifications limitées au bien actif en version gratuite, avant la
-   production. Corriger en même temps les textes qui promettent les rappels
-   pour tous les biens : écran Premium (« Toujours gratuit »), message de
-   fin d'abonnement, cahier des charges.
 
 En attente de l'utilisateur
 - Bannière jaune pour les rappels désactivés : à confirmer, puis à inscrire

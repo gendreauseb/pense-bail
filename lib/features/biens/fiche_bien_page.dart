@@ -376,8 +376,9 @@ class _Panneau extends ConsumerWidget {
             BandeauVerrou(
               texte:
                   'Ce bien est en lecture seule dans la version gratuite : '
-                  'vous consultez ses informations et suivez ses échéances. '
-                  'Pense-Bail Premium permet de le modifier.',
+                  'vous consultez ses informations et ses échéances, sans '
+                  'rappel. Pense-Bail Premium permet de le modifier et '
+                  'rétablit ses rappels.',
               onDecouvrir: () => ouvrirPremium(context),
             ),
           ],

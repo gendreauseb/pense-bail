@@ -31,14 +31,17 @@ Future<void> main() async {
     reglages: DriftReglagesRepository(db),
     echeances: DriftEcheanceRepository(db),
   );
+  // Les droits viennent du conteneur (seule source), créé juste après.
+  late final ProviderContainer conteneur;
   final notifications = NotificationsLocales(
     db: db,
     echeances: DriftEcheanceRepository(db),
     biens: DriftBienRepository(db),
     preferences: preferences.lire,
+    droits: () => conteneur.read(sourceDroitsProvider),
   );
 
-  final conteneur = ProviderContainer(
+  conteneur = ProviderContainer(
     overrides: [
       databaseProvider.overrideWithValue(db),
       dossierDocumentsProvider.overrideWithValue(documents),

@@ -135,6 +135,21 @@ void main() {
       );
       expect(AccesBiens.perdraientAcces(biens, retire, Droits.premium), []);
     });
+
+    test('sans rappel : biens loués au-delà de la limite seulement', () {
+      final troisieme = unBien(id: 'troisieme', creeLe: DateTime(2026, 6));
+      final vendu = unBien(
+        id: 'vendu',
+        creeLe: DateTime(2026, 9),
+      ).copyWith(venduLe: DateTime(2026, 9, 1), venduLoue: false);
+      final biens = [ancien, recent, troisieme, vendu];
+      // Le bien vendu garde les rappels de ses dernières échéances.
+      expect(AccesBiens.sansRappel(biens, Droits.gratuit), {
+        'recent',
+        'troisieme',
+      });
+      expect(AccesBiens.sansRappel(biens, Droits.premium), isEmpty);
+    });
   });
 
   group('cas d\'usage', () {

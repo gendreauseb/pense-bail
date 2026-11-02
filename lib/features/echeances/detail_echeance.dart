@@ -59,6 +59,7 @@ class _PanneauEcheance extends ConsumerWidget {
       diagnostic: echeance.typeDiagnostic,
     );
     final recurrence = texteRecurrence(echeance.intervalleMois);
+    final sansRappel = ref.watch(sansRappelProvider(echeance.bienId));
     final texteDesRappels = rappels == null
         ? null
         : texteRappels([for (final r in rappels) r.joursAvant]);
@@ -130,7 +131,14 @@ class _PanneauEcheance extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.bloc),
           if (recurrence != null) info(AppIcons.echeance, recurrence),
-          if (texteDesRappels != null) info(AppIcons.rappel, texteDesRappels),
+          if (sansRappel)
+            info(
+              AppIcons.notificationsCoupees,
+              'Pas de rappel pour ce bien, en lecture seule dans la version '
+              'gratuite. Pense-Bail Premium rétablit ses rappels.',
+            )
+          else if (texteDesRappels != null)
+            info(AppIcons.rappel, texteDesRappels),
           if (dateInitiale != null)
             info(
               AppIcons.calendrier,
