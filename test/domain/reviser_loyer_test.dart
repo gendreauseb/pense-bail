@@ -89,7 +89,7 @@ void main() {
         chargesCentimes: 5000,
       );
 
-  test('à temps : loyer, IRL de référence, historique, échéance', () async {
+  test('à temps : loyer, IRL de référence, historique, échéance', () async {
     final aujourdhui = DateTime(2026, 8, 10);
     // Révisé l'an dernier : l'IRL de référence est celui du T2 2025.
     final (bien, bail) = await studio(
@@ -136,7 +136,7 @@ void main() {
     );
   });
 
-  test('en retard : effet à la demande, échéance suivante intacte', () async {
+  test('en retard : effet à la demande, échéance suivante intacte', () async {
     final aujourdhui = DateTime(2026, 9, 25);
     final (bien, bail) = await studio(aujourdhui);
     final avant = (await revisionsAFaire()).single;
@@ -155,7 +155,7 @@ void main() {
     expect((await revisionsAFaire()).single.id, avant.id);
   });
 
-  test("bien en lecture seule : la révision n'est pas enregistrée", () async {
+  test("bien en lecture seule : la révision n'est pas enregistrée", () async {
     final aujourdhui = DateTime(2026, 8, 10);
     final (bien, bail) = await studio(
       aujourdhui,
@@ -191,7 +191,7 @@ void main() {
   });
 
   test(
-    'version gratuite : révision enregistrée, courrier non inclus',
+    'version gratuite : révision enregistrée, courrier non inclus',
     () async {
       final aujourdhui = DateTime(2026, 8, 10);
       final (bien, bail) = await studio(

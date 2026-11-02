@@ -55,7 +55,7 @@ void main() {
     revision: r,
   );
 
-  test("contenu : parties, calcul, nouveau loyer, date d'application", () {
+  test("contenu : parties, calcul, nouveau loyer, date d'application", () {
     final c = courrier(revision(dateEffet: DateTime(2026, 9, 1)));
     expect(c.expediteur, [
       'Marie Durand',
@@ -68,7 +68,7 @@ void main() {
     expect(c.introduction.first, contains('article 17-1 de la loi'));
     expect(c.calcul[1], ('IRL du 2e trimestre 2025', '146,68'));
     expect(c.calcul.last.$2, '650,00$e€ × 148,37 / 146,68 = 657,49$e€');
-    expect(c.application, contains('1 septembre 2026, date de révision'));
+    expect(c.application, contains('1 septembre 2026, date anniversaire'));
     expect(c.nouveauLoyer, [
       ('Nouveau loyer hors charges', '657,49$e€'),
       ('Charges (inchangées)', '50,00$e€'),
@@ -76,7 +76,27 @@ void main() {
     ]);
   });
 
-  test('demandée en retard : non rétroactive', () {
+  test("n'affirme rien que le bail ne dit peut-être pas (A2-02)", () {
+    final c = courrier(revision(dateEffet: DateTime(2026, 9, 1)));
+    // Trimestre éventuellement choisi par défaut, date anniversaire.
+    expect(c.introduction.join(' '), isNot(contains('prévu au bail')));
+    expect(c.introduction[1], startsWith("L'indice de référence est celui"));
+    expect(c.application, isNot(contains('prévue au bail')));
+
+    final avecDate = CourrierRevision.depuis(
+      bailleur: bailleur,
+      locataires: [locataire],
+      bien: unBien(),
+      bail: unBail(
+        debut: DateTime(2023, 9, 1),
+        dateRevision: DateTime(2024, 9, 1),
+      ),
+      revision: revision(dateEffet: DateTime(2026, 9, 1)),
+    );
+    expect(avecDate.application, contains('date de révision prévue au bail'));
+  });
+
+  test('demandée en retard : non rétroactive', () {
     final c = courrier(revision(dateEffet: DateTime(2026, 9, 25)));
     expect(c.application, contains("n'étant pas rétroactive"));
     expect(c.application, contains('25 septembre 2026'));

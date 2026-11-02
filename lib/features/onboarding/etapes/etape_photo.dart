@@ -77,9 +77,9 @@ class _EtapePhotoState extends ConsumerState<EtapePhoto> {
 
     return GabaritEtape(
       entete: ProgressionBien(brouillon: b),
-      titre: 'Une photo de $nom ?',
+      titre: 'Une photo de $nom ?',
       sousTitre:
-          'Facultatif : elle vous aidera à reconnaître vos biens d\'un coup d\'œil.',
+          'Facultatif : elle vous aidera à reconnaître vos biens d\'un coup d\'œil.',
       onRetour: _controleur.precedent,
       libelleAction: aUnePhoto
           ? (dernier ? 'Voir le récapitulatif' : 'Bien suivant')

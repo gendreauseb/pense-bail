@@ -190,7 +190,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       }
       routeur.pushReplacement(Routes.ficheBien(bien.id));
       messager.showSnackBar(
-        SnackBar(content: Text('« ${bien.nom} » a été ajouté.')),
+        SnackBar(content: Text('« ${bien.nom} » a été ajouté.')),
       );
     } else {
       final modifie = await executerSiAutorise(
@@ -246,7 +246,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
               ChampTexte(
                 controleur: _nom,
                 libelle: 'Nom du bien',
-                aide: 'Le nom affiché partout. Exemple : Studio Gambetta',
+                aide: 'Le nom affiché partout. Exemple : Studio Gambetta',
                 majuscules: TextCapitalization.sentences,
                 validator: (v) => Validateurs.obligatoire(
                   v,
@@ -387,7 +387,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                     (v != null &&
                         v.trim().isNotEmpty &&
                         Formats.parseDecimal(v) == null)
-                    ? 'Surface incorrecte (exemple : 32,5).'
+                    ? 'Surface incorrecte (exemple : 32,5).'
                     : null,
               ),
               if (_typeLogement == TypeLogement.immeuble)
@@ -422,9 +422,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                 const SizedBox(height: AppSpacing.bloc),
                 const Note(
                   icone: AppIcons.energie,
-                  texte:
-                      'Logement classé F ou G : la loi interdit d\'augmenter '
-                      'son loyer, la révision n\'est pas possible.',
+                  texte: ReglesLegales.noteGelDpe,
                 ),
               ],
               const SizedBox(height: AppSpacing.bloc),

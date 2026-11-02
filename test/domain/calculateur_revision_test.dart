@@ -58,7 +58,7 @@ void main() {
     // Bail du 01/09/2023 : révision chaque 1er septembre.
     final bail = unBail(debut: DateTime(2023, 9, 1));
 
-    test('avant la date prévue : révision de cette année, à la date', () {
+    test('avant la date prévue : révision de cette année, à la date', () {
       final c = CalculateurRevision.cycle(
         bail,
         aujourdhui: DateTime(2026, 8, 10),
@@ -69,7 +69,7 @@ void main() {
       expect(c.dateEffet, DateTime(2026, 9, 1));
     });
 
-    test("en retard de moins d'un an : effet à la date de la demande", () {
+    test("en retard de moins d'un an : effet à la date de la demande", () {
       final c = CalculateurRevision.cycle(
         bail,
         aujourdhui: DateTime(2026, 9, 25),
@@ -80,7 +80,7 @@ void main() {
       expect(c.dateLimiteDemande, DateTime(2027, 8, 31));
     });
 
-    test('déjà révisé cette année : révision suivante', () {
+    test('déjà révisé cette année : révision suivante', () {
       final c = CalculateurRevision.cycle(
         bail,
         aujourdhui: DateTime(2026, 9, 25),
@@ -89,7 +89,7 @@ void main() {
       expect(c.datePrevue, DateTime(2027, 9, 1));
     });
 
-    test("plus d'un an de retard : l'année est perdue", () {
+    test("plus d'un an de retard : l'année est perdue", () {
       final c = CalculateurRevision.cycle(
         bail,
         aujourdhui: DateTime(2026, 9, 2),
@@ -99,7 +99,7 @@ void main() {
       expect(c.datePrevue, DateTime(2026, 9, 1));
     });
 
-    test("IRL de référence déjà à jour : révision de l'an dernier faite", () {
+    test("IRL de référence déjà à jour : révision de l'an dernier faite", () {
       final aJour = bail.copyWith(
         irlTrimestre: 2,
         irlAnnee: 2025,
@@ -158,7 +158,7 @@ void main() {
       );
     });
 
-    test('trimestre par défaut : dernier publié à la signature', () {
+    test('trimestre par défaut : dernier publié à la signature', () {
       final t = CalculateurRevision.dernierTrimestrePublie(
         DateTime(2023, 9, 1),
       );
@@ -246,14 +246,14 @@ void main() {
   group('blocages', () {
     final bail = unBail(debut: DateTime(2024, 1, 1));
 
-    test('longue durée, bail vide, DPE D : autorisé', () {
+    test('longue durée, bail vide, DPE D : autorisé', () {
       expect(
         CalculateurRevision.blocages(unBien(classeDpe: ClasseDpe.d), bail),
         isEmpty,
       );
     });
 
-    test('DPE F ou G : révision interdite', () {
+    test('DPE F ou G : révision interdite', () {
       expect(
         CalculateurRevision.blocages(unBien(classeDpe: ClasseDpe.f), bail),
         [BlocageRevision.dpeGel],
@@ -261,6 +261,25 @@ void main() {
       expect(
         CalculateurRevision.blocages(unBien(classeDpe: ClasseDpe.g), bail),
         [BlocageRevision.dpeGel],
+      );
+    });
+
+    test('bail sans clause de révision : révision impossible', () {
+      expect(
+        CalculateurRevision.blocages(
+          unBien(),
+          bail.copyWith(clauseRevision: false),
+        ),
+        [BlocageRevision.sansClause],
+      );
+      // « Je ne sais pas » : la révision reste possible (l'utilisateur
+      // confirme la clause au début de la révision).
+      expect(
+        CalculateurRevision.blocages(
+          unBien(),
+          bail.copyWith(clauseRevision: null),
+        ),
+        isEmpty,
       );
     });
 

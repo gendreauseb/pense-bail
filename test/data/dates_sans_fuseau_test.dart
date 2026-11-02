@@ -77,7 +77,7 @@ void main() {
       expect(echeance.date, DateTime(2026, 10, 15));
     });
 
-    test("filtre par année : du 1er janvier au 31 décembre", () async {
+    test("filtre par année : du 1er janvier au 31 décembre", () async {
       await DriftBienRepository(db).enregistrer(unBien());
       final finances = DriftFinanceRepository(db);
       for (final (id, date) in [
@@ -103,7 +103,7 @@ void main() {
     });
   });
 
-  test('mise à jour du schéma 4 : dates réécrites sans fuseau', () async {
+  test('mise à jour du schéma 4 : dates réécrites sans fuseau', () async {
     final dossier = await Directory.systemTemp.createTemp('pense_bail_v4');
     addTearDown(() => dossier.delete(recursive: true));
     final fichier = File('${dossier.path}/base.sqlite');
@@ -118,6 +118,8 @@ void main() {
       "'2026-10-16T00:00:00.000+02:00', 0, "
       "'2026-01-01T10:00:00.000+02:00', '2026-01-01T10:00:00.000+02:00')",
     );
+    // Colonnes ajoutées après le schéma 4.
+    await v4.customStatement('ALTER TABLE baux DROP COLUMN clause_revision');
     await v4.customStatement('PRAGMA user_version = 4');
     await v4.close();
 
@@ -138,5 +140,12 @@ void main() {
     expect(echeance.date, DateTime(2026, 10, 15));
     expect(echeance.dateInitiale, DateTime(2026, 10, 1));
     expect(echeance.faiteLe, DateTime(2026, 10, 16));
+
+    // Schéma 6 : clause de révision ajoutée, inconnue pour les baux
+    // existants.
+    final colonnes = await db
+        .customSelect("SELECT name FROM pragma_table_info('baux')")
+        .get();
+    expect(colonnes.map((c) => c.data['name']), contains('clause_revision'));
   });
 }

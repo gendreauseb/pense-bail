@@ -53,7 +53,10 @@ void main() {
       biensInitiaux: [
         BienInitial(
           bien: unBien(id: 'studio', nom: 'Studio Gambetta'),
-          bail: unBail(bienId: 'studio', debut: DateTime(2023, 9, 1)),
+          bail: unBail(
+            bienId: 'studio',
+            debut: DateTime(2023, 9, 1),
+          ).copyWith(clauseRevision: true),
         ),
         BienInitial(
           bien: unBien(
@@ -65,6 +68,15 @@ void main() {
           bail: unBail(
             id: 'bail-2',
             bienId: 'maison',
+            debut: DateTime(2023, 9, 1),
+          ),
+        ),
+        // Clause de révision inconnue.
+        BienInitial(
+          bien: unBien(id: 'appart', nom: 'Appartement', ordre: 2),
+          bail: unBail(
+            id: 'bail-3',
+            bienId: 'appart',
             debut: DateTime(2023, 9, 1),
           ),
         ),
@@ -114,44 +126,44 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('révision en retard : données, indices INSEE, résultat', (
+  testWidgets('révision en retard : données, indices INSEE, résultat', (
     tester,
   ) async {
     await ouvrir(tester, Routes.revision('studio'));
 
-    expect(find.bySemanticsLabel('Étape 1 sur 3 : Vos données'), findsOne);
+    expect(find.bySemanticsLabel('Étape 1 sur 3 : Vos données'), findsOne);
     expect(
-      find.bySemanticsLabel('Date de révision prévue : 01/09/2026'),
+      find.bySemanticsLabel('Date de révision prévue : 01/09/2026'),
       findsOneWidget,
     );
     expect(
-      find.bySemanticsLabel('Nouveau loyer applicable : Dès votre courrier'),
+      find.bySemanticsLabel('Nouveau loyer applicable : Dès votre courrier'),
       findsOneWidget,
     );
     expect(find.textContaining('jusqu\'au 31/08/2027'), findsOneWidget);
 
     await suivant(tester, 'Continuer');
-    expect(find.bySemanticsLabel('Étape 2 sur 3 : Indices IRL'), findsOne);
+    expect(find.bySemanticsLabel('Étape 2 sur 3 : Indices IRL'), findsOne);
     // Trimestre par défaut : dernier publié à la signature (T2 2023).
     expect(
-      find.bySemanticsLabel('Ancien indice, 2e trimestre 2025 : 146,68'),
+      find.bySemanticsLabel('Ancien indice, 2e trimestre 2025 : 146,68'),
       findsOneWidget,
     );
     expect(
-      find.bySemanticsLabel('Nouvel indice, 2e trimestre 2026 : 148,37'),
+      find.bySemanticsLabel('Nouvel indice, 2e trimestre 2026 : 148,37'),
       findsOneWidget,
     );
 
     await suivant(tester, 'Calculer le nouveau loyer');
     expect(
-      find.bySemanticsLabel('Nouveau loyer hors charges : 657,49$e€ / mois'),
+      find.bySemanticsLabel('Nouveau loyer hors charges : 657,49$e€ / mois'),
       findsOneWidget,
     );
     expect(
-      find.bySemanticsLabel('Évolution par mois : +7,49$e€'),
+      find.bySemanticsLabel('Évolution par mois : +7,49$e€'),
       findsOneWidget,
     );
-    expect(find.bySemanticsLabel('À partir du : 25/09/2026'), findsOneWidget);
+    expect(find.bySemanticsLabel('À partir du : 25/09/2026'), findsOneWidget);
     expect(
       find.text('Ajoutez le locataire pour qu\'il figure sur le courrier.'),
       findsOneWidget,
@@ -160,11 +172,11 @@ void main() {
     // Retour à l'étape précédente.
     await tester.tap(find.byTooltip('Étape précédente'));
     await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel('Étape 2 sur 3 : Indices IRL'), findsOne);
+    expect(find.bySemanticsLabel('Étape 2 sur 3 : Indices IRL'), findsOne);
     await fermer(tester);
   });
 
-  testWidgets('confirmation : loyer du bien mis à jour', (tester) async {
+  testWidgets('confirmation : loyer du bien mis à jour', (tester) async {
     await ouvrir(tester, Routes.revision('studio'));
     await suivant(tester, 'Continuer');
     await suivant(tester, 'Calculer le nouveau loyer');
@@ -181,14 +193,14 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('déjà révisé hors de l\'application : révision suivante', (
+  testWidgets('déjà révisé hors de l\'application : révision suivante', (
     tester,
   ) async {
     await ouvrir(tester, Routes.revision('studio'));
     await tester.tap(find.text('J\'ai déjà révisé le loyer au 01/09/2026'));
     await tester.pumpAndSettle();
     expect(
-      find.bySemanticsLabel('Date de révision prévue : 01/09/2027'),
+      find.bySemanticsLabel('Date de révision prévue : 01/09/2027'),
       findsOneWidget,
     );
     await suivant(tester, 'Continuer');
@@ -197,14 +209,68 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('DPE G : révision bloquée', (tester) async {
+  group('clause de révision inconnue', () {
+    FilledButton bouton(WidgetTester tester, String libelle) =>
+        tester.widget<FilledButton>(find.widgetWithText(FilledButton, libelle));
+
+    testWidgets('« Oui » : retenu sur le bail, puis le calcul', (
+      tester,
+    ) async {
+      await ouvrir(tester, Routes.revision('appart'));
+      expect(
+        find.text('Votre bail prévoit-il la révision du loyer ?'),
+        findsOneWidget,
+      );
+      // « Je ne sais pas » au départ : impossible de continuer.
+      expect(bouton(tester, 'Continuer').onPressed, isNull);
+
+      await tester.tap(find.text('Oui'));
+      await tester.pumpAndSettle();
+      await suivant(tester, 'Continuer');
+      await attendre(tester);
+      expect(find.bySemanticsLabel('Étape 2 sur 3 : Indices IRL'), findsOne);
+      final bail = await tester.runAsync(
+        () => DriftBailRepository(db).bailActif('appart'),
+      );
+      expect(bail!.clauseRevision, isTrue);
+      await fermer(tester);
+    });
+
+    testWidgets('« Non » : réponse retenue, plus de rappel de révision', (
+      tester,
+    ) async {
+      await ouvrir(tester, Routes.revision('appart'));
+      await tester.tap(find.text('Non'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Sans clause de révision'), findsOneWidget);
+
+      await suivant(tester, 'Enregistrer ma réponse');
+      await attendre(tester);
+      final (bail, echeances) = (await tester.runAsync(
+        () async => (
+          await DriftBailRepository(db).bailActif('appart'),
+          await DriftEcheanceRepository(db).aFaire(),
+        ),
+      ))!;
+      expect(bail!.clauseRevision, isFalse);
+      expect(
+        echeances.where(
+          (e) => e.bienId == 'appart' && e.type == TypeEcheance.revisionLoyer,
+        ),
+        isEmpty,
+      );
+      await fermer(tester);
+    });
+  });
+
+  testWidgets('DPE G : révision bloquée', (tester) async {
     await ouvrir(tester, Routes.revision('maison'));
     expect(find.textContaining('classé F ou G'), findsOneWidget);
     expect(find.text('Modifier le bien'), findsOneWidget);
     await fermer(tester);
   });
 
-  testWidgets('version gratuite : révision enregistrée, sans courrier', (
+  testWidgets('version gratuite : révision enregistrée, sans courrier', (
     tester,
   ) async {
     await ouvrir(tester, Routes.revision('studio'), droits: Droits.gratuit);

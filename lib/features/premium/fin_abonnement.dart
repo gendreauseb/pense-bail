@@ -29,7 +29,7 @@ class TextesFinAbonnement {
 
   String? get texteBienActif => bienActif == null
       ? null
-      : '« $bienActif » reste votre bien actif : vous pouvez le modifier '
+      : '« $bienActif » reste votre bien actif : vous pouvez le modifier '
             'comme avant.';
 
   String? get texteAutresBiens => switch (autres) {
@@ -90,7 +90,7 @@ class _MessageFinAbonnement extends ConsumerWidget {
           const Note(
             icone: AppIcons.confidentialite,
             texte:
-                "Rien n'a été supprimé : toutes vos données restent sur ce "
+                "Rien n'a été supprimé : toutes vos données restent sur ce "
                 'téléphone.',
           ),
           const SizedBox(height: AppSpacing.section),
@@ -100,8 +100,8 @@ class _MessageFinAbonnement extends ConsumerWidget {
             paragraphe(AppIcons.verrou, texte),
           paragraphe(
             AppIcons.echeance,
-            "Toujours gratuit : les échéances et leurs rappels, l'alerte DPE "
-            'et le calcul de la révision du loyer.',
+            "Toujours gratuit : les échéances et leurs rappels, le contrôle "
+            'du DPE (logements F et G) et le calcul de la révision du loyer.',
           ),
           paragraphe(
             AppIcons.document,

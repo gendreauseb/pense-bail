@@ -60,7 +60,7 @@ class ArtisansPage extends ConsumerWidget {
                 icone: AppIcons.artisans,
                 texte:
                     'Aucun artisan pour le moment. Ajoutez ceux que vous '
-                    'appelez en cas de souci : plombier, électricien…',
+                    'appelez en cas de souci : plombier, électricien…',
               )
             else if (artisans.isNotEmpty)
               CarteListe(
@@ -97,10 +97,11 @@ class _LigneArtisan extends StatelessWidget {
     final a = artisan;
     final telephone = a.telephone;
     final email = a.email;
+    final onTap = modifiable
+        ? () => context.push(Routes.avec(Routes.artisan, {'artisan': a.id}))
+        : null;
     return InkWell(
-      onTap: modifiable
-          ? () => context.push(Routes.avec(Routes.artisan, {'artisan': a.id}))
-          : null,
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.ligne,
@@ -110,18 +111,29 @@ class _LigneArtisan extends StatelessWidget {
         ),
         child: Row(
           children: [
-            TuileIcone(icone: AppIcons.metier(a.metier)),
-            const SizedBox(width: AppSpacing.bloc),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(a.nom, style: t.rowTitle),
-                  Text(
-                    [a.metier.libelle, ?a.entreprise].join(', '),
-                    style: t.secondary,
-                  ),
-                ],
+              // Appeler et écrire restent accessibles séparément.
+              child: SemantiqueLigne(
+                libelle: [a.nom, a.metier.libelle, ?a.entreprise].join(', '),
+                onTap: onTap,
+                child: Row(
+                  children: [
+                    TuileIcone(icone: AppIcons.metier(a.metier)),
+                    const SizedBox(width: AppSpacing.bloc),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(a.nom, style: t.rowTitle),
+                          Text(
+                            [a.metier.libelle, ?a.entreprise].join(', '),
+                            style: t.secondary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (telephone != null)

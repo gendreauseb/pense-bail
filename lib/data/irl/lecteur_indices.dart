@@ -23,7 +23,7 @@ abstract final class LecteurIndices {
     try {
       racine = jsonDecode(contenu);
     } on FormatException catch (e) {
-      throw FormatIndicesInvalide('JSON illisible : ${e.message}');
+      throw FormatIndicesInvalide('JSON illisible : ${e.message}');
     }
     if (racine is! Map<String, Object?>) {
       throw const FormatIndicesInvalide('Objet JSON attendu.');
@@ -31,7 +31,7 @@ abstract final class LecteurIndices {
     final version = racine['miseAJour'];
     final liste = racine['indices'];
     if (version is! String || liste is! List<Object?>) {
-      throw const FormatIndicesInvalide('Champs « miseAJour » ou « indices ».');
+      throw const FormatIndicesInvalide('Champs « miseAJour » ou « indices ».');
     }
     return (
       version: version,
@@ -49,7 +49,7 @@ abstract final class LecteurIndices {
                 valeur: valeur.toDouble(),
                 publication: e['datePublicationJo'],
               ),
-            _ => throw FormatIndicesInvalide('Indice illisible : $e'),
+            _ => throw FormatIndicesInvalide('Indice illisible : $e'),
           },
       ],
     );
@@ -67,7 +67,7 @@ abstract final class LecteurIndices {
     }
     final idbank = _attribut(serie.group(1)!, 'IDBANK');
     if (idbank != ReglesLegales.idbankInseeIrl) {
-      throw FormatIndicesInvalide('Série inattendue : $idbank');
+      throw FormatIndicesInvalide('Série inattendue : $idbank');
     }
     final indices = <IndiceIrl>[];
     for (final obs in _observation.allMatches(xml)) {
@@ -77,7 +77,7 @@ abstract final class LecteurIndices {
       );
       final valeur = double.tryParse(_attribut(attributs, 'OBS_VALUE') ?? '');
       if (periode == null || valeur == null) {
-        throw FormatIndicesInvalide('Observation illisible : $attributs');
+        throw FormatIndicesInvalide('Observation illisible : $attributs');
       }
       indices.add(
         _indice(
@@ -104,7 +104,7 @@ abstract final class LecteurIndices {
     required Object? publication,
   }) {
     if (trimestre < 1 || trimestre > 4 || valeur <= 0) {
-      throw FormatIndicesInvalide('Valeur incohérente : T$trimestre $annee');
+      throw FormatIndicesInvalide('Valeur incohérente : T$trimestre $annee');
     }
     return IndiceIrl(
       annee: annee,

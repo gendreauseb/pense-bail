@@ -143,7 +143,7 @@ class _AjoutRappel extends ConsumerWidget {
                 type: TypeEcheance.assurancePno,
                 titre: TypeEcheance.assurancePno.libelle,
                 date: dansUnAn,
-                intervalleMois: 12,
+                intervalleMois: ReglesLegales.periodiciteEntretienChaudiereMois,
               ),
             ),
           ),
@@ -265,7 +265,7 @@ class _DiagnosticState extends ConsumerState<_Diagnostic> {
                       bienId: widget.bien.id,
                       type: TypeEcheance.diagnostic,
                       typeDiagnostic: type,
-                      titre: 'Renouveler : ${type!.libelle}',
+                      titre: 'Renouveler : ${type!.libelle}',
                       date: Dates.ajouterMois(_realise!, validite),
                       intervalleMois: validite,
                       notes:

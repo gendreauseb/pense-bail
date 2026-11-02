@@ -1648,6 +1648,20 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _clauseRevisionMeta = const VerificationMeta(
+    'clauseRevision',
+  );
+  @override
+  late final GeneratedColumn<bool> clauseRevision = GeneratedColumn<bool>(
+    'clause_revision',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("clause_revision" IN (0, 1))',
+    ),
+  );
   static const VerificationMeta _actifMeta = const VerificationMeta('actif');
   @override
   late final GeneratedColumn<bool> actif = GeneratedColumn<bool>(
@@ -1692,6 +1706,7 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
     irlTrimestre,
     irlAnnee,
     irlValeur,
+    clauseRevision,
     actif,
     creeLe,
     modifieLe,
@@ -1755,6 +1770,15 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
       context.handle(
         _irlValeurMeta,
         irlValeur.isAcceptableOrUnknown(data['irl_valeur']!, _irlValeurMeta),
+      );
+    }
+    if (data.containsKey('clause_revision')) {
+      context.handle(
+        _clauseRevisionMeta,
+        clauseRevision.isAcceptableOrUnknown(
+          data['clause_revision']!,
+          _clauseRevisionMeta,
+        ),
       );
     }
     if (data.containsKey('actif')) {
@@ -1836,6 +1860,10 @@ class $BauxTable extends Baux with TableInfo<$BauxTable, Bail> {
         DriftSqlType.double,
         data['${effectivePrefix}irl_valeur'],
       ),
+      clauseRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}clause_revision'],
+      ),
       actif: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}actif'],
@@ -1877,6 +1905,7 @@ class BauxCompanion extends UpdateCompanion<Bail> {
   final Value<int?> irlTrimestre;
   final Value<int?> irlAnnee;
   final Value<double?> irlValeur;
+  final Value<bool?> clauseRevision;
   final Value<bool> actif;
   final Value<DateTime> creeLe;
   final Value<DateTime> modifieLe;
@@ -1892,6 +1921,7 @@ class BauxCompanion extends UpdateCompanion<Bail> {
     this.irlTrimestre = const Value.absent(),
     this.irlAnnee = const Value.absent(),
     this.irlValeur = const Value.absent(),
+    this.clauseRevision = const Value.absent(),
     this.actif = const Value.absent(),
     this.creeLe = const Value.absent(),
     this.modifieLe = const Value.absent(),
@@ -1908,6 +1938,7 @@ class BauxCompanion extends UpdateCompanion<Bail> {
     this.irlTrimestre = const Value.absent(),
     this.irlAnnee = const Value.absent(),
     this.irlValeur = const Value.absent(),
+    this.clauseRevision = const Value.absent(),
     required bool actif,
     required DateTime creeLe,
     required DateTime modifieLe,
@@ -1930,6 +1961,7 @@ class BauxCompanion extends UpdateCompanion<Bail> {
     Expression<int>? irlTrimestre,
     Expression<int>? irlAnnee,
     Expression<double>? irlValeur,
+    Expression<bool>? clauseRevision,
     Expression<bool>? actif,
     Expression<DateTime>? creeLe,
     Expression<DateTime>? modifieLe,
@@ -1947,6 +1979,7 @@ class BauxCompanion extends UpdateCompanion<Bail> {
       if (irlTrimestre != null) 'irl_trimestre': irlTrimestre,
       if (irlAnnee != null) 'irl_annee': irlAnnee,
       if (irlValeur != null) 'irl_valeur': irlValeur,
+      if (clauseRevision != null) 'clause_revision': clauseRevision,
       if (actif != null) 'actif': actif,
       if (creeLe != null) 'cree_le': creeLe,
       if (modifieLe != null) 'modifie_le': modifieLe,
@@ -1965,6 +1998,7 @@ class BauxCompanion extends UpdateCompanion<Bail> {
     Value<int?>? irlTrimestre,
     Value<int?>? irlAnnee,
     Value<double?>? irlValeur,
+    Value<bool?>? clauseRevision,
     Value<bool>? actif,
     Value<DateTime>? creeLe,
     Value<DateTime>? modifieLe,
@@ -1982,6 +2016,7 @@ class BauxCompanion extends UpdateCompanion<Bail> {
       irlTrimestre: irlTrimestre ?? this.irlTrimestre,
       irlAnnee: irlAnnee ?? this.irlAnnee,
       irlValeur: irlValeur ?? this.irlValeur,
+      clauseRevision: clauseRevision ?? this.clauseRevision,
       actif: actif ?? this.actif,
       creeLe: creeLe ?? this.creeLe,
       modifieLe: modifieLe ?? this.modifieLe,
@@ -2030,6 +2065,9 @@ class BauxCompanion extends UpdateCompanion<Bail> {
     if (irlValeur.present) {
       map['irl_valeur'] = Variable<double>(irlValeur.value);
     }
+    if (clauseRevision.present) {
+      map['clause_revision'] = Variable<bool>(clauseRevision.value);
+    }
     if (actif.present) {
       map['actif'] = Variable<bool>(actif.value);
     }
@@ -2058,6 +2096,7 @@ class BauxCompanion extends UpdateCompanion<Bail> {
           ..write('irlTrimestre: $irlTrimestre, ')
           ..write('irlAnnee: $irlAnnee, ')
           ..write('irlValeur: $irlValeur, ')
+          ..write('clauseRevision: $clauseRevision, ')
           ..write('actif: $actif, ')
           ..write('creeLe: $creeLe, ')
           ..write('modifieLe: $modifieLe, ')
@@ -2083,6 +2122,7 @@ class _$BailInsertable implements Insertable<Bail> {
       irlTrimestre: Value(_object.irlTrimestre),
       irlAnnee: Value(_object.irlAnnee),
       irlValeur: Value(_object.irlValeur),
+      clauseRevision: Value(_object.clauseRevision),
       actif: Value(_object.actif),
       creeLe: Value(_object.creeLe),
       modifieLe: Value(_object.modifieLe),
@@ -7572,6 +7612,7 @@ typedef $$BauxTableCreateCompanionBuilder =
       Value<int?> irlTrimestre,
       Value<int?> irlAnnee,
       Value<double?> irlValeur,
+      Value<bool?> clauseRevision,
       required bool actif,
       required DateTime creeLe,
       required DateTime modifieLe,
@@ -7589,6 +7630,7 @@ typedef $$BauxTableUpdateCompanionBuilder =
       Value<int?> irlTrimestre,
       Value<int?> irlAnnee,
       Value<double?> irlValeur,
+      Value<bool?> clauseRevision,
       Value<bool> actif,
       Value<DateTime> creeLe,
       Value<DateTime> modifieLe,
@@ -7708,6 +7750,11 @@ class $$BauxTableFilterComposer extends Composer<_$AppDatabase, $BauxTable> {
 
   ColumnFilters<double> get irlValeur => $composableBuilder(
     column: $table.irlValeur,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get clauseRevision => $composableBuilder(
+    column: $table.clauseRevision,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7853,6 +7900,11 @@ class $$BauxTableOrderingComposer extends Composer<_$AppDatabase, $BauxTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get clauseRevision => $composableBuilder(
+    column: $table.clauseRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get actif => $composableBuilder(
     column: $table.actif,
     builder: (column) => ColumnOrderings(column),
@@ -7934,6 +7986,11 @@ class $$BauxTableAnnotationComposer
 
   GeneratedColumn<double> get irlValeur =>
       $composableBuilder(column: $table.irlValeur, builder: (column) => column);
+
+  GeneratedColumn<bool> get clauseRevision => $composableBuilder(
+    column: $table.clauseRevision,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<bool> get actif =>
       $composableBuilder(column: $table.actif, builder: (column) => column);
@@ -8060,6 +8117,7 @@ class $$BauxTableTableManager
                 Value<int?> irlTrimestre = const Value.absent(),
                 Value<int?> irlAnnee = const Value.absent(),
                 Value<double?> irlValeur = const Value.absent(),
+                Value<bool?> clauseRevision = const Value.absent(),
                 Value<bool> actif = const Value.absent(),
                 Value<DateTime> creeLe = const Value.absent(),
                 Value<DateTime> modifieLe = const Value.absent(),
@@ -8075,6 +8133,7 @@ class $$BauxTableTableManager
                 irlTrimestre: irlTrimestre,
                 irlAnnee: irlAnnee,
                 irlValeur: irlValeur,
+                clauseRevision: clauseRevision,
                 actif: actif,
                 creeLe: creeLe,
                 modifieLe: modifieLe,
@@ -8092,6 +8151,7 @@ class $$BauxTableTableManager
                 Value<int?> irlTrimestre = const Value.absent(),
                 Value<int?> irlAnnee = const Value.absent(),
                 Value<double?> irlValeur = const Value.absent(),
+                Value<bool?> clauseRevision = const Value.absent(),
                 required bool actif,
                 required DateTime creeLe,
                 required DateTime modifieLe,
@@ -8107,6 +8167,7 @@ class $$BauxTableTableManager
                 irlTrimestre: irlTrimestre,
                 irlAnnee: irlAnnee,
                 irlValeur: irlValeur,
+                clauseRevision: clauseRevision,
                 actif: actif,
                 creeLe: creeLe,
                 modifieLe: modifieLe,

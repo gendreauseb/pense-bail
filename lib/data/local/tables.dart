@@ -50,8 +50,7 @@ class Biens extends Table {
   TextColumn get photoChemin => text().nullable()();
   RealColumn get surfaceM2 => real().nullable()();
   TextColumn get classeDpe => textEnum<ClasseDpe>().nullable()();
-  TextColumn get dateDpe =>
-      text().nullable().map(const ConvertisseurJour())();
+  TextColumn get dateDpe => text().nullable().map(const ConvertisseurJour())();
   IntColumn get nombreLots => integer().nullable()();
   IntColumn get prixAchatCentimes => integer().nullable()();
   IntColumn get fraisNotaireCentimes => integer().nullable()();
@@ -75,8 +74,7 @@ class Baux extends Table {
   TextColumn get bienId =>
       text().references(Biens, #id, onDelete: KeyAction.cascade)();
   TextColumn get typeBail => textEnum<TypeBail>()();
-  TextColumn get dateDebut =>
-      text().map(const ConvertisseurJour())();
+  TextColumn get dateDebut => text().map(const ConvertisseurJour())();
   IntColumn get dureeMois => integer().nullable()();
   IntColumn get depotGarantieCentimes => integer().nullable()();
   TextColumn get dateRevision =>
@@ -85,6 +83,8 @@ class Baux extends Table {
       integer().nullable().check(irlTrimestre.isBetweenValues(1, 4))();
   IntColumn get irlAnnee => integer().nullable()();
   RealColumn get irlValeur => real().nullable()();
+  // Ajoutée en version 6 du schéma (null : « je ne sais pas »).
+  BoolColumn get clauseRevision => boolean().nullable()();
   BoolColumn get actif => boolean()();
   DateTimeColumn get creeLe => dateTime()();
   DateTimeColumn get modifieLe => dateTime()();
@@ -116,13 +116,11 @@ class Echeances extends Table {
       text().nullable().references(Biens, #id, onDelete: KeyAction.cascade)();
   TextColumn get type => textEnum<TypeEcheance>()();
   TextColumn get titre => text()();
-  TextColumn get date =>
-      text().map(const ConvertisseurJour())();
+  TextColumn get date => text().map(const ConvertisseurJour())();
   TextColumn get dateInitiale =>
       text().nullable().map(const ConvertisseurJour())();
   TextColumn get statut => textEnum<StatutEcheance>()();
-  TextColumn get faiteLe =>
-      text().nullable().map(const ConvertisseurJour())();
+  TextColumn get faiteLe => text().nullable().map(const ConvertisseurJour())();
   TextColumn get notes => text().nullable()();
   IntColumn get intervalleMois => integer().nullable()();
   TextColumn get typeDiagnostic => textEnum<TypeDiagnostic>().nullable()();
@@ -169,8 +167,7 @@ class Interventions extends Table {
     #id,
     onDelete: KeyAction.setNull,
   )();
-  TextColumn get date =>
-      text().map(const ConvertisseurJour())();
+  TextColumn get date => text().map(const ConvertisseurJour())();
   TextColumn get description => text()();
   IntColumn get coutCentimes => integer().nullable()();
   DateTimeColumn get creeLe => dateTime()();
@@ -185,8 +182,7 @@ class MouvementsFinanciers extends Table {
   TextColumn get id => text()();
   TextColumn get bienId =>
       text().references(Biens, #id, onDelete: KeyAction.cascade)();
-  TextColumn get date =>
-      text().map(const ConvertisseurJour())();
+  TextColumn get date => text().map(const ConvertisseurJour())();
   IntColumn get montantCentimes => integer()();
   TextColumn get categorie => textEnum<CategorieMouvement>()();
   TextColumn get note => text().nullable()();
@@ -209,8 +205,7 @@ class EncaissementsLoyers extends Table {
   IntColumn get annee => integer()();
   IntColumn get mois => integer().check(mois.isBetweenValues(1, 12))();
   BoolColumn get recu => boolean()();
-  TextColumn get recuLe =>
-      text().nullable().map(const ConvertisseurJour())();
+  TextColumn get recuLe => text().nullable().map(const ConvertisseurJour())();
 
   @override
   Set<Column> get primaryKey => {bienId, annee, mois};
@@ -226,8 +221,7 @@ class RevisionsLoyers extends Table {
   // Ajoutée en version 2 du schéma.
   TextColumn get datePrevue =>
       text().nullable().map(const ConvertisseurJour())();
-  TextColumn get dateEffet =>
-      text().map(const ConvertisseurJour())();
+  TextColumn get dateEffet => text().map(const ConvertisseurJour())();
   IntColumn get ancienLoyerCentimes => integer()();
   IntColumn get nouveauLoyerCentimes => integer()();
   IntColumn get ancienIrlTrimestre => integer()();

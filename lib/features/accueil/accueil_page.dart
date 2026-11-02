@@ -201,7 +201,7 @@ class _BadgeBeta extends ConsumerWidget {
       container: true,
       label: 'Version bêta, mode $mode',
       excludeSemantics: true,
-      child: PuceInfo(libelle: 'Bêta : $mode', icone: AppIcons.beta),
+      child: PuceInfo(libelle: 'Bêta : $mode', icone: AppIcons.beta),
     );
   }
 }

@@ -11,6 +11,7 @@ class IndicateursRentabilite {
     required this.creditAnnuel,
     required this.coutAcquisition,
     required this.cashFlowMensuel,
+    required this.cashFlowAnnuel,
     required this.rendementBrut,
     required this.rendementNet,
   });
@@ -23,8 +24,11 @@ class IndicateursRentabilite {
 
   /// Prix d'achat + frais de notaire + travaux initiaux. `null` si inconnu.
   final int? coutAcquisition;
+
+  /// Arrondi au centime : le mensuel × 12 peut différer de l'annuel de
+  /// quelques centimes, l'annuel est donc calculé directement.
   final int cashFlowMensuel;
-  int get cashFlowAnnuel => cashFlowMensuel * 12;
+  final int cashFlowAnnuel;
 
   /// Ratios (0,05 = 5 %). `null` sans coût d'acquisition.
   final double? rendementBrut;
@@ -72,6 +76,7 @@ abstract final class Rentabilite {
       creditAnnuel: credit,
       coutAcquisition: cout,
       cashFlowMensuel: ((loyersAnnuels - charges - credit) / 12).round(),
+      cashFlowAnnuel: loyersAnnuels - charges - credit,
       rendementBrut: cout == null ? null : loyersAnnuels / cout,
       rendementNet: cout == null ? null : (loyersAnnuels - charges) / cout,
     );
@@ -156,12 +161,18 @@ abstract final class Rentabilite {
   }
 
   /// Mois (1 à 12) de l'[annee] dont le loyer aurait dû être reçu mais n'est
-  /// pas coché : mois entièrement écoulés, après le début du bail.
+  /// pas coché : mois entièrement écoulés,
+  /// - à partir du début du bail : le mois de début seulement si le bail
+  ///   commence le 1er (sinon ce loyer partiel est souvent réglé à la
+  ///   signature) ;
+  /// - à partir du mois où le bien a été ajouté dans l'application
+  ///   ([suiviDepuis]) : les mois d'avant n'ont jamais pu être cochés.
   static List<int> moisEnRetard({
     required int annee,
     required List<EncaissementLoyer> encaissements,
     required DateTime aujourdhui,
     DateTime? debutBail,
+    DateTime? suiviDepuis,
   }) {
     final recus = {
       for (final e in encaissements)
@@ -171,6 +182,7 @@ abstract final class Rentabilite {
       for (var mois = 1; mois <= 12; mois++)
         if (_ecoule(annee, mois, aujourdhui) &&
             !_avantBail(annee, mois, debutBail) &&
+            !_avant(annee, mois, suiviDepuis) &&
             !recus.contains(mois))
           mois,
     ];
@@ -182,5 +194,11 @@ abstract final class Rentabilite {
 
   static bool _avantBail(int annee, int mois, DateTime? debut) =>
       debut != null &&
-      (annee < debut.year || (annee == debut.year && mois < debut.month));
+      (_avant(annee, mois, debut) ||
+          (debut.day != 1 && annee == debut.year && mois == debut.month));
+
+  /// Le mois est-il antérieur au mois de [date] ?
+  static bool _avant(int annee, int mois, DateTime? date) =>
+      date != null &&
+      (annee < date.year || (annee == date.year && mois < date.month));
 }

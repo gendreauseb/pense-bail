@@ -65,12 +65,12 @@ class CourrierRevisionPage extends ConsumerWidget {
       surtitre: 'Révision du loyer',
       titre: 'Courrier au locataire',
       nomFichier: CourrierRevision.nomFichier(bien, revision),
-      sujet: '${courrier.objet} : ${courrier.logement}',
+      sujet: '${courrier.objet} : ${courrier.logement}',
       generer: courrier.genererPdf,
       enTete: const Note(
         icone: AppIcons.courrier,
         texte:
-            'Envoyez ce courrier en recommandé avec accusé de réception : '
+            'Envoyez ce courrier en recommandé avec accusé de réception : '
             'vous garderez la preuve de la date de votre demande.',
       ),
       legende: 'Outil d\'aide, ne remplace pas un conseil juridique.',

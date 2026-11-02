@@ -134,7 +134,7 @@ class _FicheBienPageState extends ConsumerState<FicheBienPage>
                 libelle: 'Réviser le loyer',
                 onPressed: () => context.push(Routes.revision(bien.id)),
                 legende: dpeGel
-                    ? 'Révision impossible : logement classé F ou G.'
+                    ? 'Révision impossible : logement classé F ou G.'
                     : revision == null
                     ? verrouille
                           ? 'Aucun bail renseigné pour ce bien.'
@@ -371,7 +371,7 @@ class _Panneau extends ConsumerWidget {
             const SizedBox(height: AppSpacing.section),
             BandeauVerrou(
               texte:
-                  'Ce bien est en lecture seule dans la version gratuite : '
+                  'Ce bien est en lecture seule dans la version gratuite : '
                   'vous consultez ses informations et suivez ses échéances. '
                   'Pense-Bail Premium permet de le modifier.',
               onDecouvrir: () => ouvrirPremium(context),
@@ -385,10 +385,35 @@ class _Panneau extends ConsumerWidget {
             revisionPossible: bien.typeLocation.revisionDisponible,
           ),
           const SizedBox(height: AppSpacing.sectionSerree),
-          TabBar(
-            controller: controleur,
-            isScrollable: true,
-            tabs: [for (final o in _onglets) Tab(text: o)],
+          // Onglets plus larges que l'écran : un fondu à droite montre qu'il
+          // y en a d'autres (le dernier reste lisible une fois défilé).
+          Stack(
+            children: [
+              TabBar(
+                controller: controleur,
+                isScrollable: true,
+                padding: const EdgeInsets.only(right: AppSizes.fonduOnglets),
+                tabs: [for (final o in _onglets) Tab(text: o)],
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                bottom: AppSizes.bordure,
+                width: AppSizes.fonduOnglets,
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          context.couleurs.background.withValues(alpha: 0),
+                          context.couleurs.background,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: AppSpacing.section),
           switch (controleur.index) {
@@ -422,37 +447,17 @@ class _ChiffresCles extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.textes;
     final revision = this.revision;
-    Widget colonne(String valeur, String libelle) => Expanded(
-      child: Semantics(
-        container: true,
-        label: '$libelle : $valeur',
-        excludeSemantics: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(valeur, style: t.figure),
-            ),
-            const SizedBox(height: AppSpacing.xxs),
-            Text(libelle, style: t.caption),
-          ],
-        ),
-      ),
-    );
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.carte),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            colonne(Formats.montant(loyer), 'Loyer hors charges'),
-            const SizedBox(width: AppSpacing.bloc),
-            colonne(Formats.montant(charges), 'Charges'),
-            const SizedBox(width: AppSpacing.bloc),
-            colonne(
+        child: ChiffresEnColonnes(
+          styleValeur: t.figure,
+          styleLibelle: t.caption,
+          libelleSemantique: (valeur, libelle) => '$libelle : $valeur',
+          chiffres: [
+            (Formats.montant(loyer), 'Loyer hors charges'),
+            (Formats.montant(charges), 'Charges'),
+            (
               revision != null
                   ? Formats.date(revision)
                   : revisionPossible

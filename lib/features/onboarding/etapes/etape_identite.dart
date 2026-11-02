@@ -78,6 +78,8 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
     Iterable<String>? autofill,
     List<TextInputFormatter>? formats,
     String? aide,
+    // Dernier champ : « OK » ferme le clavier, qui masquait « Continuer ».
+    TextInputAction action = TextInputAction.next,
   }) => Padding(
     padding: const EdgeInsets.only(bottom: AppSpacing.bloc),
     child: TextFormField(
@@ -88,7 +90,7 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
       textCapitalization: majuscules,
       autofillHints: autofill,
       inputFormatters: formats,
-      textInputAction: TextInputAction.next,
+      textInputAction: action,
       autovalidateMode: AutovalidateMode.onUserInteractionIfError,
       onChanged: (_) => _enregistrer(),
     ),
@@ -182,7 +184,7 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
                 validator: Validateurs.telephone,
                 clavier: TextInputType.phone,
                 autofill: const [AutofillHints.telephoneNumber],
-                aide: 'Exemple : 06 12 34 56 78',
+                aide: 'Exemple : 06 12 34 56 78',
               ),
               _champ(
                 _email,
@@ -190,6 +192,7 @@ class _EtapeIdentiteState extends ConsumerState<EtapeIdentite> {
                 validator: Validateurs.email,
                 clavier: TextInputType.emailAddress,
                 autofill: const [AutofillHints.email],
+                action: TextInputAction.done,
               ),
             ],
           ),

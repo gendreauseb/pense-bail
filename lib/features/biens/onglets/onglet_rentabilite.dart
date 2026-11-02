@@ -105,6 +105,7 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
             encaissements: encaissements,
             aujourdhui: aujourdhui,
             debutBail: bail?.dateDebut,
+            suiviDepuis: bien.creeLe,
           )
         : const <int>[];
 
@@ -133,14 +134,10 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
               ? 'Mois indiqués comme reçus.'
               : retard.isEmpty
               ? 'Touchez un mois quand le loyer est arrivé.'
-              : '${retard.length} ${retard.length > 1 ? 'mois' : 'mois'} '
-                    'sans loyer indiqué comme reçu.',
+              : '${retard.length} mois sans loyer indiqué comme reçu.',
           style: retard.isEmpty
               ? t.secondary
-              : t.secondary.copyWith(
-                  color: context.couleurs.erreur,
-                  fontWeight: FontWeight.w700,
-                ),
+              : t.secondary.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: AppSpacing.bloc),
         _GrilleMois(
@@ -246,8 +243,8 @@ class _Indicateurs extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(AppSpacing.ligne),
           child: Text(
-            'Cash-flow : loyer hors charges, moins la mensualité de crédit '
-            'et vos charges annuelles. Rendement : loyers de l\'année '
+            'Cash-flow : loyer hors charges, moins la mensualité de crédit '
+            'et vos charges annuelles. Rendement : loyers de l\'année '
             'divisés par le coût d\'achat (prix, notaire, travaux).',
             style: context.textes.caption,
           ),
@@ -388,11 +385,9 @@ class _CaseMois extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.couleurs;
     final t = context.textes;
-    final statut = recu
-        ? c.aVenir
-        : enRetard
-        ? c.urgent
-        : c.lointain;
+    // Couleur neutre pour un retard : les couleurs d'alerte sont réservées
+    // aux échéances (design-system.md §2). L'icône et le texte le disent.
+    final statut = recu ? c.aVenir : c.lointain;
     final etat = recu
         ? 'Reçu'
         : enRetard
@@ -400,12 +395,12 @@ class _CaseMois extends StatelessWidget {
         : futur
         ? 'À venir'
         : 'Non reçu';
-    final nomMois = Formats.dateLongue(mois).split(' ')[1];
+    final nomMois = Formats.nomMois(mois.month);
 
     return Semantics(
       button: !futur && onTap != null,
       checked: recu,
-      label: '$nomMois ${mois.year} : $etat',
+      label: '$nomMois ${mois.year} : $etat',
       excludeSemantics: true,
       child: Material(
         color: futur ? c.surface : statut.fond,
@@ -426,9 +421,9 @@ class _CaseMois extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (recu) ...[
+                      if (recu || enRetard) ...[
                         Icon(
-                          AppIcons.selectionne,
+                          recu ? AppIcons.selectionne : AppIcons.attention,
                           size: AppSizes.iconePetite,
                           color: statut.texte,
                         ),
@@ -469,43 +464,54 @@ class _LigneMouvement extends StatelessWidget {
     final m = mouvement;
     final recette = m.sens == SensMouvement.recette;
     final note = m.note;
-    return InkWell(
-      onTap: modifiable
-          ? () => context.push(
-              Routes.avec(Routes.mouvement(m.bienId), {'mouvement': m.id}),
-            )
-          : null,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.ligne),
-        child: Row(
-          children: [
-            TuileIcone(icone: recette ? AppIcons.recette : AppIcons.depense),
-            const SizedBox(width: AppSpacing.bloc),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(m.categorie.libelle, style: t.rowTitle),
-                  Text(
-                    [Formats.date(m.date), ?note].join(', '),
-                    style: t.secondary,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+    final onTap = modifiable
+        ? () => context.push(
+            Routes.avec(Routes.mouvement(m.bienId), {'mouvement': m.id}),
+          )
+        : null;
+    return SemantiqueLigne(
+      libelle: [
+        m.categorie.libelle,
+        Formats.date(m.date),
+        ?note,
+        '${recette ? 'recette' : 'dépense'} de '
+            '${Formats.montant(m.montantCentimes)}',
+      ].join(', '),
+      onTap: onTap,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.ligne),
+          child: Row(
+            children: [
+              TuileIcone(icone: recette ? AppIcons.recette : AppIcons.depense),
+              const SizedBox(width: AppSpacing.bloc),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(m.categorie.libelle, style: t.rowTitle),
+                    Text(
+                      [Formats.date(m.date), ?note].join(', '),
+                      style: t.secondary,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: AppSpacing.s),
-            // Couleurs d'alerte réservées aux échéances : montant en texte.
-            Text(
-              '${recette ? '+' : '−'} ${Formats.montant(m.montantCentimes)}',
-              style: t.rowTitle.copyWith(
-                color: recette
-                    ? context.couleurs.primary
-                    : context.couleurs.textPrimary,
+              const SizedBox(width: AppSpacing.s),
+              // Couleurs d'alerte réservées aux échéances : montant en texte.
+              Text(
+                '${recette ? '+' : '−'} ${Formats.montant(m.montantCentimes)}',
+                style: t.rowTitle.copyWith(
+                  color: recette
+                      ? context.couleurs.primary
+                      : context.couleurs.textPrimary,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

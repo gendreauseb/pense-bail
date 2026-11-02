@@ -71,7 +71,7 @@ void main() {
       );
     });
 
-    test('29 février : pas de dérive au fil des années', () {
+    test('29 février : pas de dérive au fil des années', () {
       final origine = DateTime(2024, 2, 29);
       expect(
         Dates.prochaineOccurrence(

@@ -16,6 +16,7 @@ class Bail {
     this.irlTrimestre,
     this.irlAnnee,
     this.irlValeur,
+    this.clauseRevision,
     required this.actif,
     required this.creeLe,
     required this.modifieLe,
@@ -39,6 +40,11 @@ class Bail {
   final int? irlAnnee;
   final double? irlValeur;
 
+  /// Le bail prévoit-il la révision du loyer ? La loi ne permet de réviser
+  /// le loyer que si le contrat le prévoit (loi 89-462, art. 17-1).
+  /// `null` : l'utilisateur ne sait pas (ou n'a pas encore répondu).
+  final bool? clauseRevision;
+
   final bool actif;
   final DateTime creeLe;
   final DateTime modifieLe;
@@ -47,6 +53,11 @@ class Bail {
 
   /// Durée effective : saisie, sinon durée légale par défaut.
   int? get dureeEffectiveMois => dureeMois ?? regle.dureeMois;
+
+  /// Révision annuelle selon l'IRL possible : type de bail qui le permet et
+  /// clause de révision non exclue par l'utilisateur.
+  bool get revisionPrevue =>
+      regle.revisionIrlAutorisee && clauseRevision != false;
 
   bool get irlReferenceComplet =>
       irlTrimestre != null && irlAnnee != null && irlValeur != null;
@@ -60,6 +71,7 @@ class Bail {
     Object? irlTrimestre = inchange,
     Object? irlAnnee = inchange,
     Object? irlValeur = inchange,
+    Object? clauseRevision = inchange,
     bool? actif,
     DateTime? modifieLe,
   }) => Bail(
@@ -76,6 +88,7 @@ class Bail {
     irlTrimestre: choisir(irlTrimestre, this.irlTrimestre),
     irlAnnee: choisir(irlAnnee, this.irlAnnee),
     irlValeur: choisir(irlValeur, this.irlValeur),
+    clauseRevision: choisir(clauseRevision, this.clauseRevision),
     actif: actif ?? this.actif,
     creeLe: creeLe,
     modifieLe: modifieLe ?? DateTime.now(),

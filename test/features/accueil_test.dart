@@ -129,7 +129,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('révision : bouton « Calculer » à la place de la pastille', (
+  testWidgets('révision : bouton « Calculer » à la place de la pastille', (
     tester,
   ) async {
     await ouvrir(tester);
@@ -200,7 +200,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets("le détail s'ouvre au-dessus de la barre ; « Modifier »", (
+  testWidgets("le détail s'ouvre au-dessus de la barre ; « Modifier »", (
     tester,
   ) async {
     await ouvrir(tester);
@@ -227,7 +227,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('détail : boutons au-dessus de la barre de navigation Android', (
+  testWidgets('détail : boutons au-dessus de la barre de navigation Android', (
     tester,
   ) async {
     // Navigation à 3 boutons : 48 dp réservés en bas de l'écran.
@@ -254,13 +254,13 @@ void main() {
       expect(
         zone.bottom,
         lessThanOrEqualTo(hauteurEcran - barreSysteme),
-        reason: '« $bouton » passe sous la barre de navigation',
+        reason: '« $bouton » passe sous la barre de navigation',
       );
     }
     await fermer(tester);
   });
 
-  testWidgets('choix du bien à réviser : courte durée grisée', (tester) async {
+  testWidgets('choix du bien à réviser : courte durée grisée', (tester) async {
     await ouvrir(tester);
     await tester.tap(find.text('Réviser un loyer'));
     await tester.pumpAndSettle();
@@ -274,7 +274,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('cloche : nombre d\'échéances urgentes', (tester) async {
+  testWidgets('cloche : nombre d\'échéances urgentes', (tester) async {
     await ouvrir(tester);
     // Aucune échéance à 7 jours ou moins : pas de pastille.
     expect(find.byTooltip('Notifications'), findsOneWidget);

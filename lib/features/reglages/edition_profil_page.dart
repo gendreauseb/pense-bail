@@ -161,7 +161,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       ChampTexte(
         controleur: _telephone,
         libelle: 'Téléphone (facultatif)',
-        aide: 'Exemple : 06 12 34 56 78',
+        aide: 'Exemple : 06 12 34 56 78',
         clavier: TextInputType.phone,
         autofill: const [AutofillHints.telephoneNumber],
         validator: Validateurs.telephone,

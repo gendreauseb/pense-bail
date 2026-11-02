@@ -90,7 +90,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   Future<void> _supprimer() async {
     final ok = await confirmerSuppression(
       context,
-      titre: 'Retirer cet artisan du carnet ?',
+      titre: 'Retirer cet artisan du carnet ?',
       message:
           'Ses interventions passées sont conservées dans l\'historique des '
           'biens.',
@@ -144,7 +144,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       ChampTexte(
         controleur: _telephone,
         libelle: 'Téléphone (facultatif)',
-        aide: 'Exemple : 06 12 34 56 78',
+        aide: 'Exemple : 06 12 34 56 78',
         clavier: TextInputType.phone,
         validator: Validateurs.telephone,
       ),
@@ -157,7 +157,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       ChampTexte(
         controleur: _notes,
         libelle: 'Notes (facultatif)',
-        aide: 'Exemple : intervient le samedi, devis gratuit',
+        aide: 'Exemple : intervient le samedi, devis gratuit',
         majuscules: TextCapitalization.sentences,
         lignes: 3,
       ),

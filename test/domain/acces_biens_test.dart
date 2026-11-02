@@ -10,14 +10,14 @@ void main() {
   final mars = DateTime(2026, 3, 1);
 
   group('droits', () {
-    test('gratuit : un bien, aucune fonctionnalité Premium', () {
+    test('gratuit : un bien, aucune fonctionnalité Premium', () {
       expect(Droits.gratuit.maxBiensActifs, 1);
       for (final f in Fonctionnalite.values) {
         expect(Droits.gratuit.autorise(f), isFalse, reason: f.name);
       }
     });
 
-    test('Premium : tout est disponible', () {
+    test('Premium : tout est disponible', () {
       expect(Droits.premium.maxBiensActifs, isNull);
       for (final f in Fonctionnalite.values) {
         expect(Droits.premium.autorise(f), isTrue, reason: f.name);
@@ -35,7 +35,7 @@ void main() {
       expect(AccesBiens.actifs(biens, Droits.gratuit), {'ancien'});
     });
 
-    test('même date de création (onboarding) : le premier saisi', () {
+    test('même date de création (onboarding) : le premier saisi', () {
       final biens = [
         unBien(id: 'b', creeLe: janvier, ordre: 1),
         unBien(id: 'a', creeLe: janvier, ordre: 0),
@@ -44,7 +44,7 @@ void main() {
       expect(AccesBiens.actifs(biens, Droits.gratuit), {'a'});
     });
 
-    test('même date et même ordre : par identifiant, toujours le même', () {
+    test('même date et même ordre : par identifiant, toujours le même', () {
       final biens = [
         unBien(id: 'z', creeLe: janvier),
         unBien(id: 'm', creeLe: janvier),
@@ -53,7 +53,7 @@ void main() {
       expect(AccesBiens.actifs(biens.reversed.toList(), Droits.gratuit), {'m'});
     });
 
-    test('le plus ancien supprimé : le suivant devient actif', () {
+    test('le plus ancien supprimé : le suivant devient actif', () {
       final biens = [
         unBien(id: 'ancien', creeLe: janvier),
         unBien(id: 'moyen', creeLe: fevrier),
@@ -68,7 +68,7 @@ void main() {
     });
   });
 
-  test('Premium : tous les biens sont actifs', () {
+  test('Premium : tous les biens sont actifs', () {
     final biens = [
       unBien(id: 'a', creeLe: janvier),
       unBien(id: 'b', creeLe: fevrier),

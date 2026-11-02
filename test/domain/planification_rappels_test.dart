@@ -40,8 +40,8 @@ void main() {
       DateTime(2026, 11, 24, 9),
       DateTime(2026, 11, 30, 9),
     ]);
-    expect(plan.first.titre, 'Dans 30 jours : Révision du loyer');
-    expect(plan.last.titre, 'Demain : Révision du loyer');
+    expect(plan.first.titre, 'Dans 30 jours : Révision du loyer');
+    expect(plan.last.titre, 'Demain : Révision du loyer');
     expect(plan.first.corps, 'Studio Gambetta, le 01/12/2026');
     expect(plan.first.id, 1);
     expect(plan.first.echeanceId, 'e1');
@@ -59,7 +59,7 @@ void main() {
       maintenant: maintenant,
     );
     expect(plan.single.id, 3);
-    expect(plan.single.titre, 'Aujourd\'hui : Révision du loyer');
+    expect(plan.single.titre, 'Aujourd\'hui : Révision du loyer');
   });
 
   test('échéance commune et échéance faite', () {
@@ -79,7 +79,7 @@ void main() {
     expect(plan.single.corps, 'Tous vos biens, le 20/05/2027');
   });
 
-  test('limite iOS : seulement les plus proches', () {
+  test('limite iOS : seulement les plus proches', () {
     final echeances = [
       for (var i = 0; i < 100; i++)
         _echeance('e$i', DateTime(2027, 1, 1).add(Duration(days: i))),
@@ -99,7 +99,7 @@ void main() {
     expect(plan.last.id, 59);
   });
 
-  test("types désactivés dans les réglages : aucune notification", () {
+  test("types désactivés dans les réglages : aucune notification", () {
     final plan = PlanificationRappels.planifier(
       echeances: [_echeance('e1', DateTime(2026, 12, 1))],
       rappels: const [Rappel(id: 1, echeanceId: 'e1', joursAvant: 30)],

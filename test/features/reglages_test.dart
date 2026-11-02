@@ -89,7 +89,7 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
   }
 
-  testWidgets('profil : modification visible dans les réglages', (
+  testWidgets('profil : modification visible dans les réglages', (
     tester,
   ) async {
     await ouvrirReglages(tester);
@@ -120,7 +120,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('rappels : délais par défaut et type sans notification', (
+  testWidgets('rappels : délais par défaut et type sans notification', (
     tester,
   ) async {
     await ouvrirReglages(tester);
@@ -147,7 +147,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('tout effacer : retour à l\'onboarding, base vide', (
+  testWidgets('tout effacer : retour à l\'onboarding, base vide', (
     tester,
   ) async {
     await ouvrirReglages(tester);
@@ -176,7 +176,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('mentions légales : données sur le téléphone', (tester) async {
+  testWidgets('mentions légales : données sur le téléphone', (tester) async {
     await ouvrirReglages(tester);
     final mentions = find.text('Mentions légales et confidentialité');
     await tester.scrollUntilVisible(
@@ -193,7 +193,7 @@ void main() {
   });
 
   group('mode bêta', () {
-    testWidgets('hors bêta : ni section ni badge', (tester) async {
+    testWidgets('hors bêta : ni section ni badge', (tester) async {
       await ouvrirReglages(tester);
       expect(find.text('MODE BÊTA'), findsNothing);
       expect(find.text('Pense-Bail Premium'), findsNothing);
@@ -206,16 +206,16 @@ void main() {
       await fermer(tester);
     });
 
-    testWidgets("bêta : Premium par défaut, bascule visible sur l'accueil", (
+    testWidgets("bêta : Premium par défaut, bascule visible sur l'accueil", (
       tester,
     ) async {
       await ouvrirReglages(tester, estBeta: true);
       expect(find.text('MODE BÊTA'), findsOneWidget);
-      expect(find.text('Activé : toutes les fonctionnalités'), findsOneWidget);
+      expect(find.text('Activé : toutes les fonctionnalités'), findsOneWidget);
 
       await tester.tap(find.text('Pense-Bail Premium'));
       await attendre(tester);
-      expect(find.text('Désactivé : version gratuite'), findsOneWidget);
+      expect(find.text('Désactivé : version gratuite'), findsOneWidget);
       final mode = await tester.runAsync(
         () => DriftReglagesRepository(db).lire(ClesReglages.modePremiumBeta),
       );
@@ -225,7 +225,7 @@ void main() {
         tester.element(find.text('Réglages').first),
       ).go(Routes.accueil);
       await attendre(tester);
-      expect(find.text('Bêta : gratuit'), findsOneWidget);
+      expect(find.text('Bêta : gratuit'), findsOneWidget);
       expect(
         find.bySemanticsLabel('Version bêta, mode gratuit'),
         findsOneWidget,

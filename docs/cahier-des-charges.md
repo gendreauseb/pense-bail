@@ -43,8 +43,8 @@ bord déjà utile. La progression est sauvegardée à chaque étape (reprise là
 l'utilisateur s'est arrêté).
 
 0. **Bienvenue** : 2 ou 3 écrans de promesse (« Ne ratez plus aucune
-   échéance », « Tous vos biens au même endroit », « Vos courriers prêts en
-   un clic »), bouton « Commencer ». Lien « J'ai une sauvegarde : la
+   échéance », « Tous vos biens au même endroit », « Votre loyer révisé sans
+   calcul »), bouton « Commencer ». Lien « J'ai une sauvegarde : la
    restaurer » pour reprendre ses données sur un nouveau téléphone.
 1. **Identité du bailleur** : prénom, nom, adresse (rue, complément
    facultatif, code postal, ville), téléphone et email facultatifs.
@@ -145,8 +145,8 @@ bêta » (voir 8).
 
 Détail des règles : [decisions.md](decisions.md).
 - **Gratuit** : un bien actif ; onboarding, fiche, bail, locataires,
-  échéances et rappels, alerte DPE, calcul et enregistrement de la
-  révision.
+  échéances et rappels, contrôle du DPE (F et G), calcul et enregistrement
+  de la révision.
 - **Premium** : biens illimités, courrier de révision, rentabilité
   (journal, loyers reçus, investissement, récapitulatif annuel), carnet
   d'artisans et interventions.

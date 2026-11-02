@@ -21,7 +21,7 @@ MouvementFinancier _mvt(
 
 void main() {
   group('indicateurs', () {
-    test('sans données d\'investissement : pas de rendement', () {
+    test('sans données d\'investissement : pas de rendement', () {
       final i = Rentabilite.indicateurs(unBien(loyerHcCentimes: 65000));
       expect(i.loyersAnnuels, 780000);
       expect(i.chargesAnnuelles, 0);
@@ -53,9 +53,20 @@ void main() {
       // (7 800 − 1 200 − 5 400) / 12 = 100 €
       expect(i.cashFlowMensuel, 10000);
     });
+
+    test('cash-flow annuel juste au centime (A2-05)', () {
+      // 7 800 € − 10 € = 7 790 € par an ; 649,1666… € par mois.
+      final i = Rentabilite.indicateurs(
+        unBien(
+          loyerHcCentimes: 65000,
+        ).copyWith(taxeFonciereCentimes: 1000),
+      );
+      expect(i.cashFlowMensuel, 64917);
+      expect(i.cashFlowAnnuel, 779000);
+    });
   });
 
-  test('bilan annuel : loyers cochés + journal de l\'année', () {
+  test('bilan annuel : loyers cochés + journal de l\'année', () {
     final bilan = Rentabilite.bilan(
       bien: unBien(loyerHcCentimes: 65000),
       annee: 2026,
@@ -110,7 +121,47 @@ void main() {
       expect(retard, [5, 7, 8]);
     });
 
-    test('année future : aucun retard', () {
+    test(
+      "mois de début compté seulement si le bail commence le 1er (A2-06)",
+      () {
+        List<int> retard(DateTime debut) => Rentabilite.moisEnRetard(
+          annee: 2026,
+          encaissements: const [],
+          aujourdhui: DateTime(2026, 10, 16),
+          debutBail: debut,
+        );
+        expect(retard(DateTime(2026, 9, 20)), isEmpty);
+        expect(retard(DateTime(2026, 9, 1)), [9]);
+      },
+    );
+
+    test("bien ajouté aujourd'hui : aucun mois en retard (A2-04)", () {
+      expect(
+        Rentabilite.moisEnRetard(
+          annee: 2026,
+          encaissements: const [],
+          aujourdhui: DateTime(2026, 10, 5),
+          debutBail: DateTime(2023, 9, 1),
+          suiviDepuis: DateTime(2026, 10, 5, 14, 30),
+        ),
+        isEmpty,
+      );
+    });
+
+    test("retards comptés à partir du mois d'ajout du bien", () {
+      final retard = Rentabilite.moisEnRetard(
+        annee: 2026,
+        encaissements: [
+          EncaissementLoyer(bienId: 'bien-1', annee: 2026, mois: 7, recu: true),
+        ],
+        aujourdhui: DateTime(2026, 10, 16),
+        debutBail: DateTime(2023, 9, 1),
+        suiviDepuis: DateTime(2026, 6, 12),
+      );
+      expect(retard, [6, 8, 9]);
+    });
+
+    test('année future : aucun retard', () {
       expect(
         Rentabilite.moisEnRetard(
           annee: 2027,
@@ -151,10 +202,10 @@ void main() {
     test("avant et après la révision", () {
       expect(loyer(8, [revision]), 65000);
       expect(loyer(9, [revision]), 65749);
-      expect(loyer(8, const []), 65749, reason: 'sans révision : loyer actuel');
+      expect(loyer(8, const []), 65749, reason: 'sans révision : loyer actuel');
     });
 
-    test("bilan : chaque mois reçu au loyer de l'époque", () {
+    test("bilan : chaque mois reçu au loyer de l'époque", () {
       final bilan = Rentabilite.bilan(
         bien: bien,
         annee: 2026,

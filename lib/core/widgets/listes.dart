@@ -84,6 +84,35 @@ class LigneNavigation extends StatelessWidget {
   }
 }
 
+/// Une ligne (ou une carte) d'information lue en une seule fois par les
+/// lecteurs d'écran, avec un libellé complet. Placée autour de toute la
+/// ligne, ou seulement autour de son texte quand des boutons voisins
+/// (appeler, écrire) doivent rester accessibles séparément.
+class SemantiqueLigne extends StatelessWidget {
+  const SemantiqueLigne({
+    super.key,
+    required this.libelle,
+    required this.onTap,
+    required this.child,
+  });
+
+  final String libelle;
+
+  /// Nul : ligne non cliquable (lecture seule).
+  final VoidCallback? onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    container: true,
+    button: onTap != null,
+    label: libelle,
+    onTap: onTap,
+    excludeSemantics: true,
+    child: child,
+  );
+}
+
 /// Ligne d'échéance : tuile de date (facultative), titre, sous-titre et
 /// pastille de statut, ou bouton « Calculer » pour une action directe.
 class LigneEcheance extends StatelessWidget {
@@ -217,6 +246,9 @@ class PuceFiltre extends StatelessWidget {
     return Semantics(
       button: true,
       selected: active,
+      // Libellé complet, même s'il est tronqué à l'écran.
+      label: libelle,
+      excludeSemantics: true,
       child: Material(
         color: active ? c.textPrimary : c.surface,
         shape: StadiumBorder(
@@ -226,7 +258,11 @@ class PuceFiltre extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: AppSizes.puceFiltre),
+            // Jamais plus large que la zone de contenu (nom de bien long).
+            constraints: BoxConstraints(
+              minHeight: AppSizes.puceFiltre,
+              maxWidth: MediaQuery.sizeOf(context).width - 2 * AppSpacing.ecran,
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.ligne,
@@ -236,6 +272,8 @@ class PuceFiltre extends StatelessWidget {
                 widthFactor: 1,
                 child: Text(
                   libelle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: context.textes.label.copyWith(
                     color: active ? c.surface : c.textPrimary,
                   ),
@@ -249,7 +287,8 @@ class PuceFiltre extends StatelessWidget {
   }
 }
 
-/// Bannière d'information, réservée aux données manquantes.
+/// Bannière d'information, réservée aux données manquantes et aux réglages
+/// à activer (rappels désactivés).
 class BanniereInformation extends StatelessWidget {
   const BanniereInformation({
     super.key,

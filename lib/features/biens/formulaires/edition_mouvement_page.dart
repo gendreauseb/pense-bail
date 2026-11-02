@@ -119,7 +119,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   Future<void> _supprimer() async {
     final ok = await confirmerSuppression(
       context,
-      titre: 'Supprimer cette ligne ?',
+      titre: 'Supprimer cette ligne ?',
       message: 'Elle disparaîtra du journal et du bilan.',
     );
     if (!ok || !mounted) return;
@@ -143,7 +143,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
           padding: EdgeInsets.all(AppSpacing.ecran),
           child: Note(
             texte:
-                'Cette dépense vient d\'une intervention d\'artisan : '
+                'Cette dépense vient d\'une intervention d\'artisan : '
                 'modifiez-la depuis l\'onglet Artisans du bien.',
           ),
         ),

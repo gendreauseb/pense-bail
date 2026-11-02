@@ -16,7 +16,7 @@ abstract final class Validateurs {
     if (texte.isEmpty) return "Indiquez la valeur de l'indice.";
     final nombre = Formats.parseDecimal(texte);
     if (nombre == null || nombre <= 0 || nombre >= 1000) {
-      return 'Valeur incorrecte (format : 123,45).';
+      return 'Valeur incorrecte (format : 123,45).';
     }
     if (!_deuxDecimales.hasMatch(texte)) return 'Deux décimales au maximum.';
     return null;
@@ -29,7 +29,7 @@ abstract final class Validateurs {
     if (v.isEmpty) return obligatoire ? 'Indiquez votre adresse email.' : null;
     return _email.hasMatch(v)
         ? null
-        : 'Adresse email incorrecte (exemple : prenom.nom@email.fr).';
+        : 'Adresse email incorrecte (exemple : prenom.nom@email.fr).';
   }
 
   static String? telephone(String? valeur, {bool obligatoire = false}) {
@@ -38,7 +38,7 @@ abstract final class Validateurs {
       return obligatoire ? 'Indiquez votre numéro de téléphone.' : null;
     }
     return normaliserTelephone(v) == null
-        ? 'Numéro incorrect : 10 chiffres commençant par 0 (exemple : 06 12 34 56 78).'
+        ? 'Numéro incorrect : 10 chiffres commençant par 0 (exemple : 06 12 34 56 78).'
         : null;
   }
 
@@ -47,7 +47,7 @@ abstract final class Validateurs {
     if (v.isEmpty) return 'Indiquez le code postal.';
     return estCodePostal(v)
         ? null
-        : 'Code postal incorrect : 5 chiffres (exemple : 75011).';
+        : 'Code postal incorrect : 5 chiffres (exemple : 75011).';
   }
 
   /// 5 chiffres, département 01 à 98 (y compris outre-mer 97x / 98x).

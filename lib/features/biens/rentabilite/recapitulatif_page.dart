@@ -60,7 +60,7 @@ class RecapitulatifPage extends ConsumerWidget {
       surtitre: bien.nom,
       titre: recapitulatif.titre,
       nomFichier: RecapitulatifAnnuel.nomFichier(bien, annee),
-      sujet: '${recapitulatif.titre} : ${bien.nom}',
+      sujet: '${recapitulatif.titre} : ${bien.nom}',
       generer: recapitulatif.genererPdf,
       legende: 'Aide à la déclaration, ne remplace pas un conseil fiscal.',
     );

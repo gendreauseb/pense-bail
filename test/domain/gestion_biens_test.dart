@@ -37,7 +37,7 @@ void main() {
     aujourdhui: aujourdhui,
   );
 
-  test('créer : bien, bail, échéances et rappels par défaut', () async {
+  test('créer : bien, bail, échéances et rappels par défaut', () async {
     await creerStudio();
     final liste = await aFaire();
     expect(liste.map((e) => e.type).toSet(), {
@@ -51,7 +51,7 @@ void main() {
     expect(rappels.map((r) => r.joursAvant), [30, 7, 1]);
   });
 
-  test('modifier le nom : échéances conservées telles quelles', () async {
+  test('modifier le nom : échéances conservées telles quelles', () async {
     await creerStudio();
     final avant = {for (final e in await aFaire()) e.id};
 
@@ -63,7 +63,7 @@ void main() {
     expect({for (final e in await aFaire()) e.id}, avant);
   });
 
-  test('passer en moyenne durée : la révision disparaît', () async {
+  test('passer en moyenne durée : la révision disparaît', () async {
     await creerStudio();
     await gestion.modifier(
       bien: unBien(typeLocation: TypeLocation.moyenneDuree),
@@ -74,7 +74,7 @@ void main() {
     expect(types, contains(TypeEcheance.finBail));
   });
 
-  test('bail : l\'IRL seul ne recalcule pas, la date de début oui', () async {
+  test('bail : l\'IRL seul ne recalcule pas, la date de début oui', () async {
     await creerStudio();
     final bail = (await DriftBailRepository(db).bailActif('bien-1'))!;
     final avant = {for (final e in await aFaire()) e.id};
@@ -103,7 +103,40 @@ void main() {
     expect(revision.date, DateTime(2027, 3, 1));
   });
 
-  test('supprimer : tout ce qui se rattache au bien disparaît', () async {
+  test('clause de révision', () async {
+    await creerStudio();
+    final bail = (await DriftBailRepository(db).bailActif('bien-1'))!;
+    final avant = {for (final e in await aFaire()) e.id};
+    Future<void> enregistrer(bool? clause) => gestion.enregistrerBail(
+      bien: unBien(),
+      bail: bail.copyWith(clauseRevision: clause),
+      aujourdhui: aujourdhui,
+    );
+
+    // « Oui » au lieu de « je ne sais pas » : rien à recalculer.
+    await enregistrer(true);
+    expect({for (final e in await aFaire()) e.id}, avant);
+    expect(
+      (await DriftBailRepository(db).bailActif('bien-1'))!.clauseRevision,
+      isTrue,
+    );
+
+    // « Non » : plus de rappel de révision.
+    await enregistrer(false);
+    expect(
+      (await aFaire()).map((e) => e.type),
+      isNot(contains(TypeEcheance.revisionLoyer)),
+    );
+
+    // Retour à « je ne sais pas » : le rappel revient.
+    await enregistrer(null);
+    expect(
+      (await aFaire()).map((e) => e.type),
+      contains(TypeEcheance.revisionLoyer),
+    );
+  });
+
+  test('supprimer : tout ce qui se rattache au bien disparaît', () async {
     await creerStudio();
     await gestion.supprimer('bien-1');
     expect(await DriftBienRepository(db).tous(), isEmpty);
@@ -143,7 +176,7 @@ void main() {
       );
     });
 
-    test('Premium : plusieurs biens', () async {
+    test('Premium : plusieurs biens', () async {
       final premium = avec(Droits.premium);
       await premium.creer(bien: unBien(), aujourdhui: aujourdhui);
       await premium.creer(
@@ -153,7 +186,7 @@ void main() {
       expect(await DriftBienRepository(db).tous(), hasLength(2));
     });
 
-    test('déjà plusieurs biens (ancien Premium) : ajout refusé', () async {
+    test('déjà plusieurs biens (ancien Premium) : ajout refusé', () async {
       await avec(Droits.premium).creer(bien: unBien(), aujourdhui: aujourdhui);
       await avec(Droits.premium).creer(
         bien: unBien(id: 'bien-2'),
@@ -199,7 +232,7 @@ void main() {
       modifieLe: aujourdhui,
     );
 
-    test('modifier, bail, locataires : refusés, rien ne change', () async {
+    test('modifier, bail, locataires : refusés, rien ne change', () async {
       final t2 = (await DriftBienRepository(db).parId('bien-2'))!;
       final bail2 = (await DriftBailRepository(db).bailActif('bien-2'))!;
 
@@ -262,7 +295,7 @@ void main() {
       ]);
     });
 
-    test('le bien actif supprimé : le suivant devient modifiable', () async {
+    test('le bien actif supprimé : le suivant devient modifiable', () async {
       await gratuit.supprimer('bien-1');
       await gratuit.modifier(
         bien: (await DriftBienRepository(

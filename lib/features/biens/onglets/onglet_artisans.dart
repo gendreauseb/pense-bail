@@ -115,14 +115,18 @@ class _LigneIntervention extends StatelessWidget {
     final artisan = this.artisan;
     final telephone = artisan?.telephone;
     final cout = i.coutCentimes;
+    final onTap = modifiable
+        ? () => context.push(
+            Routes.avec(Routes.intervention(i.bienId), {'intervention': i.id}),
+          )
+        : null;
+    final details = [
+      Formats.date(i.date),
+      ?artisan?.nom,
+      if (cout != null) Formats.montant(cout),
+    ].join(', ');
     return InkWell(
-      onTap: modifiable
-          ? () => context.push(
-              Routes.avec(Routes.intervention(i.bienId), {
-                'intervention': i.id,
-              }),
-            )
-          : null,
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.ligne,
@@ -132,26 +136,30 @@ class _LigneIntervention extends StatelessWidget {
         ),
         child: Row(
           children: [
-            TuileIcone(
-              icone: artisan == null
-                  ? AppIcons.intervention
-                  : AppIcons.metier(artisan.metier),
-            ),
-            const SizedBox(width: AppSpacing.bloc),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(i.description, style: t.rowTitle),
-                  Text(
-                    [
-                      Formats.date(i.date),
-                      ?artisan?.nom,
-                      if (cout != null) Formats.montant(cout),
-                    ].join(', '),
-                    style: t.secondary,
-                  ),
-                ],
+              // Appeler reste accessible séparément.
+              child: SemantiqueLigne(
+                libelle: '${i.description}, $details',
+                onTap: onTap,
+                child: Row(
+                  children: [
+                    TuileIcone(
+                      icone: artisan == null
+                          ? AppIcons.intervention
+                          : AppIcons.metier(artisan.metier),
+                    ),
+                    const SizedBox(width: AppSpacing.bloc),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(i.description, style: t.rowTitle),
+                          Text(details, style: t.secondary),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (telephone != null)

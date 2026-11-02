@@ -31,7 +31,7 @@ Future<bool> sauvegarderDonnees(BuildContext context, WidgetRef ref) async {
     if (fichier == null) return false;
     _message(
       messager,
-      'Sauvegarde enregistrée. Conservez-la en lieu sûr : elle contient '
+      'Sauvegarde enregistrée. Conservez-la en lieu sûr : elle contient '
       'toutes vos données.',
     );
     return true;
@@ -69,7 +69,7 @@ Future<void> restaurerDonnees(BuildContext context, WidgetRef ref) async {
   final ok = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Restaurer cette sauvegarde ?'),
+      title: const Text('Restaurer cette sauvegarde ?'),
       content: Text(
         'Sauvegarde du ${Formats.date(sauvegarde.creeLe)} '
         '($biens bien${biens > 1 ? 's' : ''}). Toutes les données actuelles '
@@ -112,7 +112,7 @@ Future<void> effacerDonnees(BuildContext context, WidgetRef ref) async {
   final choix = await showDialog<_ChoixEffacement>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Tout effacer ?'),
+      title: const Text('Tout effacer ?'),
       content: const Text(
         'Toutes vos données (profil, biens, baux, locataires, échéances, '
         'photos) seront supprimées de ce téléphone. Cette action est '

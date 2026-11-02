@@ -87,7 +87,7 @@ class _PanneauNotifications extends ConsumerWidget {
                 const SizedBox(width: AppSpacing.blocSerre),
                 Expanded(
                   child: Text(
-                    'Rappels activés : une notification arrive à '
+                    'Rappels activés : une notification arrive à '
                     '${ConfigApp.heureRappel} h, aux dates choisies pour '
                     'chaque échéance.',
                     style: t.secondary,

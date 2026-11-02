@@ -100,7 +100,7 @@ class ChampMontant extends StatelessWidget {
       }
       final centimes = Formats.parseMontant(v);
       if (centimes == null) {
-        return 'Montant incorrect (exemple : 650 ou 650,50).';
+        return 'Montant incorrect (exemple : 650 ou 650,50).';
       }
       return validationSupplementaire?.call(centimes);
     },
@@ -184,7 +184,7 @@ class _ChampDateState extends State<ChampDate> {
       confirmText: 'Choisir cette date',
       cancelText: 'Annuler',
       fieldLabelText: 'Date (JJ/MM/AAAA)',
-      errorFormatText: 'Format attendu : JJ/MM/AAAA',
+      errorFormatText: 'Format attendu : JJ/MM/AAAA',
       errorInvalidText: 'Date hors des limites possibles',
     );
     if (choisie == null) return;

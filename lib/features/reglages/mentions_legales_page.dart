@@ -72,7 +72,7 @@ class MentionsLegalesPage extends StatelessWidget {
                 'uniquement dans l\'application, sur ce téléphone. Il n\'y a '
                 'ni publicité, ni mesure d\'audience, ni partage avec des '
                 'tiers.',
-            'Seul accès à internet : l\'application télécharge les indices '
+            'Seul accès à internet : l\'application télécharge les indices '
                 'de référence des loyers publiés par l\'INSEE (bdm.insee.fr). '
                 'Cette demande ne contient aucune de vos informations.',
             'Les courriers, récapitulatifs et sauvegardes ne quittent le '
@@ -81,17 +81,17 @@ class MentionsLegalesPage extends StatelessWidget {
             'Si la sauvegarde de votre téléphone est activée (sauvegarde '
                 'Google sur Android, iCloud sur iPhone), le système copie '
                 'les données de l\'application dans votre compte, comme pour '
-                'vos autres applications : vous les retrouvez en changeant de '
+                'vos autres applications : vous les retrouvez en changeant de '
                 'téléphone. Pense-Bail n\'a pas accès à cette copie.',
           ]),
           section('Les données de vos locataires', [
             'Vous êtes responsable des informations que vous saisissez sur '
-                'vos locataires : n\'enregistrez que celles utiles à la '
+                'vos locataires : n\'enregistrez que celles utiles à la '
                 'gestion de la location, et conservez vos fichiers de '
                 'sauvegarde en lieu sûr, car ils contiennent ces informations.',
           ]),
           section('Supprimer vos données', [
-            'Réglages, puis « Tout effacer » supprime définitivement toutes '
+            'Réglages, puis « Tout effacer » supprime définitivement toutes '
                 'les données et photos de l\'application. Désinstaller '
                 'l\'application a le même effet. Pensez à faire une '
                 'sauvegarde avant si vous souhaitez les conserver.',
@@ -104,7 +104,7 @@ class MentionsLegalesPage extends StatelessWidget {
                 'professionnel (ADIL, notaire, avocat).',
             if (verification != null)
               'Règles légales vérifiées le ${Formats.date(verification)}.',
-            'Sources : service-public.gouv.fr, legifrance.gouv.fr, insee.fr, '
+            'Sources : service-public.gouv.fr, legifrance.gouv.fr, insee.fr, '
                 'impots.gouv.fr.',
           ]),
           if (editeur != null) section('Éditeur', [editeur, ?contact]),

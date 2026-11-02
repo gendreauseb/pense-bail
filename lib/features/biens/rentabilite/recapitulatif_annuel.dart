@@ -44,9 +44,9 @@ class RecapitulatifAnnuel {
       'Document d\'aide à la préparation de votre déclaration de revenus, '
       'établi à partir des informations saisies dans Pense-Bail. Les loyers '
       'sont ceux des mois indiqués comme reçus, au montant en vigueur ce '
-      'mois-là : vérifiez-les avec vos relevés bancaires. Toutes les dépenses '
+      'mois-là : vérifiez-les avec vos relevés bancaires. Toutes les dépenses '
       'ne sont pas déductibles de vos revenus fonciers (par exemple le '
-      'remboursement du capital d\'un crédit) : consultez impots.gouv.fr. '
+      'remboursement du capital d\'un crédit) : consultez impots.gouv.fr. '
       'Ne remplace pas un conseil fiscal.';
 
   factory RecapitulatifAnnuel.depuis({
@@ -163,13 +163,13 @@ class RecapitulatifAnnuel {
           pw.Text(adresse),
           pw.SizedBox(height: StylePdf.interligne),
           pw.Text(
-            'Propriétaire : $proprietaire. Édité le $editeLe avec Pense-Bail.',
+            'Propriétaire : $proprietaire. Édité le $editeLe avec Pense-Bail.',
             style: style.styleLegende,
           ),
           section('Recettes'),
           style.tableau(recettes),
           pw.Text(
-            'Mois indiqués comme reçus : $moisRecus.',
+            'Mois indiqués comme reçus : $moisRecus.',
             style: style.styleLegende,
           ),
           section('Dépenses'),

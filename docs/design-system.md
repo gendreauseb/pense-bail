@@ -95,7 +95,7 @@ Les tailles doivent suivre le réglage de taille de texte du téléphone sans ca
 - **Action rapide dans une ligne** : quand une échéance a une action directe (révision de loyer), la pastille est remplacée par un petit bouton primary « Calculer ».
 - **Puces de filtre** : 36 de haut, inactive = fond blanc et bordure, active = fond textPrimary et texte blanc. Défilement horizontal.
 - **Puces d'information** (type de bien, type de location) : 30 de haut, fond blanc, bordure, non cliquables.
-- **Bannière d'information** : fond #FAEFD2, rayon 14 à 16, texte 13 en #5A3D00, action à droite (« Compléter », « Ajouter »). Réservée aux données manquantes.
+- **Bannière d'information** : fond #FAEFD2, rayon 14 à 16, texte 13 en #5A3D00, action à droite (« Compléter », « Ajouter », « Activer »). Réservée aux données manquantes et aux réglages à activer (rappels désactivés).
 - **Onglets** : texte label, inactif en textSecondary, actif en textPrimary gras avec soulignement primary de 3 px, ligne de base border sous l'ensemble.
 - **Bouton pointillé** : 48 de haut, bordure 1,5 px pointillée borderDashed, fond transparent, pour ajouter un élément à une liste.
 - **Barre de navigation** : fond surface, bordure haute, 5 emplacements : Accueil, Biens, bouton central « + », Artisans, Réglages. Le bouton central fait 56 × 56, rayon 18, fond primary, surélevé de 26 px avec ombre douce ; il ouvre un choix « Ajouter une échéance » ou « Ajouter un bien ».
@@ -113,6 +113,7 @@ Les tailles doivent suivre le réglage de taille de texte du téléphone sans ca
 - Vouvoiement, phrases courtes, vocabulaire simple. Un terme juridique est toujours accompagné d'une explication.
 - Dates au format JJ/MM/AAAA, ou jour + mois abrégé en majuscules dans les tuiles (29 SEPT).
 - Montants au format français : « 1 150 € », « 620 € / mois ».
+- Espace insécable (U+00A0) avant « : ; ? ! » et après « (et avant »), pour qu'un signe ne commence jamais une ligne ; vérifié par `test/core/typographie_test.dart`.
 - Pas de tiret cadratin dans les textes de l'interface : utiliser une virgule, un deux-points, des parenthèses ou un point.
 - Les boutons disent ce qu'ils font (« Réviser le loyer », « Compléter »), jamais « OK » ou « Valider » seuls.
 

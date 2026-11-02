@@ -12,10 +12,11 @@ enum BlocageRevision {
   ),
   pasDeBail('Renseignez d\'abord les informations du bail.'),
   bailSansRevision('Ce type de bail ne prévoit pas de révision selon l\'IRL.'),
-  dpeGel(
-    'Ce logement est classé F ou G : la loi interdit d\'augmenter son '
-    'loyer, la révision n\'est pas autorisée.',
-  );
+  sansClause(
+    'Votre bail ne prévoit pas de révision du loyer : le loyer ne peut pas '
+    'être révisé en cours de bail.',
+  ),
+  dpeGel(ReglesLegales.noteGelDpe);
 
   const BlocageRevision(this.message);
   final String message;
@@ -119,6 +120,10 @@ abstract final class CalculateurRevision {
     if (bail == null) BlocageRevision.pasDeBail,
     if (bail != null && !bail.regle.revisionIrlAutorisee)
       BlocageRevision.bailSansRevision,
+    if (bail != null &&
+        bail.regle.revisionIrlAutorisee &&
+        bail.clauseRevision == false)
+      BlocageRevision.sansClause,
     if (ReglesLegales.classesDpeSansRevision.contains(bien.classeDpe))
       BlocageRevision.dpeGel,
   ];

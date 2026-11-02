@@ -132,7 +132,7 @@ void main() {
   });
 
   test(
-    'sauvegarde du schéma 3 : révisions restaurées avec leur courrier',
+    'sauvegarde du schéma 3 : révisions restaurées avec leur courrier',
     () async {
       await remplir();
       await DriftRevisionRepository(db).enregistrer(
@@ -173,7 +173,7 @@ void main() {
   );
 
   test(
-    "sauvegarde du schéma 4 : dates avec fuseau horaire relues au bon jour",
+    "sauvegarde du schéma 4 : dates avec fuseau horaire relues au bon jour",
     () async {
       await remplir();
       final json =
@@ -203,7 +203,7 @@ void main() {
     },
   );
 
-  group('mode Premium simulé : propre au téléphone', () {
+  group('mode Premium simulé : propre au téléphone', () {
     late DriftReglagesRepository reglages;
     setUp(() => reglages = DriftReglagesRepository(db));
 
@@ -234,7 +234,7 @@ void main() {
       expect(await reglages.lire('onboarding.termine'), 'true');
     });
 
-    test('conservé par « Tout effacer »', () async {
+    test('conservé par « Tout effacer »', () async {
       await remplir();
       await reglages.ecrire(ClesReglages.modePremiumBeta, 'gratuit');
       await service.effacerTout();

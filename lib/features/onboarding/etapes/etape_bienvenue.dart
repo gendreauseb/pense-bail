@@ -18,20 +18,20 @@ const _promesses = [
   _Promesse(
     IllustrationEcheances(),
     'Ne ratez plus aucune échéance',
-    'Révision du loyer, fin de bail, assurance, taxe foncière : '
+    'Révision du loyer, fin de bail, assurance, taxe foncière : '
         'Pense-Bail vous prévient à temps.',
   ),
   _Promesse(
     IllustrationBiens(),
     'Tous vos biens au même endroit',
-    'Bail, locataire, rentabilité, artisans : l\'essentiel de chaque bien, '
+    'Bail, locataire, rentabilité, artisans : l\'essentiel de chaque bien, '
         'toujours sous la main.',
   ),
   _Promesse(
     IllustrationCourrier(),
-    'Vos courriers prêts en un clic',
-    'La révision du loyer est calculée pour vous, avec un courrier prêt à '
-        'envoyer. Vos données restent sur votre téléphone.',
+    'Votre loyer révisé sans calcul',
+    "Pense-Bail applique l'indice publié par l'INSEE et met à jour le "
+        'loyer. Vos données restent sur votre téléphone.',
   ),
 ];
 
@@ -156,7 +156,7 @@ class _EtapeBienvenueState extends ConsumerState<EtapeBienvenue> {
             Center(
               child: TextButton(
                 onPressed: () => restaurerDonnees(context, ref),
-                child: const Text('J\'ai une sauvegarde : la restaurer'),
+                child: const Text('J\'ai une sauvegarde : la restaurer'),
               ),
             ),
             const SizedBox(height: AppSpacing.s),

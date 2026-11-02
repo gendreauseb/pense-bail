@@ -71,7 +71,7 @@ class IllustrationBien extends StatelessWidget {
             color: maison ? c.sandIcon : c.primary,
             semanticLabel: type == null
                 ? 'Illustration'
-                : 'Illustration : ${type.libelle}',
+                : 'Illustration : ${type.libelle}',
           ),
         ),
       ),

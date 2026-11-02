@@ -76,15 +76,15 @@ class _SaisieIndiceState extends ConsumerState<_SaisieIndice> {
               const TitreSection('Saisir l\'indice'),
               Text(
                 'Recopiez la valeur de l\'IRL du $libelle publiée sur '
-                'insee.fr (« Indice de référence des loyers »). Vérifiez-la '
-                'bien : elle sert au calcul de votre révision.',
+                'insee.fr (« Indice de référence des loyers »). Vérifiez-la '
+                'bien : elle sert au calcul de votre révision.',
                 style: context.textes.secondary,
               ),
               const SizedBox(height: AppSpacing.bloc),
               ChampTexte(
                 controleur: _valeur,
                 libelle: 'IRL du $libelle',
-                aide: 'Format : 123,45',
+                aide: 'Format : 123,45',
                 clavier: const TextInputType.numberWithOptions(decimal: true),
                 formats: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),

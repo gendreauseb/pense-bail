@@ -11,7 +11,7 @@ void main() {
     for (final e in liste) e.type: e.date,
   };
 
-  test('longue durée, bail vide : 4 échéances automatiques', () {
+  test('longue durée, bail vide : 4 échéances automatiques', () {
     final prevues = GenerateurEcheances.depuisBail(
       bien: unBien(),
       bail: unBail(debut: DateTime(2023, 9, 1)),
@@ -30,13 +30,23 @@ void main() {
     );
   });
 
-  test("moyenne durée : pas d'échéance de révision", () {
+  test("moyenne durée : pas d'échéance de révision", () {
     final prevues = GenerateurEcheances.depuisBail(
       bien: unBien(typeLocation: TypeLocation.moyenneDuree),
       bail: unBail(typeBail: TypeBail.meuble, debut: DateTime(2026, 3, 15)),
       aujourdhui: aujourdhui,
     );
     expect(parType(prevues).containsKey(TypeEcheance.revisionLoyer), isFalse);
+  });
+
+  test("bail sans clause de révision : pas d'échéance de révision", () {
+    final prevues = GenerateurEcheances.depuisBail(
+      bien: unBien(),
+      bail: unBail(debut: DateTime(2023, 9, 1)).copyWith(clauseRevision: false),
+      aujourdhui: aujourdhui,
+    );
+    expect(parType(prevues).containsKey(TypeEcheance.revisionLoyer), isFalse);
+    expect(parType(prevues).containsKey(TypeEcheance.finBail), isTrue);
   });
 
   test('échéances génériques', () {

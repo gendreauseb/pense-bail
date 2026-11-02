@@ -83,10 +83,6 @@ class BarreNavigation extends StatelessWidget {
   final int brancheActive;
   final ValueChanged<int> onBranche;
 
-  /// Les libellés suivent la taille de texte du téléphone, dans une limite
-  /// qui préserve la barre.
-  static const _echelleTexteMax = 1.3;
-
   @override
   Widget build(BuildContext context) {
     final c = context.couleurs;
@@ -99,7 +95,7 @@ class BarreNavigation extends StatelessWidget {
     );
 
     return MediaQuery.withClampedTextScaling(
-      maxScaleFactor: _echelleTexteMax,
+      maxScaleFactor: AppSizes.echelleTexteBarresMax,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: c.surface,

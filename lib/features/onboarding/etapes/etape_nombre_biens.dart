@@ -26,7 +26,8 @@ class EtapeNombreBiens extends ConsumerWidget {
     final auDelaDuGratuit = maxGratuit != null && nombre > maxGratuit;
 
     return GabaritEtape(
-      titre: 'Combien de biens louez-vous ?',
+      // Gluon (U+2060) : pas de retour à la ligne après le trait d'union.
+      titre: 'Combien de biens louez-\u2060vous ?',
       onRetour: controleur.precedent,
       libelleAction: 'Continuer',
       onAction: controleur.suivant,

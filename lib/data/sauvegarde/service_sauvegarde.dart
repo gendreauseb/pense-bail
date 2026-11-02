@@ -144,7 +144,7 @@ class ServiceSauvegarde {
       final colonnes = connues[nom];
       if (colonnes == null || lignes is! List) {
         throw SauvegardeInvalide(
-          'Contenu inattendu dans la sauvegarde : $nom.',
+          'Contenu inattendu dans la sauvegarde : $nom.',
         );
       }
       tables[nom] = [
@@ -153,7 +153,7 @@ class ServiceSauvegarde {
               !ligne.keys.every(colonnes.contains) ||
               !ligne.values.every(_valeurSimple))
             throw SauvegardeInvalide(
-              'Contenu inattendu dans la sauvegarde : $nom.',
+              'Contenu inattendu dans la sauvegarde : $nom.',
             )
           else if (!_reglagePropreAuTelephone(nom, ligne))
             ligne,

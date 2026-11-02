@@ -53,7 +53,7 @@ void main() {
       );
     });
 
-    test("valeur illisible : rien n'est importé", () {
+    test("valeur illisible : rien n'est importé", () {
       expect(
         () =>
             LecteurIndices.depuisSdmxInsee(_sdmx.replaceAll('148.37', 'NaN?')),
@@ -112,7 +112,7 @@ void main() {
       expect(await indices.tous(), isEmpty);
     });
 
-    test('mise à jour INSEE : nouveaux indices et date enregistrés', () async {
+    test('mise à jour INSEE : nouveaux indices et date enregistrés', () async {
       final s = service(inseeOk);
       expect(await s.miseAJourConseillee(), isTrue);
       expect(await s.mettreAJour(), 2);
@@ -122,7 +122,7 @@ void main() {
       expect(appels, 1);
     });
 
-    test('INSEE indisponible : message clair, rien de modifié', () async {
+    test('INSEE indisponible : message clair, rien de modifié', () async {
       final s = service(MockClient((_) async => http.Response('', 503)));
       await expectLater(
         s.mettreAJour(),
@@ -153,7 +153,7 @@ void main() {
       );
     });
 
-    test('saisie manuelle : ne remplace jamais une valeur INSEE', () async {
+    test('saisie manuelle : ne remplace jamais une valeur INSEE', () async {
       final s = service(inseeOk);
       await s.importerTableEmbarquee();
       await s.saisir(annee: 2025, trimestre: 2, valeur: 150);

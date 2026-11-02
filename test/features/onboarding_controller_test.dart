@@ -69,7 +69,7 @@ void main() {
     expect((etat(c).etape, etat(c).indexBien), (EtapeOnboarding.photoBien, 0));
   });
 
-  test('modification depuis le récapitulatif : retour direct', () async {
+  test('modification depuis le récapitulatif : retour direct', () async {
     final (c, ctrl) = await demarrer();
     addTearDown(c.dispose);
     for (var i = 0; i < 5; i++) {
@@ -104,7 +104,7 @@ void main() {
   });
 
   test(
-    'terminer : données enregistrées et onboarding marqué terminé',
+    'terminer : données enregistrées et onboarding marqué terminé',
     () async {
       final (c, ctrl) = await demarrer();
       addTearDown(c.dispose);

@@ -35,7 +35,7 @@ class _EtapeRecapitulatifState extends ConsumerState<EtapeRecapitulatif> {
         const SnackBar(
           content: Text(
             'L\'enregistrement n\'a pas abouti. Vos informations sont '
-            'conservées : réessayez.',
+            'conservées : réessayez.',
           ),
         ),
       );
@@ -54,7 +54,7 @@ class _EtapeRecapitulatifState extends ConsumerState<EtapeRecapitulatif> {
     final id = b.identite;
 
     return GabaritEtape(
-      titre: 'Tout est prêt !',
+      titre: 'Tout est prêt !',
       sousTitre:
           '${biens.length} ${biens.length > 1 ? 'biens' : 'bien'}, '
           '${Formats.parMois(totalLoyers)} de loyers (hors charges).',
@@ -153,7 +153,8 @@ class _LigneBien extends StatelessWidget {
       lignes: [
         [
           bien.typeLogement?.libelle,
-          bien.typeLocation?.libelle,
+          // Même casse que la liste des biens : « Appartement, longue durée ».
+          bien.typeLocation?.libelle.toLowerCase(),
         ].whereType<String>().join(', '),
         if (loyer != null)
           charges > 0

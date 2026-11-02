@@ -16,8 +16,11 @@ grandes zones tactiles. Tout en français.
   toucher un écran.**
 - [docs/conventions-code.md](docs/conventions-code.md) : couches, Riverpod,
   drift et migrations, formulaires, tests, vérification sur émulateur.
-- [docs/decisions.md](docs/decisions.md) : décisions prises, points ouverts,
-  liste avant publication.
+- [docs/decisions.md](docs/decisions.md) : décisions prises, points ouverts.
+- [docs/a-verifier.md](docs/a-verifier.md) : ce que l'utilisateur doit
+  vérifier ou faire lui-même (règles légales, essais sur téléphone,
+  publication). À tenir à jour quand une règle, un texte juridique ou une
+  démarche s'ajoute.
 
 ## Commandes
 
@@ -56,7 +59,8 @@ pdf + printing, file_picker, http (INSEE uniquement).
   Panneaux du bas via `ouvrirFeuille()`.
 - **Rédaction** : vouvoiement, phrases courtes, terme juridique toujours
   expliqué, pas de tiret cadratin, boutons qui disent ce qu'ils font (jamais
-  « OK » seul). Dates JJ/MM/AAAA.
+  « OK » seul). Dates JJ/MM/AAAA. Espace insécable (U+00A0) avant
+  « : ; ? ! » » et après « « » dans les chaînes (un test le vérifie).
 - **Gratuit / Premium** : demander ce qui est disponible
   (`Droits.autorise`), jamais « a-t-il payé ? » ; écritures via les cas
   d'usage qui contrôlent les droits (voir conventions). Rien n'est jamais

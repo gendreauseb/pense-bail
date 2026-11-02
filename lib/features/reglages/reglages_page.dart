@@ -53,7 +53,7 @@ class ReglagesPage extends ConsumerWidget {
               section('Mode bêta', [
                 Text(
                   "Réservé aux testeurs. Passez d'une version à l'autre pour "
-                  'voir les différences : aucun achat, aucune donnée '
+                  'voir les différences : aucun achat, aucune donnée '
                   'supprimée.',
                   style: t.secondary,
                 ),
@@ -204,8 +204,8 @@ class _InterrupteurPremium extends ConsumerWidget {
       title: Text('Pense-Bail Premium', style: t.rowTitle),
       subtitle: Text(
         premium
-            ? 'Activé : toutes les fonctionnalités'
-            : 'Désactivé : version gratuite',
+            ? 'Activé : toutes les fonctionnalités'
+            : 'Désactivé : version gratuite',
         style: t.secondary,
       ),
       value: premium,

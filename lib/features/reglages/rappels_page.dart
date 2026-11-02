@@ -57,7 +57,7 @@ class RappelsPage extends ConsumerWidget {
                   const Note(
                     icone: AppIcons.notificationsCoupees,
                     texte:
-                        'Les notifications sont bloquées sur ce téléphone : '
+                        'Les notifications sont bloquées sur ce téléphone : '
                         'vous ne recevrez aucun rappel. Si rien ne s\'affiche '
                         'en touchant le bouton, autorisez-les dans les '
                         'réglages du téléphone.',
@@ -158,9 +158,9 @@ class RappelsPage extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Appliquer à toutes les échéances ?'),
+        title: const Text('Appliquer à toutes les échéances ?'),
         content: Text(
-          'Les rappels de toutes les échéances à venir seront remplacés par : '
+          'Les rappels de toutes les échéances à venir seront remplacés par : '
           '$texteDelais. Les réglages faits échéance par échéance seront '
           'perdus.',
         ),

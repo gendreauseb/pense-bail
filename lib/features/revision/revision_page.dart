@@ -7,6 +7,7 @@ import '../../app/etat_app.dart';
 import '../../app/routes.dart';
 import '../../core/config/regles_legales.dart';
 import '../../core/format/formats.dart';
+import '../../core/widgets/choix_oui_non.dart';
 import '../../core/widgets/choix_trimestre.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/formulaires.dart';
@@ -147,6 +148,11 @@ class _AssistantState extends ConsumerState<_Assistant> {
   String? _erreurMiseAJour;
   bool _enCours = false;
 
+  /// Clause de révision inconnue : demandée à l'étape 1 (la révision n'est
+  /// possible que si le bail la prévoit), puis retenue sur le bail.
+  late final bool _clauseADemander = widget.bail.clauseRevision == null;
+  bool? _clause;
+
   @override
   void initState() {
     super.initState();
@@ -220,14 +226,56 @@ class _AssistantState extends ConsumerState<_Assistant> {
 
   void _continuer() {
     switch (_etape) {
+      case _Etape.donnees when _clauseADemander && _clause == false:
+        _enregistrerSansClause();
       case _Etape.donnees:
         if (!validerEtMontrerErreur(_cle)) return;
+        if (_clauseADemander) _retenirClause();
         setState(() => _etape = _Etape.indices);
       case _Etape.indices:
         setState(() => _etape = _Etape.resultat);
       case _Etape.resultat:
         _confirmer();
     }
+  }
+
+  /// « Oui » : retenu sur le bail (sauf bien en lecture seule, où le calcul
+  /// reste indicatif).
+  void _retenirClause() {
+    if (ref.read(bienVerrouilleProvider(widget.bien.id))) return;
+    ref
+        .read(gestionBiensProvider)
+        .enregistrerBail(
+          bien: widget.bien,
+          bail: widget.bail.copyWith(clauseRevision: true),
+          aujourdhui: ref.read(aujourdhuiProvider),
+        );
+  }
+
+  /// « Non » : la révision est impossible ; la réponse est retenue sur le
+  /// bail (plus de rappel de révision).
+  Future<void> _enregistrerSansClause() async {
+    final navigateur = Navigator.of(context);
+    final messager = ScaffoldMessenger.of(context);
+    final gestion = ref.read(gestionBiensProvider);
+    final enregistre = await executerSiAutorise(
+      context,
+      () => gestion.enregistrerBail(
+        bien: widget.bien,
+        bail: widget.bail.copyWith(clauseRevision: false),
+        aujourdhui: ref.read(aujourdhuiProvider),
+      ),
+    );
+    if (!enregistre) return;
+    navigateur.pop();
+    messager.showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Réponse enregistrée : Pense-Bail ne vous rappellera plus la '
+          'révision de ce loyer.',
+        ),
+      ),
+    );
   }
 
   Future<void> _confirmer() async {
@@ -267,7 +315,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
     messager.showSnackBar(
       SnackBar(
         content: Text(
-          'Révision enregistrée : le loyer passe à '
+          'Révision enregistrée : le loyer passe à '
           '${Formats.parMois(enregistree.nouveauLoyerCentimes)}.',
         ),
       ),
@@ -303,12 +351,23 @@ class _AssistantState extends ConsumerState<_Assistant> {
     );
 
     final (libelleAction, peutContinuer, legende) = switch (_etape) {
+      _Etape.donnees when _clauseADemander && _clause == null => (
+        'Continuer',
+        false,
+        'Vérifiez votre bail : la révision n\'est possible que s\'il la '
+            'prévoit.',
+      ),
+      _Etape.donnees when _clauseADemander && _clause == false => (
+        'Enregistrer ma réponse',
+        true,
+        null,
+      ),
       _Etape.donnees => ('Continuer', true, null),
       _Etape.indices => ('Calculer le nouveau loyer', indices.complets, null),
       _Etape.resultat when verrouille => (
         'Confirmer la révision',
         false,
-        'Bien en lecture seule : ce calcul est indicatif.',
+        'Bien en lecture seule : ce calcul est indicatif.',
       ),
       _Etape.resultat => (
         'Confirmer la révision',
@@ -381,7 +440,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
                         texte:
                             'Le courrier prêt à envoyer à votre locataire est '
                             'inclus dans Pense-Bail Premium. Vous pouvez '
-                            'enregistrer la révision : le loyer du bien sera '
+                            'enregistrer la révision : le loyer du bien sera '
                             'mis à jour.',
                         onDecouvrir: () => ouvrirPremium(context),
                       ),
@@ -411,7 +470,27 @@ class _AssistantState extends ConsumerState<_Assistant> {
   List<Widget> _donnees(BuildContext context) {
     final t = context.textes;
     final cycle = _cycle;
+    final question = [
+      Text('Votre bail prévoit-il la révision du loyer ?', style: t.rowTitle),
+      const SizedBox(height: AppSpacing.s),
+      ChoixOuiNon(
+        valeur: _clause,
+        onChanged: (v) => setState(() => _clause = v),
+      ),
+      const SizedBox(height: AppSpacing.bloc),
+      Note(
+        icone: _clause == false ? AppIcons.attention : AppIcons.information,
+        texte: _clause == false
+            ? 'Sans clause de révision, le loyer ne peut pas être révisé en '
+                  'cours de bail. Votre réponse sera retenue dans la fiche '
+                  'du bail : Pense-Bail ne vous rappellera plus la révision.'
+            : ReglesLegales.clauseRevisionExplication,
+      ),
+      const SizedBox(height: AppSpacing.sectionLarge),
+    ];
+    if (_clauseADemander && _clause != true) return question;
     return [
+      if (_clauseADemander) ...question,
       CarteListe(
         enfants: [
           LigneInfo(
@@ -436,7 +515,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
                   's\'appliquera à partir de la date de votre courrier, '
                   'sans effet rétroactif.'
             : 'La révision a lieu une fois par an, à la date prévue au '
-                  'bail. Elle n\'est pas rétroactive : envoyez votre courrier '
+                  'bail. Elle n\'est pas rétroactive : envoyez votre courrier '
                   'avant le ${Formats.date(cycle.datePrevue)}.',
       ),
       if (cycle.enRetard)
@@ -467,7 +546,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
       Text(
         _trimestreSuggere
             ? '${ReglesLegales.trimestreParDefautExplication} Nous avons '
-                  'présélectionné le ${Formats.trimestre(_trimestre)} : '
+                  'présélectionné le ${Formats.trimestre(_trimestre)} : '
                   'vérifiez la clause de révision de votre bail.'
             : 'Indiqué dans la clause de révision de votre bail.',
         style: t.secondary,
@@ -546,6 +625,13 @@ class _AssistantState extends ConsumerState<_Assistant> {
         ],
       ),
       const SizedBox(height: AppSpacing.bloc),
+      if (_cycle.enRetard) ...[
+        const Note(
+          icone: AppIcons.attention,
+          texte: ReglesLegales.noteIndiceEnRetard,
+        ),
+        const SizedBox(height: AppSpacing.bloc),
+      ],
       if (nouvelPasEncorePublie)
         Note(
           icone: AppIcons.calendrier,
@@ -585,7 +671,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
         Note(
           texte:
               'Le loyer n\'a pas été révisé depuis l\'indice de $anneeBail. '
-              'Les révisions des années passées sont perdues : le calcul '
+              'Les révisions des années passées sont perdues : le calcul '
               'part de l\'indice de ${indices.anneeAncien}, comme le prévoit '
               'la loi.',
         ),
@@ -630,7 +716,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
       ),
       Text(
         [
-          'Source : INSEE, indice de référence des loyers.',
+          'Source : INSEE, indice de référence des loyers.',
           if (derniereVerification != null)
             'Dernière vérification le ${Formats.date(derniereVerification)}.',
         ].join(' '),
@@ -662,7 +748,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
       Semantics(
         container: true,
         label:
-            'Nouveau loyer hors charges : '
+            'Nouveau loyer hors charges : '
             '${Formats.parMois(r.nouveauLoyerCentimes)}',
         excludeSemantics: true,
         child: Column(
@@ -706,7 +792,7 @@ class _AssistantState extends ConsumerState<_Assistant> {
         const SizedBox(height: AppSpacing.bloc),
         const Note(
           texte:
-              'L\'indice a baissé : ce calcul diminue le loyer. La révision '
+              'L\'indice a baissé : ce calcul diminue le loyer. La révision '
               'est à votre initiative, vous n\'êtes pas obligé de la faire.',
         ),
       ],
@@ -772,7 +858,7 @@ class _Progression extends StatelessWidget {
     final total = _Etape.values.length;
     return Semantics(
       container: true,
-      label: 'Étape $numero sur $total : ${etape.libelle}',
+      label: 'Étape $numero sur $total : ${etape.libelle}',
       excludeSemantics: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -795,7 +881,7 @@ class _Progression extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s),
           Text(
-            'Étape $numero sur $total : ${etape.libelle}',
+            'Étape $numero sur $total : ${etape.libelle}',
             style: context.textes.caption,
           ),
         ],

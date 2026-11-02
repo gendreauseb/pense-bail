@@ -109,7 +109,7 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
   }
 
-  testWidgets('accueil et liste : le second bien est en lecture seule', (
+  testWidgets('accueil et liste : le second bien est en lecture seule', (
     tester,
   ) async {
     await lancer(tester, droits: Droits.gratuit);
@@ -137,7 +137,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets("accueil : pas d'invitation à compléter un bien verrouillé", (
+  testWidgets("accueil : pas d'invitation à compléter un bien verrouillé", (
     tester,
   ) async {
     await lancer(tester, droits: Droits.gratuit);
@@ -155,13 +155,13 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('Premium : aucun bien en lecture seule', (tester) async {
+  testWidgets('Premium : aucun bien en lecture seule', (tester) async {
     await lancer(tester, droits: Droits.premium);
     expect(find.text('Lecture seule'), findsNothing);
     await fermer(tester);
   });
 
-  testWidgets('fiche verrouillée : consultation, pas de modification', (
+  testWidgets('fiche verrouillée : consultation, pas de modification', (
     tester,
   ) async {
     await lancer(tester, droits: Droits.gratuit);
@@ -203,7 +203,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('fiche du bien actif : modifiable, sans bandeau', (tester) async {
+  testWidgets('fiche du bien actif : modifiable, sans bandeau', (tester) async {
     await lancer(tester, droits: Droits.gratuit);
     aller(tester, Routes.ficheBien('studio'));
     await attendre(tester);
@@ -221,7 +221,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets("échéance d'un bien verrouillé : faite possible, pas Modifier", (
+  testWidgets("échéance d'un bien verrouillé : faite possible, pas Modifier", (
     tester,
   ) async {
     await lancer(tester, droits: Droits.gratuit);
@@ -258,7 +258,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('« + » puis « Ajouter un bien » : présentation de Premium', (
+  testWidgets('« + » puis « Ajouter un bien » : présentation de Premium', (
     tester,
   ) async {
     await lancer(tester, droits: Droits.gratuit);
@@ -280,7 +280,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('nouvelle échéance : seuls les biens modifiables sont proposés', (
+  testWidgets('nouvelle échéance : seuls les biens modifiables sont proposés', (
     tester,
   ) async {
     await lancer(tester, droits: Droits.gratuit);
@@ -298,7 +298,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('onboarding en gratuit : prévenu avant de saisir 2 biens', (
+  testWidgets('onboarding en gratuit : prévenu avant de saisir 2 biens', (
     tester,
   ) async {
     const brouillon = BrouillonOnboarding(
@@ -349,7 +349,7 @@ void main() {
   }
 
   group('fonctionnalités Premium en version gratuite', () {
-    testWidgets('rentabilité sans données : bandeau seul', (tester) async {
+    testWidgets('rentabilité sans données : bandeau seul', (tester) async {
       await lancer(tester, droits: Droits.gratuit);
       await ouvrirOnglet(tester, 'studio', 'Rentabilité');
       expect(
@@ -361,7 +361,7 @@ void main() {
       await fermer(tester);
     });
 
-    testWidgets('rentabilité déjà saisie : consultable, sans saisie', (
+    testWidgets('rentabilité déjà saisie : consultable, sans saisie', (
       tester,
     ) async {
       await lancer(tester, droits: Droits.gratuit);
@@ -394,7 +394,7 @@ void main() {
       await fermer(tester);
     });
 
-    testWidgets("carnet d'artisans : consultable, sans ajout", (tester) async {
+    testWidgets("carnet d'artisans : consultable, sans ajout", (tester) async {
       await lancer(tester, droits: Droits.gratuit);
       await tester.runAsync(
         () => DriftArtisanRepository(db).enregistrer(
@@ -417,7 +417,7 @@ void main() {
       await fermer(tester);
     });
 
-    testWidgets("Premium : ajout d'artisan proposé", (tester) async {
+    testWidgets("Premium : ajout d'artisan proposé", (tester) async {
       await lancer(tester, droits: Droits.premium);
       aller(tester, Routes.artisans);
       await attendre(tester);
@@ -426,7 +426,7 @@ void main() {
       await fermer(tester);
     });
 
-    testWidgets('courriers : produits consultables, les autres verrouillés', (
+    testWidgets('courriers : produits consultables, les autres verrouillés', (
       tester,
     ) async {
       await lancer(tester, droits: Droits.gratuit);
@@ -489,9 +489,9 @@ void main() {
   });
 
   group("fin d'abonnement (bêta)", () {
-    test('textes : bien actif et autres biens', () {
+    test('textes : bien actif et autres biens', () {
       final un = TextesFinAbonnement([unBien(id: 'a', nom: 'Studio')]);
-      expect(un.texteBienActif, contains('« Studio » reste votre bien actif'));
+      expect(un.texteBienActif, contains('« Studio » reste votre bien actif'));
       expect(un.texteAutresBiens, isNull);
 
       final trois = TextesFinAbonnement([
@@ -499,13 +499,13 @@ void main() {
         unBien(id: 'a', nom: 'Ancien', creeLe: DateTime(2020)),
         unBien(id: 'b', nom: 'Moyen', creeLe: DateTime(2024)),
       ]);
-      expect(trois.texteBienActif, contains('« Ancien »'));
+      expect(trois.texteBienActif, contains('« Ancien »'));
       expect(trois.texteAutresBiens, startsWith('Vos 2 autres biens'));
 
       expect(TextesFinAbonnement(const []).texteBienActif, isNull);
     });
 
-    testWidgets("simulée : message sur l'accueil, une seule fois", (
+    testWidgets("simulée : message sur l'accueil, une seule fois", (
       tester,
     ) async {
       await lancer(tester, estBeta: true);
@@ -517,7 +517,7 @@ void main() {
       expect(find.text('Votre abonnement Premium a pris fin'), findsOneWidget);
       expect(find.textContaining("Rien n'a été supprimé"), findsOneWidget);
       expect(
-        find.textContaining('« Studio Gambetta » reste votre bien actif'),
+        find.textContaining('« Studio Gambetta » reste votre bien actif'),
         findsOneWidget,
       );
       expect(
@@ -530,7 +530,7 @@ void main() {
       await tester.tap(find.text('Continuer en version gratuite'));
       await attendre(tester);
       expect(find.text('Votre abonnement Premium a pris fin'), findsNothing);
-      expect(find.text('Bêta : gratuit'), findsOneWidget);
+      expect(find.text('Bêta : gratuit'), findsOneWidget);
       final drapeau = await tester.runAsync(
         () => DriftReglagesRepository(
           db,

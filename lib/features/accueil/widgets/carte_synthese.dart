@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/design/design.dart';
 import '../../../core/format/formats.dart';
+import '../../../core/widgets/composants.dart';
 import '../../../domain/services/tableau_de_bord.dart';
 
 /// Carte de synthèse : fond bleu canard, 3 colonnes égales (design-system.md
@@ -19,49 +20,23 @@ class CarteSynthese extends StatelessWidget {
     final t = context.textes;
     final n = synthese.nombreBiens;
 
-    Widget colonne(String valeur, String libelle) => Expanded(
-      child: Semantics(
-        // Chaque chiffre est lu séparément par les lecteurs d'écran.
-        container: true,
-        label: '$valeur $libelle',
-        excludeSemantics: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(valeur, style: t.figure.copyWith(color: c.onPrimary)),
-            ),
-            const SizedBox(height: AppSpacing.xxs),
-            Text(
-              libelle,
-              style: t.caption.copyWith(
-                color: c.onPrimary.withValues(alpha: _opaciteLibelle),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
     return Container(
       decoration: BoxDecoration(
         color: c.primary,
         borderRadius: AppRadius.arrondi(AppRadius.synthese),
       ),
       padding: const EdgeInsets.all(AppSpacing.carte),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          colonne('$n', n > 1 ? 'biens' : 'bien'),
-          const SizedBox(width: AppSpacing.bloc),
-          colonne(Formats.montant(synthese.loyersCentimes), 'loyers par mois'),
-          const SizedBox(width: AppSpacing.bloc),
-          colonne(
-            Formats.montant(synthese.chargesCentimes),
-            'charges par mois',
-          ),
+      child: ChiffresEnColonnes(
+        styleValeur: t.figure.copyWith(color: c.onPrimary),
+        styleLibelle: t.caption.copyWith(
+          color: c.onPrimary.withValues(alpha: _opaciteLibelle),
+        ),
+        // Chaque chiffre est lu séparément par les lecteurs d'écran.
+        libelleSemantique: (valeur, libelle) => '$valeur $libelle',
+        chiffres: [
+          ('$n', n > 1 ? 'biens' : 'bien'),
+          (Formats.montant(synthese.loyersCentimes), 'loyers par mois'),
+          (Formats.montant(synthese.chargesCentimes), 'charges par mois'),
         ],
       ),
     );

@@ -36,7 +36,7 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
   }
 
-  testWidgets('onboarding terminé : barre de navigation', (tester) async {
+  testWidgets('onboarding terminé : barre de navigation', (tester) async {
     await tester.pumpWidget(app(onboardingTermine: true));
     await tester.pumpAndSettle();
 
@@ -67,7 +67,7 @@ void main() {
     await fermer(tester);
   });
 
-  testWidgets('premier lancement : écrans de bienvenue', (tester) async {
+  testWidgets('premier lancement : écrans de bienvenue', (tester) async {
     await tester.pumpWidget(app(onboardingTermine: false));
     await tester.pumpAndSettle();
 
@@ -77,7 +77,7 @@ void main() {
     expect(find.text('Tous vos biens au même endroit'), findsOneWidget);
     await tester.tap(find.text('Suivant'));
     await tester.pumpAndSettle();
-    expect(find.text('Vos courriers prêts en un clic'), findsOneWidget);
+    expect(find.text('Votre loyer révisé sans calcul'), findsOneWidget);
 
     await tester.tap(find.text('Commencer'));
     await tester.pumpAndSettle();

@@ -37,6 +37,7 @@ class RegleBail {
     required this.depotGarantieMaxMois,
     required this.references,
     this.aVerifier,
+    this.noteUtilisateur,
   });
 
   /// Durée par défaut du bail. `null` : fixée librement au contrat
@@ -66,7 +67,13 @@ class RegleBail {
   final int? depotGarantieMaxMois;
 
   final String references;
+
+  /// Note pour le développeur : interprétation retenue, à confirmer.
   final String? aVerifier;
+
+  /// Ce que l'utilisateur doit vérifier lui-même, affiché après
+  /// « À vérifier : » dans le bail (d'où la minuscule initiale).
+  final String? noteUtilisateur;
 }
 
 /// Règles d'un diagnostic immobilier (dans le cadre d'une location).
@@ -124,7 +131,10 @@ abstract final class ReglesLegales {
       references: 'Loi 89-462, art. 10, 15, 17-1, 22',
       aVerifier:
           'Durée de 6 ans si bailleur personne morale (hors SCI '
-          'familiale) : non géré en V1.',
+          'familiale) : non géré en V1.',
+      noteUtilisateur:
+          'si le bailleur est une société (hors SCI familiale), la durée '
+          'légale est de 6 ans. Indiquez-la dans la durée du bail.',
     ),
     TypeBail.meuble: RegleBail(
       // 1 an ; 9 mois non reconductible pour un étudiant.
@@ -137,8 +147,12 @@ abstract final class ReglesLegales {
       depotGarantieMaxMois: 2,
       references: 'Loi 89-462, art. 25-6, 25-7, 25-8, 25-9',
       aVerifier:
-          'Bail étudiant de 9 mois (sans reconduction) : non géré '
+          'Bail étudiant de 9 mois (sans reconduction) : non géré '
           'en V1, l\'utilisateur peut saisir la durée à la main.',
+      noteUtilisateur:
+          'un bail étudiant de 9 mois n\'est pas reconduit, alors que '
+          'Pense-Bail calcule des reconductions. Vérifiez les dates de fin '
+          'et de congé.',
     ),
     TypeBail.mobilite: RegleBail(
       dureeMois: null,
@@ -151,8 +165,12 @@ abstract final class ReglesLegales {
       depotGarantieMaxMois: 0,
       references: 'Loi 89-462, art. 25-12 à 25-18',
       aVerifier:
-          'Confirmer : pas de révision de loyer en cours de bail '
+          'Confirmer : pas de révision de loyer en cours de bail '
           'mobilité, dépôt de garantie interdit, pas de congé du bailleur.',
+      noteUtilisateur:
+          'Pense-Bail considère qu\'un bail mobilité n\'a ni révision du '
+          'loyer, ni dépôt de garantie, ni congé du bailleur. Vérifiez ces '
+          'règles sur service-public.gouv.fr.',
     ),
     TypeBail.saisonnier: RegleBail(
       dureeMois: null,
@@ -164,7 +182,7 @@ abstract final class ReglesLegales {
       depotGarantieMaxMois: null,
       references: 'Code du tourisme (meublé de tourisme), code civil',
       aVerifier:
-          'Plafond de 90 jours exprimé ici en 3 mois : à affiner '
+          'Plafond de 90 jours exprimé ici en 3 mois : à affiner '
           'en jours si l\'app gère un jour la courte durée.',
     ),
     TypeBail.professionnel: RegleBail(
@@ -179,6 +197,10 @@ abstract final class ReglesLegales {
       aVerifier:
           'Durée de reconduction (6 ans) et modalités de révision '
           '(indice contractuel) à confirmer.',
+      noteUtilisateur:
+          'le loyer d\'un bail professionnel suit l\'indice prévu au contrat '
+          '(souvent l\'ILAT), que Pense-Bail ne calcule pas. Vérifiez aussi '
+          'la durée de reconduction dans votre contrat.',
     ),
     TypeBail.commercial: RegleBail(
       dureeMois: 108, // 9 ans minimum (bail « 3-6-9 »)
@@ -192,8 +214,13 @@ abstract final class ReglesLegales {
       depotGarantieMaxMois: null,
       references: 'Code de commerce, art. L145-4, L145-9, L145-38',
       aVerifier:
-          'Prolongation tacite à durée indéterminée : l\'app ne '
+          'Prolongation tacite à durée indéterminée : l\'app ne '
           'génère que la première échéance de fin de bail.',
+      noteUtilisateur:
+          'à son terme, sans congé ni demande de renouvellement, un bail '
+          'commercial se prolonge sans durée fixe. Pense-Bail n\'affiche que '
+          'la première fin de bail et ne calcule pas la révision (ILC ou '
+          'ILAT).',
     ),
   };
 
@@ -209,7 +236,12 @@ abstract final class ReglesLegales {
   /// Choix volontairement prudent : on conseille toujours d'envoyer bien avant.
   static const String aVerifierCalculConge =
       'Mode de calcul exact du délai de préavis (jour de réception, '
-      'fin de mois) à confirmer ; l\'app retient une date prudente.';
+      'fin de mois) à confirmer ; l\'app retient une date prudente.';
+
+  /// Version pour l'utilisateur de [aVerifierCalculConge].
+  static const String noteCalculConge =
+      'Date calculée par prudence : le mode de calcul exact du préavis peut '
+      'varier. En cas de doute, renseignez-vous sur service-public.gouv.fr.';
 
   // --------------------------------------------------------------------------
   // Révision de loyer (IRL)
@@ -238,14 +270,29 @@ abstract final class ReglesLegales {
 
   /// Jour du mois suivant la fin d'un trimestre à partir duquel l'app
   /// considère l'IRL de ce trimestre comme publié (l'INSEE le publie vers
-  /// la mi-avril, mi-juillet, mi-octobre et mi-janvier).
+  /// la mi-avril, mi-juillet, mi-octobre et mi-janvier ; source : calendrier
+  /// des publications sur insee.fr). Estimation : la table et la mise à
+  /// jour depuis l'INSEE font foi.
   static const int jourPublicationIrl = 15;
 
   static const String aVerifierIndiceUtilise =
-      'Indice retenu : le dernier IRL du trimestre de référence publié à la '
+      'Indice retenu : le dernier IRL du trimestre de référence publié à la '
       'date de révision prévue, y compris quand la révision est demandée en '
       'retard. La date de publication est estimée (15 du mois qui suit le '
-      "trimestre) : l'utilisateur peut choisir une autre année.";
+      "trimestre) : l'utilisateur peut choisir une autre année.";
+
+  /// Version pour l'utilisateur de [aVerifierIndiceUtilise].
+  static const String noteIndiceEnRetard =
+      'Révision demandée en retard : Pense-Bail retient l\'IRL publié à la '
+      'date prévue au bail. Cette lecture de la loi reste à confirmer : '
+      'vous pouvez choisir un autre indice.';
+
+  /// La révision n'est possible que si le contrat la prévoit (art. 17-1 :
+  /// « Lorsque le contrat de location prévoit la révision du loyer… »).
+  static const String clauseRevisionExplication =
+      'La loi ne permet de réviser le loyer en cours de bail que si le '
+      'contrat le prévoit. Cherchez dans votre bail une clause « révision du '
+      'loyer » ou « indexation ».';
 
   /// À défaut de trimestre indiqué au bail : dernier IRL publié à la date
   /// de signature du bail.
@@ -267,11 +314,20 @@ abstract final class ReglesLegales {
     ClasseDpe.g,
   };
 
+  // Source : loi n° 2021-1104 du 22/08/2021 « Climat et résilience »,
+  // art. 159 (article précis à confirmer à la vérification).
   static const String aVerifierGelDpe =
-      'Gel des loyers F/G : applicable aux baux conclus, renouvelés ou '
+      'Gel des loyers F/G : applicable aux baux conclus, renouvelés ou '
       'reconduits depuis le 24/08/2022 en métropole (dates différentes en '
       'outre-mer). L\'app bloque la révision pour tout bien classé F ou G, '
       'sans tenir compte de la date du bail.';
+
+  /// Version pour l'utilisateur de [aVerifierGelDpe].
+  static const String noteGelDpe =
+      'Logement classé F ou G : la loi interdit d\'augmenter le loyer des '
+      'baux signés, renouvelés ou reconduits depuis le 24/08/2022 en '
+      'métropole (autres dates en outre-mer). Par prudence, Pense-Bail '
+      'bloque la révision : vérifiez votre cas sur service-public.gouv.fr.';
 
   /// Nombre de décimales de l'IRL publié par l'INSEE.
   static const int decimalesIrl = 2;
@@ -285,13 +341,28 @@ abstract final class ReglesLegales {
   // Charges
   // --------------------------------------------------------------------------
 
-  /// Les provisions pour charges sont régularisées au moins une fois par an.
+  /// Les provisions pour charges sont régularisées au moins une fois par an
+  /// (loi 89-462, art. 23 ; meublé : art. 25-10).
   static const int periodiciteRegularisationChargesMois = 12;
 
   static const String aVerifierRegularisation =
       'En meublé, les charges peuvent être au forfait (pas de '
       'régularisation). L\'app génère l\'échéance dans tous les cas, '
       'l\'utilisateur peut la supprimer.';
+
+  /// Version pour l'utilisateur de [aVerifierRegularisation].
+  static const String noteRegularisationMeuble =
+      'En meublé, si votre bail prévoit des charges au forfait, il n\'y a '
+      'pas de régularisation : vous pouvez supprimer cette échéance.';
+
+  // --------------------------------------------------------------------------
+  // Entretien
+  // --------------------------------------------------------------------------
+
+  /// Entretien annuel des chaudières (gaz, fioul, bois…) de 4 à 400 kW, à la
+  /// charge du locataire. Source : code de l'environnement, art. R224-41-4
+  /// et suivants (décret n° 2009-649 du 09/06/2009).
+  static const int periodiciteEntretienChaudiereMois = 12;
 
   // --------------------------------------------------------------------------
   // Diagnostics (validité dans le cadre d'une LOCATION)
@@ -308,12 +379,12 @@ abstract final class ReglesLegales {
     ),
     TypeDiagnostic.electricite: RegleDiagnostic(
       validiteMois: 72,
-      references: 'Loi 89-462, art. 3-3 ; décret 2016-1105',
+      references: 'Loi 89-462, art. 3-3 ; décret 2016-1105',
       remarque: 'Obligatoire si l\'installation a plus de 15 ans.',
     ),
     TypeDiagnostic.gaz: RegleDiagnostic(
       validiteMois: 72,
-      references: 'Loi 89-462, art. 3-3 ; décret 2016-1104',
+      references: 'Loi 89-462, art. 3-3 ; décret 2016-1104',
       remarque: 'Obligatoire si l\'installation a plus de 15 ans.',
     ),
     TypeDiagnostic.plomb: RegleDiagnostic(
@@ -339,8 +410,13 @@ abstract final class ReglesLegales {
 
   static RegleDiagnostic diagnostic(TypeDiagnostic type) => diagnostics[type]!;
 
+  /// Ajouté à l'explication d'un diagnostic dont la règle est `aVerifier`.
+  static const String noteDiagnosticAVerifier =
+      'Règles de validité à vérifier sur service-public.gouv.fr.';
+
   // --------------------------------------------------------------------------
   // Calendrier fiscal (dates indicatives, modifiables)
+  // Source : calendrier fiscal publié chaque année sur impots.gouv.fr.
   // --------------------------------------------------------------------------
 
   static const DateAnnuelleSuggeree taxeFonciere = DateAnnuelleSuggeree(
@@ -349,7 +425,7 @@ abstract final class ReglesLegales {
     explication:
         'Date limite de paiement habituelle de la taxe foncière '
         '(mi-octobre, quelques jours de plus en paiement en ligne).',
-    aVerifier: 'Date fixée chaque année : à vérifier sur impots.gouv.fr.',
+    aVerifier: 'Date fixée chaque année : à vérifier sur impots.gouv.fr.',
   );
 
   static const DateAnnuelleSuggeree declarationRevenus = DateAnnuelleSuggeree(
@@ -360,6 +436,6 @@ abstract final class ReglesLegales {
         '(fin mai / début juin selon le département).',
     aVerifier:
         'Dates fixées chaque année et variables selon le '
-        'département : à vérifier sur impots.gouv.fr.',
+        'département : à vérifier sur impots.gouv.fr.',
   );
 }

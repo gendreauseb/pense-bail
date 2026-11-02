@@ -82,9 +82,11 @@ class CourrierRevision {
             'vous informe de la révision annuelle du loyer du logement que '
             'vous occupez, selon l\'indice de référence des loyers (IRL) '
             'publié par l\'INSEE.',
-        'Le trimestre de référence prévu au bail est le '
+        // Le trimestre peut venir du défaut légal (rien au bail) : ne pas
+        // écrire qu'il est « prévu au bail ».
+        'L\'indice de référence est celui du '
             '${Formats.trimestre(revision.nouvelIrlTrimestre)}. Le loyer '
-            'hors charges évolue comme l\'indice sur un an :',
+            'hors charges évolue comme l\'indice sur un an :',
       ],
       calcul: [
         ('Loyer actuel hors charges', ancien),
@@ -101,10 +103,10 @@ class CourrierRevision {
       application: revision.demandeeEnRetard
           ? 'La révision n\'étant pas rétroactive, votre nouveau loyer '
                 's\'applique à compter de la date du présent courrier, soit '
-                'le ${Formats.dateLongue(revision.dateEffet)} :'
+                'le ${Formats.dateLongue(revision.dateEffet)} :'
           : 'Votre nouveau loyer s\'applique à compter du '
-                '${Formats.dateLongue(revision.dateEffet)}, date de révision '
-                'prévue au bail :',
+                '${Formats.dateLongue(revision.dateEffet)}, '
+                '${bail.dateRevision == null ? 'date anniversaire du bail' : 'date de révision prévue au bail'} :',
       nouveauLoyer: [
         ('Nouveau loyer hors charges', nouveau),
         if (charges > 0)
@@ -174,7 +176,7 @@ class CourrierRevision {
           pw.SizedBox(height: StylePdf.espaceSection),
           pw.Text(objet, style: style.styleTitre),
           pw.SizedBox(height: StylePdf.interligne),
-          pw.Text('Logement : $logement', style: style.styleLegende),
+          pw.Text('Logement : $logement', style: style.styleLegende),
           pw.SizedBox(height: StylePdf.espaceSection),
           style.paragraphe(salutation),
           for (final p in introduction) style.paragraphe(p),

@@ -98,7 +98,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
       firstDate: DateTime(1970),
       lastDate: max,
       fieldLabelText: 'Date (JJ/MM/AAAA)',
-      errorFormatText: 'Format attendu : JJ/MM/AAAA',
+      errorFormatText: 'Format attendu : JJ/MM/AAAA',
       errorInvalidText: 'Date trop éloignée dans le futur',
       // Jamais « OK » seul (design-system.md §8).
       confirmText: 'Choisir cette date',
@@ -134,7 +134,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
               'Nom du bien',
               aide:
                   'Le nom affiché partout dans l\'application. '
-                  'Exemple : Studio Gambetta',
+                  'Exemple : Studio Gambetta',
               validator: (v) => Validateurs.obligatoire(
                 v,
                 message: 'Donnez un nom à ce bien.',
@@ -190,7 +190,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return 'Indiquez le loyer.';
                 return Formats.parseMontant(v) == null
-                    ? 'Montant incorrect (exemple : 650 ou 650,50).'
+                    ? 'Montant incorrect (exemple : 650 ou 650,50).'
                     : null;
               },
             ),
@@ -205,7 +205,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
                   (v != null &&
                       v.trim().isNotEmpty &&
                       Formats.parseMontant(v) == null)
-                  ? 'Montant incorrect (exemple : 50 ou 49,90).'
+                  ? 'Montant incorrect (exemple : 50 ou 49,90).'
                   : null,
             ),
             const SizedBox(height: AppSpacing.bloc),
@@ -239,6 +239,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
               validator: (v) =>
                   Validateurs.obligatoire(v, message: 'Indiquez la ville.'),
               majuscules: TextCapitalization.words,
+              action: TextInputAction.done,
             ),
           ],
         ),
@@ -259,6 +260,8 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
     TextInputType? clavier,
     TextCapitalization majuscules = TextCapitalization.none,
     List<TextInputFormatter>? formats,
+    // Dernier champ : « OK » ferme le clavier, qui masquait « Continuer ».
+    TextInputAction action = TextInputAction.next,
   }) => Padding(
     padding: const EdgeInsets.only(bottom: AppSpacing.bloc),
     child: TextFormField(
@@ -272,7 +275,7 @@ class _EtapeBienState extends ConsumerState<EtapeBien> {
       keyboardType: clavier,
       textCapitalization: majuscules,
       inputFormatters: formats,
-      textInputAction: TextInputAction.next,
+      textInputAction: action,
       autovalidateMode: AutovalidateMode.onUserInteractionIfError,
       onChanged: (_) => _enregistrer(),
     ),
@@ -346,7 +349,7 @@ class _BlocBail extends StatelessWidget {
                   const SizedBox(width: AppSpacing.blocSerre),
                   Expanded(
                     child: Text(
-                      'Pour activer vos premiers rappels automatiquement : '
+                      'Pour activer vos premiers rappels automatiquement : '
                       'révision du loyer, fin du bail et date limite pour '
                       'donner congé.',
                       style: t.secondary.copyWith(

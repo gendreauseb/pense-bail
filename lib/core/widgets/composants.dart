@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/design/design.dart';
+import 'mesure_texte.dart';
 
 /// Logo Pense-Bail : tuile d'icône + nom en Fraunces.
 class LogoPenseBail extends StatelessWidget {
@@ -228,49 +229,54 @@ class BarreActionFixe extends StatelessWidget {
     final c = context.couleurs;
     final secondaire = this.secondaire;
     final legende = this.legende;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: c.surface,
-        border: Border(top: BorderSide(color: c.border)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.ecran,
-            AppSpacing.bloc,
-            AppSpacing.ecran,
-            AppSpacing.bloc,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              FilledButton(
-                onPressed: enCours ? null : onPressed,
-                child: enCours
-                    ? SizedBox.square(
-                        dimension: _tailleIndicateur,
-                        child: CircularProgressIndicator(
-                          strokeWidth: _epaisseurIndicateur,
-                          color: c.onPrimary,
-                        ),
-                      )
-                    : Text(libelle),
-              ),
-              if (secondaire != null) ...[
-                const SizedBox(height: AppSpacing.xs),
-                secondaire,
-              ],
-              if (legende != null) ...[
-                const SizedBox(height: AppSpacing.s),
-                Text(
-                  legende,
-                  textAlign: TextAlign.center,
-                  style: context.textes.caption,
+    // Comme la barre de navigation : en très grand texte, la barre ne doit
+    // pas occuper le quart de l'écran.
+    return MediaQuery.withClampedTextScaling(
+      maxScaleFactor: AppSizes.echelleTexteBarresMax,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: c.surface,
+          border: Border(top: BorderSide(color: c.border)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.ecran,
+              AppSpacing.bloc,
+              AppSpacing.ecran,
+              AppSpacing.bloc,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FilledButton(
+                  onPressed: enCours ? null : onPressed,
+                  child: enCours
+                      ? SizedBox.square(
+                          dimension: _tailleIndicateur,
+                          child: CircularProgressIndicator(
+                            strokeWidth: _epaisseurIndicateur,
+                            color: c.onPrimary,
+                          ),
+                        )
+                      : Text(libelle),
                 ),
+                if (secondaire != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  secondaire,
+                ],
+                if (legende != null) ...[
+                  const SizedBox(height: AppSpacing.s),
+                  Text(
+                    legende,
+                    textAlign: TextAlign.center,
+                    style: context.textes.caption,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -345,27 +351,63 @@ class LigneInfo extends StatelessWidget {
     return Semantics(
       // Une ligne = un élément pour les lecteurs d'écran.
       container: true,
-      label: '$libelle : $valeur',
+      label: '$libelle : $valeur',
       excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.ligne),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (icone != null) ...[
-              Icon(
-                icone,
-                size: AppSizes.iconePetite,
-                color: context.couleurs.textSecondary,
-              ),
-              const SizedBox(width: AppSpacing.blocSerre),
-            ],
-            Expanded(child: Text(libelle, style: t.secondary)),
-            const SizedBox(width: AppSpacing.bloc),
-            Expanded(
-              child: Text(valeur, style: t.rowTitle, textAlign: TextAlign.end),
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (context, contraintes) {
+            final largeurIcone = icone == null
+                ? 0.0
+                : AppSizes.iconePetite + AppSpacing.blocSerre;
+            final colonne =
+                (contraintes.maxWidth - largeurIcone - AppSpacing.bloc) / 2;
+            // En grand texte, deux colonnes coupent les mots (« Apparte-
+            // ment ») : le libellé passe alors au-dessus de la valeur.
+            final empile =
+                !MesureTexte.motsTiennent(
+                  context,
+                  libelle,
+                  t.secondary,
+                  colonne,
+                ) ||
+                !MesureTexte.motsTiennent(context, valeur, t.rowTitle, colonne);
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (icone != null) ...[
+                  Icon(
+                    icone,
+                    size: AppSizes.iconePetite,
+                    color: context.couleurs.textSecondary,
+                  ),
+                  const SizedBox(width: AppSpacing.blocSerre),
+                ],
+                if (empile)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(libelle, style: t.secondary),
+                        const SizedBox(height: AppSpacing.xxs),
+                        Text(valeur, style: t.rowTitle),
+                      ],
+                    ),
+                  )
+                else ...[
+                  Expanded(child: Text(libelle, style: t.secondary)),
+                  const SizedBox(width: AppSpacing.bloc),
+                  Expanded(
+                    child: Text(
+                      valeur,
+                      style: t.rowTitle,
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -511,4 +553,76 @@ class _BordurePointillee extends CustomPainter {
       ancien.couleur != couleur ||
       ancien.epaisseur != epaisseur ||
       ancien.rayon != rayon;
+}
+
+/// Chiffres côte à côte en colonnes égales (valeur en grand, libellé
+/// dessous) : carte de synthèse, chiffres clés d'un bien. En grand texte,
+/// si un mot d'un libellé ne tient pas dans sa colonne, les chiffres passent
+/// les uns sous les autres plutôt que de couper les mots.
+class ChiffresEnColonnes extends StatelessWidget {
+  const ChiffresEnColonnes({
+    super.key,
+    required this.chiffres,
+    required this.styleValeur,
+    required this.styleLibelle,
+    required this.libelleSemantique,
+  });
+
+  /// (valeur, libellé)
+  final List<(String, String)> chiffres;
+  final TextStyle styleValeur;
+  final TextStyle styleLibelle;
+
+  /// Texte lu par les lecteurs d'écran pour un chiffre.
+  final String Function(String valeur, String libelle) libelleSemantique;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, contraintes) {
+      final n = chiffres.length;
+      final colonne = (contraintes.maxWidth - AppSpacing.bloc * (n - 1)) / n;
+      final empile = chiffres.any(
+        (c) => !MesureTexte.motsTiennent(context, c.$2, styleLibelle, colonne),
+      );
+
+      Widget chiffre((String, String) c) => Semantics(
+        container: true,
+        label: libelleSemantique(c.$1, c.$2),
+        excludeSemantics: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(c.$1, style: styleValeur),
+            ),
+            const SizedBox(height: AppSpacing.xxs),
+            Text(c.$2, style: styleLibelle),
+          ],
+        ),
+      );
+
+      if (empile) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final (i, c) in chiffres.indexed) ...[
+              if (i > 0) const SizedBox(height: AppSpacing.bloc),
+              chiffre(c),
+            ],
+          ],
+        );
+      }
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final (i, c) in chiffres.indexed) ...[
+            if (i > 0) const SizedBox(width: AppSpacing.bloc),
+            Expanded(child: chiffre(c)),
+          ],
+        ],
+      );
+    },
+  );
 }

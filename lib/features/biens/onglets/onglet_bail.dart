@@ -55,7 +55,7 @@ class _SansBail extends StatelessWidget {
         const Note(
           icone: AppIcons.bail,
           texte:
-              'Renseignez le bail pour activer les rappels : révision du '
+              'Renseignez le bail pour activer les rappels : révision du '
               'loyer, fin du bail, date limite pour donner congé.',
         ),
         const SizedBox(height: AppSpacing.bloc),
@@ -160,27 +160,48 @@ class _AvecBail extends ConsumerWidget {
             ),
           ],
         ),
+        if (regle.noteUtilisateur case final note?) ...[
+          const SizedBox(height: AppSpacing.bloc),
+          Note(icone: AppIcons.attention, texte: 'À vérifier : $note'),
+        ],
         if (regle.revisionIrlAutorisee) ...[
           const SizedBox(height: AppSpacing.sectionLarge),
           const EnTeteSection(titre: 'Révision du loyer'),
           CarteListe(
             enfants: [
               LigneInfo(
-                libelle: 'Date de révision',
-                valeur: dateRevision == null
-                    ? 'Date anniversaire (${_jourMois(bail.dateDebut)})'
-                    : 'Chaque ${_jourMois(dateRevision)}',
+                libelle: 'Prévue au bail',
+                valeur: switch (bail.clauseRevision) {
+                  true => 'Oui',
+                  false => 'Non',
+                  null => 'À vérifier',
+                },
               ),
-              LigneInfo(
-                libelle: 'IRL de référence',
-                valeur: bail.irlReferenceComplet
-                    ? '${Formats.trimestre(trimestre!, bail.irlAnnee)} : '
-                          '${Formats.decimal(bail.irlValeur!)}'
-                    : 'À renseigner',
-              ),
+              if (bail.revisionPrevue) ...[
+                LigneInfo(
+                  libelle: 'Date de révision',
+                  valeur: dateRevision == null
+                      ? 'Date anniversaire (${_jourMois(bail.dateDebut)})'
+                      : 'Chaque ${_jourMois(dateRevision)}',
+                ),
+                LigneInfo(
+                  libelle: 'IRL de référence',
+                  valeur: bail.irlReferenceComplet
+                      ? '${Formats.trimestre(trimestre!, bail.irlAnnee)} : '
+                            '${Formats.decimal(bail.irlValeur!)}'
+                      : 'À renseigner',
+                ),
+              ],
             ],
           ),
-          if (!bail.irlReferenceComplet && !verrouille) ...[
+          if (bail.clauseRevision == false) ...[
+            const SizedBox(height: AppSpacing.bloc),
+            const Note(
+              texte:
+                  'Sans clause de révision, le loyer ne peut pas être révisé '
+                  'en cours de bail : Pense-Bail ne vous le rappelle pas.',
+            ),
+          ] else if (!bail.irlReferenceComplet && !verrouille) ...[
             const SizedBox(height: AppSpacing.bloc),
             BanniereInformation(
               texte:
@@ -203,7 +224,7 @@ class _AvecBail extends ConsumerWidget {
   }
 
   static String _jourMois(DateTime d) {
-    final mois = Formats.dateLongue(d).split(' ')[1];
+    final mois = Formats.nomMois(d.month);
     return '${d.day == 1 ? '1er' : d.day} $mois';
   }
 }
@@ -228,14 +249,13 @@ class _LigneLocataire extends StatelessWidget {
     final email = locataire.email;
     final coordonnees = [?telephone, ?email].join('\n');
 
+    final onTap = modifiable
+        ? () => context.push(
+            Routes.avec(Routes.locataire(bienId), {'locataire': locataire.id}),
+          )
+        : null;
     return InkWell(
-      onTap: modifiable
-          ? () => context.push(
-              Routes.avec(Routes.locataire(bienId), {
-                'locataire': locataire.id,
-              }),
-            )
-          : null,
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.ligne,
@@ -245,20 +265,36 @@ class _LigneLocataire extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const TuileIcone(icone: AppIcons.locataire),
-            const SizedBox(width: AppSpacing.bloc),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(locataire.nomComplet, style: t.rowTitle),
-                  Text(
-                    coordonnees.isEmpty
-                        ? 'Coordonnées à compléter'
-                        : coordonnees,
-                    style: t.secondary,
-                  ),
-                ],
+              // Appeler et écrire restent accessibles séparément.
+              child: SemantiqueLigne(
+                libelle: [
+                  locataire.nomComplet,
+                  if (coordonnees.isEmpty) 'coordonnées à compléter',
+                  ?telephone,
+                  ?email,
+                ].join(', '),
+                onTap: onTap,
+                child: Row(
+                  children: [
+                    const TuileIcone(icone: AppIcons.locataire),
+                    const SizedBox(width: AppSpacing.bloc),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(locataire.nomComplet, style: t.rowTitle),
+                          Text(
+                            coordonnees.isEmpty
+                                ? 'Coordonnées à compléter'
+                                : coordonnees,
+                            style: t.secondary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (telephone != null)

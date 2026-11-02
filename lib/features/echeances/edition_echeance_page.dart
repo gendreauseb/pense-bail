@@ -194,7 +194,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       confirmText: 'Choisir cette date',
       cancelText: 'Annuler',
       fieldLabelText: 'Date (JJ/MM/AAAA)',
-      errorFormatText: 'Format attendu : JJ/MM/AAAA',
+      errorFormatText: 'Format attendu : JJ/MM/AAAA',
       errorInvalidText: 'Date hors des limites possibles',
     );
     if (date == null) return;
@@ -264,12 +264,12 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     final confirme = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Supprimer cette échéance ?'),
+        title: const Text('Supprimer cette échéance ?'),
         content: Text(
           existante.automatique
-              ? '« ${existante.titre} » a été calculée depuis le bail : elle '
+              ? '« ${existante.titre} » a été calculée depuis le bail : elle '
                     'sera recréée si vous modifiez les informations du bail.'
-              : '« ${existante.titre} » et ses rappels seront supprimés.',
+              : '« ${existante.titre} » et ses rappels seront supprimés.',
         ),
         actions: [
           TextButton(
@@ -353,7 +353,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                 controller: _titre,
                 decoration: const InputDecoration(
                   labelText: 'Intitulé',
-                  helperText: 'Exemple : Contrôle de la VMC',
+                  helperText: 'Exemple : Contrôle de la VMC',
                 ),
                 textCapitalization: TextCapitalization.sentences,
                 validator: (v) => Validateurs.obligatoire(

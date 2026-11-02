@@ -87,67 +87,80 @@ class _LigneBien extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.textes;
     final prochaine = this.prochaine;
-    return InkWell(
-      onTap: () => context.push(Routes.ficheBien(bien.id)),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.ligne),
-        child: Row(
-          children: [
-            SizedBox.square(
-              dimension: AppSizes.vignette,
-              child: PhotoBien(
-                chemin: bien.photoChemin,
-                typeLogement: bien.typeLogement,
-                rayon: AppRadius.tuile,
-                tailleIcone: AppSizes.pictogrammePetit,
+    void ouvrir() => context.push(Routes.ficheBien(bien.id));
+    return SemantiqueLigne(
+      libelle: [
+        bien.nom,
+        '${bien.typeLogement.libelle}, '
+            '${bien.typeLocation.libelle.toLowerCase()}',
+        Formats.parMois(bien.loyerHcCentimes),
+        if (verrouille) MentionLectureSeule.libelle.toLowerCase(),
+        if (prochaine != null)
+          '${prochaine.titre} : ${textePastille(prochaine.date, aujourdhui: aujourdhui, dense: false)}',
+      ].join(', '),
+      onTap: ouvrir,
+      child: InkWell(
+        onTap: ouvrir,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.ligne),
+          child: Row(
+            children: [
+              SizedBox.square(
+                dimension: AppSizes.vignette,
+                child: PhotoBien(
+                  chemin: bien.photoChemin,
+                  typeLogement: bien.typeLogement,
+                  rayon: AppRadius.tuile,
+                  tailleIcone: AppSizes.pictogrammePetit,
+                ),
               ),
-            ),
-            const SizedBox(width: AppSpacing.bloc),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(bien.nom, style: t.rowTitle),
-                  Text(
-                    '${bien.typeLogement.libelle}, '
-                    '${bien.typeLocation.libelle.toLowerCase()}',
-                    style: t.secondary,
-                  ),
-                  Text(
-                    Formats.parMois(bien.loyerHcCentimes),
-                    style: t.secondary,
-                  ),
-                  if (verrouille) ...[
-                    const SizedBox(height: AppSpacing.xxs),
-                    const MentionLectureSeule(),
-                  ],
-                  if (prochaine != null) ...[
-                    const SizedBox(height: AppSpacing.xs),
-                    Wrap(
-                      spacing: AppSpacing.s,
-                      runSpacing: AppSpacing.xxs,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(prochaine.titre, style: t.caption),
-                        PastilleStatut(
-                          texte: textePastille(
-                            prochaine.date,
-                            aujourdhui: aujourdhui,
-                            dense: false,
-                          ),
-                          proximite: Proximite.depuisDate(
-                            prochaine.date,
-                            aujourdhui: aujourdhui,
-                          ),
-                        ),
-                      ],
+              const SizedBox(width: AppSpacing.bloc),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(bien.nom, style: t.rowTitle),
+                    Text(
+                      '${bien.typeLogement.libelle}, '
+                      '${bien.typeLocation.libelle.toLowerCase()}',
+                      style: t.secondary,
                     ),
+                    Text(
+                      Formats.parMois(bien.loyerHcCentimes),
+                      style: t.secondary,
+                    ),
+                    if (verrouille) ...[
+                      const SizedBox(height: AppSpacing.xxs),
+                      const MentionLectureSeule(),
+                    ],
+                    if (prochaine != null) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      Wrap(
+                        spacing: AppSpacing.s,
+                        runSpacing: AppSpacing.xxs,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(prochaine.titre, style: t.caption),
+                          PastilleStatut(
+                            texte: textePastille(
+                              prochaine.date,
+                              aujourdhui: aujourdhui,
+                              dense: false,
+                            ),
+                            proximite: Proximite.depuisDate(
+                              prochaine.date,
+                              aujourdhui: aujourdhui,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            Icon(AppIcons.suivant, color: context.couleurs.textSecondary),
-          ],
+              Icon(AppIcons.suivant, color: context.couleurs.textSecondary),
+            ],
+          ),
         ),
       ),
     );

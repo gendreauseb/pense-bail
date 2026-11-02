@@ -25,7 +25,7 @@ void main() {
     loyerHcCentimes: 90000,
   );
 
-  test('synthèse : nombre de biens, loyers et charges', () {
+  test('synthèse : nombre de biens, loyers et charges', () {
     final s = TableauDeBord.synthese([studio, gite]);
     expect(s.nombreBiens, 2);
     expect(s.loyersCentimes, 155000);
@@ -39,7 +39,7 @@ void main() {
       expect(invitations.single.type, TypeInvitation.irlManquant);
     });
 
-    test('longue durée complète : aucune invitation', () {
+    test('longue durée complète : aucune invitation', () {
       final bail = unBail(
         bienId: 'studio',
         debut: DateTime(2024, 1, 1),
@@ -47,7 +47,7 @@ void main() {
       expect(TableauDeBord.invitations([studio], [bail]), isEmpty);
     });
 
-    test('autre type sans bail : bail manquant', () {
+    test('autre type sans bail : bail manquant', () {
       final invitations = TableauDeBord.invitations([gite], const []);
       expect(invitations.single.type, TypeInvitation.bailManquant);
       expect(invitations.single.bien.id, 'gite');

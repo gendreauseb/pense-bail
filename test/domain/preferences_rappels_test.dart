@@ -11,7 +11,7 @@ import '../helpers/fabriques.dart';
 
 void main() {
   group('PreferencesRappels', () {
-    test('par défaut : J-30, J-7, J-1 et tous les types notifiés', () {
+    test('par défaut : J-30, J-7, J-1 et tous les types notifiés', () {
       const p = PreferencesRappels();
       expect(p.delaisParDefaut, [30, 7, 1]);
       expect(TypeEcheance.values.every(p.notifie), isTrue);
@@ -63,7 +63,7 @@ void main() {
       expect(await gestion.lire(), const PreferencesRappels());
     });
 
-    test('nouveaux biens : rappels des préférences', () async {
+    test('nouveaux biens : rappels des préférences', () async {
       await gestion.enregistrer(
         const PreferencesRappels(delaisParDefaut: [15, 0]),
       );

@@ -8,7 +8,7 @@ String _espaces(String s) => s.replaceAll(RegExp('[\u00A0\u202F]'), ' ');
 void main() {
   setUpAll(() => initializeDateFormatting(Formats.locale));
 
-  test('montants à l\'écran : centimes seulement s\'ils sont non nuls', () {
+  test('montants à l\'écran : centimes seulement s\'ils sont non nuls', () {
     expect(_espaces(Formats.montant(123456)), '1 234,56 €');
     expect(_espaces(Formats.montant(66423)), '664,23 €');
     expect(_espaces(Formats.montant(65000)), '650 €');
@@ -18,7 +18,7 @@ void main() {
     expect(_espaces(Formats.montantArrondi(123456)), '1 235 €');
   });
 
-  test('montants des courriers : toujours les centimes', () {
+  test('montants des courriers : toujours les centimes', () {
     expect(_espaces(Formats.montantComplet(65000)), '650,00 €');
   });
 

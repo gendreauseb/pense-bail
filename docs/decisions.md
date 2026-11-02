@@ -37,8 +37,10 @@ Rentabilité
 - Bilan : mois cochés « reçu » × loyer en vigueur ce mois-là (d'après
   l'historique des révisions ; une révision en cours de mois compte à partir
   du mois suivant).
-- Mois « en retard » : mois entièrement écoulé, après le début du bail, non
-  coché.
+- Mois « en retard » : mois entièrement écoulé, non coché, à partir du mois
+  où le bien a été ajouté dans l'application et du début du bail (le mois de
+  début seulement si le bail commence le 1er). Couleur neutre avec une icône
+  (les couleurs d'alerte sont réservées aux échéances).
 - Journal sans catégorie « Loyer » (suivi par les cases) ni « Intervention »
   (ajoutée automatiquement).
 
@@ -52,7 +54,17 @@ Révision de loyer
 - Une date de révision est considérée comme faite si une révision a pris
   effet ce jour-là ou après, si l'IRL de référence du bail est déjà celui de
   cette année, ou si l'utilisateur l'indique (« J'ai déjà révisé »).
-- Trimestre par défaut : dernier IRL publié à la signature du bail.
+- Clause de révision : « Votre bail prévoit-il la révision du loyer ? »
+  (oui / non / je ne sais pas), retenue sur le bail (schéma 6), modifiable
+  dans le bail et demandée au début de la révision tant qu'elle est
+  inconnue. « Non » : ni rappel de révision ni révision.
+- Trimestre par défaut : dernier IRL publié à la signature du bail. Le
+  courrier dit « L'indice de référence est celui du … trimestre », sans
+  affirmer qu'il figure au bail.
+- Règles incertaines : une note « À vérifier » pour l'utilisateur
+  (`noteUtilisateur` et `note…` de `regles_legales.dart`) là où la règle
+  s'applique (bail, révision en retard, congé, charges en meublé,
+  diagnostics, DPE F et G).
 - Baisse de l'indice : révision possible, avec une note (non obligatoire).
 - Courrier : article 17-1 de la loi du 6 juillet 1989 (meublé : articles
   25-9 et 17-1) ; « Au locataire » si aucun locataire n'est enregistré.
@@ -64,8 +76,8 @@ Données
 
 Version gratuite et Premium
 - Gratuit : un seul bien actif ; onboarding, fiche, bail, locataires,
-  échéances et rappels, alerte DPE, calcul de la révision de loyer
-  (confirmation comprise : le loyer est mis à jour).
+  échéances et rappels, contrôle du DPE (F et G), calcul de la révision de
+  loyer (confirmation comprise : le loyer est mis à jour).
 - Premium : biens illimités, courrier de révision (PDF), rentabilité
   (onglet, journal, cases « Loyer reçu », investissement, récapitulatif
   annuel), carnet d'artisans et interventions.
@@ -158,6 +170,14 @@ Publication
 
 ## Points ouverts (à trancher par l'utilisateur)
 
+- **Décidé le 25/10/2026, à implémenter : notifications limitées au bien
+  actif en version gratuite.** Les échéances des biens en lecture seule ne
+  sont plus notifiées (sinon on peut saisir tous ses biens pendant l'essai,
+  résilier et garder tous ses rappels gratuitement). Remplacera « Leurs
+  échéances restent affichées et notifiées » dans « Perte du Premium » une
+  fois implémenté. À préciser : ces échéances restent-elles affichées sur
+  l'accueil ? Les échéances communes à tous les biens restent-elles
+  notifiées ?
 - Chiffrer la sauvegarde par mot de passe ? (elle contient les données des
   locataires en clair).
 - Indice retenu pour une révision demandée en retard : dernier IRL publié à
@@ -171,31 +191,60 @@ Publication
   reste chargé). À décider au branchement : attendre le retour sur
   l'accueil ?
 
-## Avant le test fermé
+## Reste à faire (état au 02/11/2026)
 
-Voir `docs/publication/README.md` (procédure complète).
+Les numéros A… renvoient à `docs/audit-2026-10-05.md`. Rayer ou retirer une
+ligne une fois faite.
 
-- Créer la clé d'importation et `android/key.properties` (hors du dépôt,
-  sauvegardés en lieu sûr).
-- Renseigner `ConfigApp.editeur` et `ConfigApp.contactEditeur`, compléter
-  la politique de confidentialité et la publier sur le site.
-- Play Console : fiche Store (textes, icône, bannière et captures prêts dans
-  `docs/publication/`), sécurité des données, classification du contenu,
-  statut de professionnel.
+1. Tests manquants et documentation
+   - Migrations de la base testées depuis les schémas 1 à 3 (A1-01).
+   - Écrans de saisie : locataire, mouvement, investissement, intervention,
+     artisan, saisie manuelle d'un IRL (A1-02).
+   - Un test par règle légale : validité des diagnostics, baux saisonnier,
+     professionnel et commercial, baisse de l'indice (A2-09).
+   - Tests qui tournent sur la date réelle : onboarding, étape bien,
+     `widget_test` (A1-04).
+   - Mise à jour de ce fichier :
+     - échéances automatiques : ajouter la clause de révision aux
+       déclencheurs du recalcul (« Non » supprime le rappel de révision,
+       « Oui » ou « Je ne sais pas » le recrée) ;
+     - notifications limitées au bien actif : passer dans une rubrique
+       « Décidé, à implémenter » ; seules ses deux questions restent dans
+       les points ouverts ;
+     - données : dates calendaires sans fuseau horaire, enregistrées en
+       AAAA-MM-JJ (schéma 5) ;
+     - interface : grand texte (lignes et chiffres empilés quand un mot ne
+       tient pas, barres fixes plafonnées à 130 %), fondu sur les onglets
+       qui défilent, espaces insécables obligatoires (vérifiées par un
+       test) ;
+     - interface : bannière jaune pour « Les rappels sont désactivés »,
+       une fois ce choix confirmé ;
+     - points ouverts : remplacer « Indice retenu pour une révision
+       demandée en retard » et « Règles marquées `aVerifier` » par un renvoi
+       à `docs/a-verifier.md` §1.
+2. Ménage technique
+   - Correctifs de dépendances (`flutter pub upgrade`) (A1-03).
+   - Référence obsolète dans `pubspec.yaml` (A1-05).
+   - Trois lectures directes du statut Premium à documenter ou à faire
+     passer par `Droits` (A3-01).
+   - Dimensions locales à remplacer par des tokens (A4-03).
+   - Journal pouvant contenir des données personnelles (A5-05).
+   - Écritures hors cas d'usage ou sans transaction (A5-06).
+3. iOS, avant sa sortie : icône, écran de lancement, langue française par
+   défaut (A5-04).
+4. Biens vendus ou retirés de la location (voir « Décisions prises »).
+5. Notifications limitées au bien actif en version gratuite, avant la
+   production. Corriger en même temps les textes qui promettent les rappels
+   pour tous les biens : écran Premium (« Toujours gratuit »), message de
+   fin d'abonnement, cahier des charges.
+
+En attente de l'utilisateur
+- Bannière jaune pour les rappels désactivés : à confirmer.
+- Illustration de l'onboarding : « Prêt à envoyer » ou « Loyer révisé » ?
+- Coordonnées de l'éditeur, adresse de la politique de confidentialité,
+  clé d'envoi (voir `docs/a-verifier.md`).
 
 ## Avant publication
 
-- Vérifier chaque règle de `regles_legales.dart` sur les sources officielles,
-  puis renseigner `ReglesLegales.derniereVerification`.
-- Régénérer `assets/irl/irl.json` (voir `assets/irl/LISEZMOI.md`).
-- Tester sur iOS (jamais fait) et sur un Android à navigation 3 boutons.
-  iOS : icône et écran de lancement encore ceux de Flutter, région de
-  développement à passer en `fr` (audit A5-01, A5-04).
-- Brancher l'abonnement réel (RevenueCat) : nouvelle implémentation de
-  `SourceDroits` à la place de `DroitsBeta` dans `sourceDroitsProvider`. À
-  l'expiration constatée, écrire `ClesReglages.finAbonnementAAnnoncer` (le
-  message de l'accueil fait le reste). Remplacer « bientôt disponible » de
-  l'écran Premium par l'achat et la restauration des achats.
-- Mettre à jour la politique de confidentialité et le formulaire « Sécurité
-  des données » (achats : identifiant et historique d'achat).
-- Construire la version publiée sans `--dart-define=BETA=true`.
+Liste des vérifications et démarches (règles légales, essais sur
+téléphone, test fermé, production) : `docs/a-verifier.md`.

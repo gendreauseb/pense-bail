@@ -48,7 +48,7 @@ abstract final class TableauDeBord {
   static TypeInvitation? _invitation(Bien bien, Bail? bail) {
     if (bail == null) return TypeInvitation.bailManquant;
     final revision =
-        bien.typeLocation.revisionDisponible && bail.regle.revisionIrlAutorisee;
+        bien.typeLocation.revisionDisponible && bail.revisionPrevue;
     if (revision && !bail.irlReferenceComplet) {
       return TypeInvitation.irlManquant;
     }

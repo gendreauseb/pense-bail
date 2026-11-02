@@ -83,7 +83,7 @@ void main() {
   );
 
   group('rentabilité', () {
-    test('Premium : journal, cases et investissement enregistrés', () async {
+    test('Premium : journal, cases et investissement enregistrés', () async {
       await finances.enregistrerMouvement(mouvement());
       await finances.definirEncaissement(encaissement);
       await finances.enregistrerInvestissement(
@@ -101,7 +101,7 @@ void main() {
       );
     });
 
-    test('gratuit : écritures refusées, données existantes intactes', () async {
+    test('gratuit : écritures refusées, données existantes intactes', () async {
       await finances.enregistrerMouvement(mouvement());
       droits = Droits.gratuit;
 
@@ -154,7 +154,7 @@ void main() {
   });
 
   group("carnet d'artisans", () {
-    test('Premium : artisan et intervention enregistrés', () async {
+    test('Premium : artisan et intervention enregistrés', () async {
       await artisans.enregistrer(plombier());
       await artisans.enregistrerIntervention(fuite());
       expect(
@@ -169,7 +169,7 @@ void main() {
       );
     });
 
-    test('gratuit : écritures refusées, carnet existant intact', () async {
+    test('gratuit : écritures refusées, carnet existant intact', () async {
       await artisans.enregistrer(plombier());
       await artisans.enregistrerIntervention(fuite());
       droits = Droits.gratuit;

@@ -123,7 +123,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     final l = widget.existant!;
     final ok = await confirmerSuppression(
       context,
-      titre: 'Retirer ce locataire ?',
+      titre: 'Retirer ce locataire ?',
       message: '${l.nomComplet} ne figurera plus sur ce bail.',
       action: 'Retirer',
     );
@@ -167,7 +167,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       ChampTexte(
         controleur: _telephone,
         libelle: 'Téléphone (facultatif)',
-        aide: 'Exemple : 06 12 34 56 78',
+        aide: 'Exemple : 06 12 34 56 78',
         clavier: TextInputType.phone,
         validator: Validateurs.telephone,
       ),

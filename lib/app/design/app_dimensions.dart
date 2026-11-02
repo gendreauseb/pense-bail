@@ -86,6 +86,15 @@ abstract final class AppSizes {
   static const bordurePointillee = 1.5;
   static const soulignementOnglet = 3.0;
 
+  /// Fondu au bord droit des onglets qui défilent : signale qu'il y en a
+  /// d'autres.
+  static const fonduOnglets = 40.0;
+
+  /// Barres fixes (navigation, barre d'action) : le texte suit la taille
+  /// choisie sur le téléphone jusqu'à ce facteur, pour ne pas envahir
+  /// l'écran.
+  static const echelleTexteBarresMax = 1.3;
+
   /// Barre de progression d'un outil en étapes (révision du loyer).
   static const progressionEtapes = 4.0;
 }

@@ -89,8 +89,8 @@ class PremiumPage extends ConsumerWidget {
           const TitreSection('Toujours gratuit'),
           Text(
             'Un bien avec son bail et ses locataires, toutes ses échéances '
-            "et leurs rappels, l'alerte DPE et le calcul de la révision du "
-            'loyer.',
+            'et leurs rappels, le contrôle du DPE (logements F et G) et le '
+            'calcul de la révision du loyer.',
             style: t.body,
           ),
           const SizedBox(height: AppSpacing.sectionLarge),

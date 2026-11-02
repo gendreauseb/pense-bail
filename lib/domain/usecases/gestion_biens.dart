@@ -85,7 +85,8 @@ class GestionBiens {
   }
 
   /// Crée ou modifie le bail du bien. Les échéances sont recalculées si une
-  /// donnée qui les détermine change (type, dates, durée).
+  /// donnée qui les détermine change (type, dates, durée, révision exclue
+  /// ou non par la clause du bail).
   ///
   /// Lève [BienVerrouille] si le bien est en lecture seule.
   Future<void> enregistrerBail({
@@ -103,7 +104,8 @@ class GestionBiens {
           ancien.typeBail == bail.typeBail &&
           ancien.dateDebut == bail.dateDebut &&
           ancien.dureeMois == bail.dureeMois &&
-          ancien.dateRevision == bail.dateRevision;
+          ancien.dateRevision == bail.dateRevision &&
+          ancien.revisionPrevue == bail.revisionPrevue;
       if (!inchange) await _recalculer(bien, bail, aujourdhui);
     });
   }

@@ -118,7 +118,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   Future<void> _supprimer() async {
     final ok = await confirmerSuppression(
       context,
-      titre: 'Supprimer cette intervention ?',
+      titre: 'Supprimer cette intervention ?',
       message: 'La dépense correspondante sera retirée du journal.',
     );
     if (!ok || !mounted) return;
@@ -154,7 +154,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
         ChampTexte(
           controleur: _description,
           libelle: 'Travaux réalisés',
-          aide: 'Exemple : réparation de la fuite sous l\'évier',
+          aide: 'Exemple : réparation de la fuite sous l\'évier',
           majuscules: TextCapitalization.sentences,
           lignes: 2,
           validator: (v) =>

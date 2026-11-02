@@ -6,6 +6,7 @@ import '../../../app/design/design.dart';
 import '../../../app/etat_app.dart';
 import '../../../app/routes.dart';
 import '../../../core/format/formats.dart';
+import '../../../core/widgets/listes.dart';
 import '../../../core/widgets/photo_bien.dart';
 import '../../../core/widgets/statut_echeance.dart';
 import '../../../core/widgets/verrou.dart';
@@ -69,69 +70,81 @@ class _CarteBien extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.textes;
     final prochaine = this.prochaine;
+    void ouvrir() => context.push(Routes.ficheBien(bien.id));
     return SizedBox(
       width: AppSizes.carteBienLargeur,
       child: Card(
         clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.push(Routes.ficheBien(bien.id)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: AppSizes.carteBienIllustration,
-                child: PhotoBien(
-                  chemin: bien.photoChemin,
-                  typeLogement: bien.typeLogement,
-                  rayon: 0,
-                  tailleIcone: AppSizes.pictogrammeMoyen,
+        child: SemantiqueLigne(
+          libelle: [
+            bien.nom,
+            bien.typeLogement.libelle,
+            Formats.parMois(bien.loyerHcCentimes),
+            if (verrouille) MentionLectureSeule.libelle.toLowerCase(),
+            if (prochaine != null)
+              '${prochaine.titre} : ${textePastille(prochaine.date, aujourdhui: aujourdhui, dense: false)}',
+          ].join(', '),
+          onTap: ouvrir,
+          child: InkWell(
+            onTap: ouvrir,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: AppSizes.carteBienIllustration,
+                  child: PhotoBien(
+                    chemin: bien.photoChemin,
+                    typeLogement: bien.typeLogement,
+                    rayon: 0,
+                    tailleIcone: AppSizes.pictogrammeMoyen,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppSpacing.bloc),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      bien.nom,
-                      style: t.rowTitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(bien.typeLogement.libelle, style: t.secondary),
-                    Text(
-                      Formats.parMois(bien.loyerHcCentimes),
-                      style: t.secondary,
-                    ),
-                    if (verrouille) ...[
-                      const SizedBox(height: AppSpacing.xxs),
-                      const MentionLectureSeule(),
-                    ],
-                    if (prochaine != null) ...[
-                      const SizedBox(height: AppSpacing.s),
+                Padding(
+                  padding: const EdgeInsets.all(AppSpacing.bloc),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        prochaine.titre,
-                        style: t.caption,
-                        maxLines: 2,
+                        bien.nom,
+                        style: t.rowTitle,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: AppSpacing.xxs),
-                      PastilleStatut(
-                        texte: textePastille(
-                          prochaine.date,
-                          aujourdhui: aujourdhui,
-                          dense: false,
-                        ),
-                        proximite: Proximite.depuisDate(
-                          prochaine.date,
-                          aujourdhui: aujourdhui,
-                        ),
+                      Text(bien.typeLogement.libelle, style: t.secondary),
+                      Text(
+                        Formats.parMois(bien.loyerHcCentimes),
+                        style: t.secondary,
                       ),
+                      if (verrouille) ...[
+                        const SizedBox(height: AppSpacing.xxs),
+                        const MentionLectureSeule(),
+                      ],
+                      if (prochaine != null) ...[
+                        const SizedBox(height: AppSpacing.s),
+                        Text(
+                          prochaine.titre,
+                          style: t.caption,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: AppSpacing.xxs),
+                        PastilleStatut(
+                          texte: textePastille(
+                            prochaine.date,
+                            aujourdhui: aujourdhui,
+                            dense: false,
+                          ),
+                          proximite: Proximite.depuisDate(
+                            prochaine.date,
+                            aujourdhui: aujourdhui,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

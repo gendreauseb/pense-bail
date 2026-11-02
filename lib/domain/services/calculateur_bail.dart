@@ -61,12 +61,13 @@ abstract final class CalculateurBail {
   }
 
   /// Prochaine date de révision annuelle du loyer le [aPartirDe] ou après.
-  /// `null` si la révision IRL n'est pas prévue pour ce type de bail.
+  /// `null` si la révision IRL n'est pas prévue (type de bail, ou bail sans
+  /// clause de révision).
   ///
   /// Date prévue au bail si renseignée (même jour et mois chaque année),
   /// sinon date anniversaire du bail.
   static DateTime? prochaineRevision(Bail bail, DateTime aPartirDe) {
-    if (!bail.regle.revisionIrlAutorisee) return null;
+    if (!bail.revisionPrevue) return null;
     final cible = Dates.jour(aPartirDe);
 
     final dateRevision = bail.dateRevision;

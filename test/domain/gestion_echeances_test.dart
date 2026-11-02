@@ -75,7 +75,7 @@ void main() {
     expect(suivante.dateInitiale, isNull);
   });
 
-  test("« Faite le » : date du jour de l'application", () async {
+  test("« Faite le » : date du jour de l'application", () async {
     await gestion.enregistrer(revision(), const []);
     await gestion.marquerFaite(
       revision(),
@@ -85,14 +85,14 @@ void main() {
     expect((await echeances.parId('rev'))!.faiteLe, DateTime(2026, 9, 24));
   });
 
-  test('échéance non récurrente : pas d\'occurrence suivante', () async {
+  test('échéance non récurrente : pas d\'occurrence suivante', () async {
     final unique = revision(intervalle: null);
     await gestion.enregistrer(unique, const [7]);
     expect(await gestion.marquerFaite(unique, maintenant: t0), isNull);
     expect(await echeances.aFaire(), isEmpty);
   });
 
-  test('annuler « faite » restaure l\'état d\'origine', () async {
+  test('annuler « faite » restaure l\'état d\'origine', () async {
     await gestion.enregistrer(revision(), [7]);
     final suivante = await gestion.marquerFaite(revision(), maintenant: t0);
     await gestion.annulerFaite(originale: revision(), suivante: suivante);
@@ -163,7 +163,7 @@ void main() {
       expect(await echeances.parId('e2'), isNotNull);
     });
 
-    test('bien actif et échéances communes : toujours modifiables', () async {
+    test('bien actif et échéances communes : toujours modifiables', () async {
       await gestion.enregistrer(revision(), const []);
       await gestion.enregistrer(revision().avecId('commune', null), const []);
       await gestion.supprimer('commune');

@@ -87,7 +87,7 @@ void main() {
     expect(await reglages.lire(ClesReglages.brouillonOnboarding), isNull);
   });
 
-  test('tout ou rien : une erreur annule tout', () async {
+  test('tout ou rien : une erreur annule tout', () async {
     await expectLater(
       finaliser.executer(
         bailleur: bailleur,

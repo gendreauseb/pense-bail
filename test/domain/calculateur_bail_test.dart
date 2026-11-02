@@ -40,7 +40,7 @@ void main() {
       );
     });
 
-    test('exemple de référence : fin au 31/08, congé au 28/02', () {
+    test('exemple de référence : fin au 31/08, congé au 28/02', () {
       expect(
         CalculateurBail.dateLimiteConge(DateTime(2026, 8, 31), 6),
         DateTime(2026, 2, 28),
@@ -68,7 +68,7 @@ void main() {
       );
     });
 
-    test('date limite dépassée : on passe à la période suivante', () {
+    test('date limite dépassée : on passe à la période suivante', () {
       final bail = unBail(
         typeBail: TypeBail.meuble,
         debut: DateTime(2025, 10, 15),
@@ -84,7 +84,7 @@ void main() {
     });
   });
 
-  test('bail mobilité : ni congé bailleur, ni révision', () {
+  test('bail mobilité : ni congé bailleur, ni révision', () {
     final bail = unBail(
       typeBail: TypeBail.mobilite,
       debut: DateTime(2026, 6, 1),
@@ -98,7 +98,7 @@ void main() {
     expect(CalculateurBail.prochaineRevision(bail, aujourdhui), isNull);
   });
 
-  test('bail mobilité sans durée saisie : fin inconnue', () {
+  test('bail mobilité sans durée saisie : fin inconnue', () {
     final bail = unBail(
       typeBail: TypeBail.mobilite,
       debut: DateTime(2026, 6, 1),

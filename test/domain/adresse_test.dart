@@ -11,7 +11,7 @@ void main() {
   });
 
   test(
-    'avec complément : après la voie sur une ligne, avant sur un courrier',
+    'avec complément : après la voie sur une ligne, avant sur un courrier',
     () {
       final bien = unBien().copyWith(
         complementAdresse: 'Résidence Les Pins, bât. B, apt 12',

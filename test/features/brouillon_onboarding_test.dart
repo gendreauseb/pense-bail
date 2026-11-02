@@ -52,7 +52,7 @@ void main() {
     expect(relu.biens.last.typeLogement, isNull);
   });
 
-  test('brouillon incohérent : reprise au choix du nombre de biens', () {
+  test('brouillon incohérent : reprise au choix du nombre de biens', () {
     final relu = BrouillonOnboarding.fromJson({
       'etape': 'bien',
       'indexBien': 3,
@@ -62,7 +62,7 @@ void main() {
     expect(relu.etape, EtapeOnboarding.nombreBiens);
   });
 
-  test('montants : charges vides = 0', () {
+  test('montants : charges vides = 0', () {
     final b = bienComplet();
     expect(b.loyerCentimes, 65050);
     expect(b.chargesCentimes, 0);
@@ -70,7 +70,7 @@ void main() {
     expect(b.copyWith(loyer: 'abc').estComplet, isFalse);
   });
 
-  test('longue durée : bail obligatoire et créé', () {
+  test('longue durée : bail obligatoire et créé', () {
     final b = bienComplet();
     final bail = b.versBail(id: 'bail', maintenant: maintenant)!;
     expect(bail.bienId, 'b1');
@@ -90,7 +90,7 @@ void main() {
     expect(sansDate.estComplet, isFalse);
   });
 
-  test('autre type : infos de bail conservées mais pas enregistrées', () {
+  test('autre type : infos de bail conservées mais pas enregistrées', () {
     final b = bienComplet(typeLocation: TypeLocation.courteDuree);
     expect(b.typeBail, TypeBail.meuble); // gardé en mémoire
     expect(b.estComplet, isTrue);

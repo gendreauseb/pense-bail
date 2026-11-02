@@ -32,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
   static const nomFichier = 'bailleur';
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -56,6 +56,8 @@ class AppDatabase extends _$AppDatabase {
       }
       // Version 5 : dates calendaires sans fuseau horaire (AAAA-MM-JJ).
       if (de < 5) await normaliserJours();
+      // Version 6 : le bail prévoit-il la révision du loyer ?
+      if (de < 6) await m.addColumn(baux, baux.clauseRevision);
     },
     beforeOpen: (details) async {
       // Indispensable pour les suppressions en cascade.

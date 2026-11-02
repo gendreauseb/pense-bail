@@ -11,6 +11,7 @@ import '../../core/utils/dates.dart';
 import '../../core/utils/identifiants.dart';
 import '../../core/validation/validateurs.dart';
 import '../../core/widgets/choix_cartes.dart';
+import '../../core/widgets/choix_oui_non.dart';
 import '../../core/widgets/choix_trimestre.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/formulaires.dart';
@@ -59,6 +60,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   late DateTime? _debut = _b?.dateDebut;
   late DateTime? _dateRevision = _b?.dateRevision;
   late int? _irlTrimestre = _b?.irlTrimestre;
+  late bool? _clauseRevision = _b?.clauseRevision;
 
   late final _duree = TextEditingController(
     text: _b?.dureeMois?.toString() ?? '',
@@ -87,6 +89,8 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
     setState(() => _enCours = true);
     final maintenant = DateTime.now();
     final revision = _type!.revision;
+    // Champs IRL conservés même si la clause est exclue (réponse modifiable).
+    final clause = revision ? _clauseRevision : null;
     final bail = Bail(
       id: _b?.id ?? Identifiants.nouveau(),
       bienId: widget.bien.id,
@@ -100,6 +104,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       irlTrimestre: revision ? _irlTrimestre : null,
       irlAnnee: revision ? int.tryParse(_irlAnnee.text.trim()) : null,
       irlValeur: revision ? Formats.parseDecimal(_irlValeur.text) : null,
+      clauseRevision: clause,
       actif: true,
       creeLe: _b?.creeLe ?? maintenant,
       modifieLe: maintenant,
@@ -178,6 +183,10 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                 messageObligatoire: 'Choisissez le type de bail.',
                 onChanged: (x) => setState(() => _type = x),
               ),
+              if (regle?.noteUtilisateur case final note?) ...[
+                const SizedBox(height: AppSpacing.s),
+                Note(icone: AppIcons.attention, texte: 'À vérifier : $note'),
+              ],
               const SizedBox(height: AppSpacing.sectionLarge),
               const TitreSection('Dates et durée'),
               ChampDate(
@@ -210,6 +219,25 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
               if (type != null && type.revision) ...[
                 const SizedBox(height: AppSpacing.bloc),
                 const TitreSection('Révision du loyer'),
+                Text(
+                  'Votre bail prévoit-il la révision du loyer ?',
+                  style: t.rowTitle,
+                ),
+                const SizedBox(height: AppSpacing.s),
+                ChoixOuiNon(
+                  valeur: _clauseRevision,
+                  onChanged: (v) => setState(() => _clauseRevision = v),
+                ),
+                const SizedBox(height: AppSpacing.s),
+                Text(
+                  ReglesLegales.clauseRevisionExplication,
+                  style: t.secondary,
+                ),
+                const SizedBox(height: AppSpacing.bloc),
+              ],
+              if (type != null &&
+                  type.revision &&
+                  _clauseRevision != false) ...[
                 ChampDate(
                   libelle: 'Date de révision prévue au bail (facultatif)',
                   date: _dateRevision,
@@ -225,8 +253,8 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                 const Note(
                   texte:
                       'L\'IRL de référence figure dans la clause de révision '
-                      'de votre bail : un trimestre (par exemple « 2e '
-                      'trimestre 2025 ») et une valeur. Recopiez-les '
+                      'de votre bail : un trimestre (par exemple « 2e '
+                      'trimestre 2025 ») et une valeur. Recopiez-les '
                       'exactement, ils servent au calcul de la révision.',
                 ),
                 const SizedBox(height: AppSpacing.bloc),
@@ -251,7 +279,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                 ChampTexte(
                   controleur: _irlValeur,
                   libelle: 'Valeur de l\'IRL de référence',
-                  aide: 'Format : 123,45',
+                  aide: 'Format : 123,45',
                   clavier: const TextInputType.numberWithOptions(decimal: true),
                   formats: [
                     FilteringTextInputFormatter.allow(RegExp('[0-9,.]')),
@@ -278,7 +306,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
       final ans = duree % 12 == 0
           ? ' (${duree ~/ 12} an${duree >= 24 ? 's' : ''})'
           : '';
-      return 'Laissez vide pour la durée légale : $duree mois$ans.';
+      return 'Laissez vide pour la durée légale : $duree mois$ans.';
     }
     final min = r.dureeMinMois;
     final max = r.dureeMaxMois;
@@ -307,7 +335,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
         null => null,
         0 => 'Interdit pour ce type de bail.',
         final m =>
-          'Maximum légal : ${Formats.montant(loyer * m)} ($m mois de loyer '
+          'Maximum légal : ${Formats.montant(loyer * m)} ($m mois de loyer '
               'hors charges).',
       };
 

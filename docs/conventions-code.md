@@ -110,7 +110,13 @@ anglais restent tels quels (`build`, `copyWith`, `Provider`).
 ## Accessibilité
 
 - Chaque ligne d'information est un seul élément pour les lecteurs d'écran
-  (`Semantics(container: true, label: …, excludeSemantics: true)`).
+  (`Semantics(container: true, label: …, excludeSemantics: true)`). Ligne
+  cliquable : `SemantiqueLigne` (`listes.dart`) autour de toute la ligne, ou
+  seulement autour de son texte quand des boutons voisins (appeler, écrire)
+  doivent rester accessibles ; test avec `find.bySemanticsLabel`.
+- Grand texte : pas de mot coupé (`LigneInfo` empile libellé et valeur
+  quand un mot ne tient pas), barres fixes plafonnées à
+  `AppSizes.echelleTexteBarresMax` ; test avec `TextScaler.linear(2)`.
 - Bouton sans texte : `tooltip` obligatoire.
 - Zone tactile ≥ 44 × 44 ; la mise en page doit supporter les grandes
   tailles de texte.

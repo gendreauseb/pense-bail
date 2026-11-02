@@ -48,7 +48,16 @@ class _PanneauEcheance extends ConsumerWidget {
       echeance.date,
       aujourdhui: aujourdhui,
     );
-    final explication = explicationEcheance(echeance.type);
+    final bienId = echeance.bienId;
+    final explication = explicationEcheance(
+      echeance.type,
+      bail: bienId == null
+          ? null
+          : ref.watch(bailActifFluxProvider(bienId)).value,
+      date: echeance.date,
+      aujourdhui: aujourdhui,
+      diagnostic: echeance.typeDiagnostic,
+    );
     final recurrence = texteRecurrence(echeance.intervalleMois);
     final texteDesRappels = rappels == null
         ? null
@@ -104,7 +113,7 @@ class _PanneauEcheance extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(Formats.dateLongue(echeance.date), style: t.rowTitle),
+                    Text(Formats.date(echeance.date), style: t.rowTitle),
                     const SizedBox(height: AppSpacing.xxs),
                     PastilleStatut(
                       texte: textePastille(
@@ -125,7 +134,7 @@ class _PanneauEcheance extends ConsumerWidget {
           if (dateInitiale != null)
             info(
               AppIcons.calendrier,
-              'Reportée (date prévue à l\'origine : '
+              'Reportée (date prévue à l\'origine : '
               '${Formats.date(dateInitiale)})',
             ),
           if (notes != null && notes.trim().isNotEmpty)
@@ -199,8 +208,8 @@ class _PanneauEcheance extends ConsumerWidget {
       aujourdhui: ref.read(aujourdhuiProvider),
     );
     final message = suivante == null
-        ? '« ${echeance.titre} » est marquée comme faite.'
-        : '« ${echeance.titre} » est faite. Prochaine le '
+        ? '« ${echeance.titre} » est marquée comme faite.'
+        : '« ${echeance.titre} » est faite. Prochaine le '
               '${Formats.date(suivante.date)}.';
     messager.showSnackBar(
       SnackBar(
@@ -232,7 +241,7 @@ class _PanneauEcheance extends ConsumerWidget {
       confirmText: 'Reporter à cette date',
       cancelText: 'Annuler',
       fieldLabelText: 'Date (JJ/MM/AAAA)',
-      errorFormatText: 'Format attendu : JJ/MM/AAAA',
+      errorFormatText: 'Format attendu : JJ/MM/AAAA',
       errorInvalidText: 'Date hors des limites possibles',
     );
     if (date == null) return;

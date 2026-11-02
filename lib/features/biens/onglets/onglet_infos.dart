@@ -91,7 +91,7 @@ class OngletInfos extends ConsumerWidget {
   Future<void> _supprimer(BuildContext context, WidgetRef ref) async {
     final ok = await confirmerSuppression(
       context,
-      titre: 'Supprimer « ${bien.nom} » ?',
+      titre: 'Supprimer « ${bien.nom} » ?',
       message:
           'Le bail, les locataires, les échéances, le journal et les '
           'interventions de ce bien seront supprimés définitivement.',
@@ -104,7 +104,7 @@ class OngletInfos extends ConsumerWidget {
     await ref.read(gestionBiensProvider).supprimer(bien.id);
     if (photo != null) await ref.read(photoServiceProvider).supprimer(photo);
     messager.showSnackBar(
-      SnackBar(content: Text('« ${bien.nom} » a été supprimé.')),
+      SnackBar(content: Text('« ${bien.nom} » a été supprimé.')),
     );
   }
 }

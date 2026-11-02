@@ -64,7 +64,7 @@ abstract final class PlanificationRappels {
           id: rappel.id,
           echeanceId: echeance.id,
           quand: quand,
-          titre: '${_quand(rappel.joursAvant)} : ${echeance.titre}',
+          titre: '${_quand(rappel.joursAvant)} : ${echeance.titre}',
           corps: '$lieu, le ${Formats.date(echeance.date)}',
         ),
       );
