@@ -106,6 +106,80 @@ void main() {
     expect(CalculateurBail.finPeriodeEnCours(bail, aujourdhui), isNull);
   });
 
+  group('Location saisonnière (A2-09)', () {
+    test('fin au terme saisi, ni congé du bailleur, ni révision', () {
+      final bail = unBail(
+        typeBail: TypeBail.saisonnier,
+        debut: DateTime(2026, 7, 1),
+        dureeMois: 2,
+      );
+      // Pas de reconduction : le terme reste le même, même passé.
+      expect(
+        CalculateurBail.finPeriodeEnCours(bail, aujourdhui),
+        DateTime(2026, 8, 31),
+      );
+      expect(CalculateurBail.prochaineDateLimiteConge(bail, aujourdhui), isNull);
+      expect(CalculateurBail.prochaineRevision(bail, aujourdhui), isNull);
+    });
+
+    test('sans durée saisie : fin inconnue', () {
+      final bail = unBail(
+        typeBail: TypeBail.saisonnier,
+        debut: DateTime(2026, 7, 1),
+      );
+      expect(CalculateurBail.finPeriodeEnCours(bail, aujourdhui), isNull);
+    });
+  });
+
+  group('Bail professionnel (6 ans, congé 6 mois) (A2-09)', () {
+    test('reconduit par périodes de 6 ans, sans révision IRL', () {
+      final bail = unBail(
+        typeBail: TypeBail.professionnel,
+        debut: DateTime(2019, 1, 1),
+      );
+      expect(
+        CalculateurBail.finPeriodeEnCours(bail, aujourdhui),
+        DateTime(2030, 12, 31),
+      );
+      expect(
+        CalculateurBail.prochaineDateLimiteConge(bail, aujourdhui),
+        DateTime(2030, 6, 30),
+      );
+      // Le loyer suit l'indice prévu au contrat, que l'app ne calcule pas.
+      expect(CalculateurBail.prochaineRevision(bail, aujourdhui), isNull);
+    });
+  });
+
+  group('Bail commercial (9 ans, congé 6 mois) (A2-09)', () {
+    test('en cours : fin à 9 ans, congé 6 mois avant, sans révision IRL', () {
+      final bail = unBail(
+        typeBail: TypeBail.commercial,
+        debut: DateTime(2020, 4, 1),
+      );
+      expect(
+        CalculateurBail.finPeriodeEnCours(bail, aujourdhui),
+        DateTime(2029, 3, 31),
+      );
+      expect(
+        CalculateurBail.prochaineDateLimiteConge(bail, aujourdhui),
+        DateTime(2028, 9, 30),
+      );
+      expect(CalculateurBail.prochaineRevision(bail, aujourdhui), isNull);
+    });
+
+    test('terme passé : prolongé sans durée fixe, seule la première fin '
+        'est connue', () {
+      final bail = unBail(
+        typeBail: TypeBail.commercial,
+        debut: DateTime(2015, 1, 1),
+      );
+      expect(
+        CalculateurBail.finPeriodeEnCours(bail, aujourdhui),
+        DateTime(2023, 12, 31),
+      );
+    });
+  });
+
   test('date de révision prévue au bail', () {
     final bail = unBail(
       typeBail: TypeBail.meuble,

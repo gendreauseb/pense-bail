@@ -6,8 +6,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/design/design.dart';
+import '../../../app/etat_app.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/utils/dates.dart';
 import '../../../core/widgets/composants.dart';
@@ -79,12 +81,12 @@ class _CarteInclinee extends StatelessWidget {
 }
 
 /// Écran 1 : trois échéances aux statuts différents.
-class IllustrationEcheances extends StatelessWidget {
+class IllustrationEcheances extends ConsumerWidget {
   const IllustrationEcheances({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final aujourdhui = Dates.aujourdhui();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final aujourdhui = ref.watch(aujourdhuiProvider);
     Widget ligne(int jours, String titre, String bien) {
       final date = Dates.ajouterJours(aujourdhui, jours);
       final proximite = Proximite.depuisDate(date, aujourdhui: aujourdhui);

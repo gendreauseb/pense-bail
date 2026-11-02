@@ -16,6 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '../helpers/base_memoire.dart';
+import '../helpers/lanceur_app.dart' show AujourdhuiFixe;
 
 void main() {
   late AppDatabase db;
@@ -46,6 +47,9 @@ void main() {
           databaseProvider.overrideWithValue(db),
           dossierDocumentsProvider.overrideWithValue(Directory.systemTemp),
           onboardingTermineAuDemarrageProvider.overrideWithValue(false),
+          aujourdhuiProvider.overrideWith(
+            () => AujourdhuiFixe(DateTime(2026, 9, 25)),
+          ),
         ],
         child: const BailleurApp(),
       ),

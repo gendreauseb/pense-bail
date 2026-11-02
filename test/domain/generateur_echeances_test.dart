@@ -49,6 +49,24 @@ void main() {
     expect(parType(prevues).containsKey(TypeEcheance.finBail), isTrue);
   });
 
+  test('bail commercial dont le terme est passé : ni fin ni congé (A2-09)', () {
+    final prevues = GenerateurEcheances.depuisBail(
+      bien: unBien(typeLocation: TypeLocation.professionnelle),
+      bail: unBail(typeBail: TypeBail.commercial, debut: DateTime(2015, 1, 1)),
+      aujourdhui: aujourdhui,
+    );
+    expect(
+      parType(prevues).keys,
+      isNot(
+        anyOf(
+          contains(TypeEcheance.finBail),
+          contains(TypeEcheance.dateLimiteConge),
+          contains(TypeEcheance.revisionLoyer),
+        ),
+      ),
+    );
+  });
+
   test('échéances génériques', () {
     final bien = GenerateurEcheances.generiquesBien(
       bien: unBien(),

@@ -15,6 +15,7 @@ import '../../../core/widgets/formulaires.dart';
 import '../../../core/widgets/listes.dart';
 import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
+import '../../../domain/services/calculateur_diagnostic.dart';
 import '../../echeances/detail_echeance.dart';
 import '../../echeances/edition_echeance_page.dart';
 import '../../echeances/textes_echeances.dart';
@@ -143,7 +144,7 @@ class _AjoutRappel extends ConsumerWidget {
                 type: TypeEcheance.assurancePno,
                 titre: TypeEcheance.assurancePno.libelle,
                 date: dansUnAn,
-                intervalleMois: ReglesLegales.periodiciteEntretienChaudiereMois,
+                intervalleMois: 12,
               ),
             ),
           ),
@@ -158,7 +159,7 @@ class _AjoutRappel extends ConsumerWidget {
                 type: TypeEcheance.entretienChaudiere,
                 titre: TypeEcheance.entretienChaudiere.libelle,
                 date: dansUnAn,
-                intervalleMois: 12,
+                intervalleMois: ReglesLegales.periodiciteEntretienChaudiereMois,
               ),
             ),
           ),
@@ -266,7 +267,7 @@ class _DiagnosticState extends ConsumerState<_Diagnostic> {
                       type: TypeEcheance.diagnostic,
                       typeDiagnostic: type,
                       titre: 'Renouveler : ${type!.libelle}',
-                      date: Dates.ajouterMois(_realise!, validite),
+                      date: CalculateurDiagnostic.expiration(type, _realise!),
                       intervalleMois: validite,
                       notes:
                           'Diagnostic réalisé le ${Formats.date(_realise!)}.',

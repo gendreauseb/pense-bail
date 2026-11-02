@@ -67,8 +67,9 @@ pdf + printing, file_picker, http (INSEE uniquement).
   supprimé par un changement de version.
 - **Montants** en centimes (`int`), affichés via `Formats` (centimes seulement
   si non nuls ; courriers : toujours).
-- **Schéma de base** modifié → `schemaVersion` + étape `onUpgrade` ; les
-  anciennes sauvegardes doivent rester restaurables.
+- **Schéma de base** modifié → `schemaVersion` + étape `onUpgrade` +
+  référence dans `drift_schemas/` (voir conventions) ; les anciennes
+  sauvegardes doivent rester restaurables.
 - **Accessibilité** : zone tactile ≥ 44, info jamais transmise par la
   couleur seule, libellé sur les boutons icône.
 - Code, noms et messages en français ; `flutter analyze` et `flutter test`

@@ -241,6 +241,34 @@ void main() {
       expect(r.nouveauTotalCentimes, 70749);
       expect(r.baisse, isFalse);
     });
+
+    test("baisse de l'indice : le loyer diminue, signalé (A2-09)", () {
+      final r = CalculateurRevision.calculer(
+        cycle: CycleRevision(
+          datePrevue: DateTime(2026, 9, 1),
+          aujourdhui: DateTime(2026, 8, 1),
+        ),
+        // Nouvel indice FICTIF, inférieur à l'ancien.
+        ancien: const IndiceIrl(
+          annee: 2025,
+          trimestre: 2,
+          valeur: 146.68,
+          source: SourceIndice.insee,
+        ),
+        nouveau: const IndiceIrl(
+          annee: 2026,
+          trimestre: 2,
+          valeur: 145,
+          source: SourceIndice.manuel,
+        ),
+        loyerActuelCentimes: 65000,
+        chargesCentimes: 5000,
+      );
+      // 650 × 145 / 146,68 = 642,5552... → 642,56
+      expect(r.nouveauLoyerCentimes, 64256);
+      expect(r.augmentationMensuelleCentimes, -744);
+      expect(r.baisse, isTrue);
+    });
   });
 
   group('blocages', () {
@@ -301,6 +329,23 @@ void main() {
         ),
         [BlocageRevision.bailSansRevision],
       );
+    });
+
+    test('baux saisonnier, professionnel et commercial (A2-09)', () {
+      for (final type in [
+        TypeBail.saisonnier,
+        TypeBail.professionnel,
+        TypeBail.commercial,
+      ]) {
+        expect(
+          CalculateurRevision.blocages(
+            unBien(),
+            unBail(typeBail: type, debut: DateTime(2026, 1, 1)),
+          ),
+          [BlocageRevision.bailSansRevision],
+          reason: type.name,
+        );
+      }
     });
   });
 }

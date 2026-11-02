@@ -77,9 +77,17 @@ anglais restent tels quels (`build`, `copyWith`, `Provider`).
 - Changement de schéma : incrémenter `schemaVersion`, ajouter l'étape dans
   `onUpgrade` (`if (de < N)`), colonnes ajoutées nullables ou avec valeur
   par défaut. Les sauvegardes JSON d'un schéma plus ancien doivent rester
-  restaurables : vérifier `test/data/sauvegarde_test.dart`. Les dates d'une
-  base ou d'une sauvegarde antérieure au schéma 5 sont réécrites par
-  `AppDatabase.normaliserJours()` (mise à jour et restauration).
+  restaurables. Les dates d'une base ou d'une sauvegarde antérieure au
+  schéma 5 sont réécrites par `AppDatabase.normaliserJours()` (mise à jour
+  et restauration).
+- Puis enregistrer la référence du nouveau schéma N et régénérer les
+  schémas de test :
+  `dart run drift_dev schema dump lib/data/local/database.dart drift_schemas/drift_schema_vN.json`
+  puis `dart run drift_dev schema generate drift_schemas/ test/data/migrations/schemas/`.
+  `test/data/migrations_test.dart` vérifie la mise à jour depuis chaque
+  version (et échoue si la référence manque) ; `sauvegarde_test.dart`
+  restaure une sauvegarde de chaque version. Ne jamais modifier une
+  référence existante.
 - Réglages clé / valeur : clés dans `ClesReglages`.
 
 ## Montants, dates, textes

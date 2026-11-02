@@ -18,6 +18,14 @@ Interface
 - Complément d'adresse facultatif (bailleur et biens) : après la voie sur
   une ligne, sur sa propre ligne avant la voie dans les courriers (norme
   AFNOR NF Z10-011).
+- Grand texte : un libellé et sa valeur, ou des chiffres côte à côte,
+  passent les uns sous les autres quand un mot ne tient plus
+  (`LigneInfo`, `ChiffresEnColonnes`) ; le texte des barres fixes (action,
+  navigation) est plafonné à 130 % pour qu'elles n'envahissent pas l'écran.
+- Onglets qui défilent (fiche du bien) : un fondu sur le bord indique qu'il
+  y en a d'autres.
+- Typographie française : espace insécable avant « : ; ? ! » » et après
+  « « » dans toutes les chaînes, vérifiée par un test.
 
 Échéances et rappels
 - Rappels J-30, J-7, J-1 par défaut, modifiables dans les réglages ; envoi
@@ -26,8 +34,10 @@ Interface
 - « Appliquer à toutes les échéances » remplace les rappels réglés
   échéance par échéance (après avertissement).
 - Échéances automatiques recalculées seulement si le type de location, le
-  type de bail, les dates ou la durée du bail changent (les reports et les
-  rappels choisis sont conservés sinon).
+  type de bail, les dates, la durée du bail ou la clause de révision
+  changent (les reports et les rappels choisis sont conservés sinon).
+  Clause à « Non » : le rappel de révision est supprimé ; « Oui » ou « Je ne
+  sais pas » : il est recréé.
 
 Rentabilité
 - Rendement brut = loyers annuels HC / (prix + notaire + travaux) ; net :
@@ -73,6 +83,13 @@ Données
 - Sauvegarde : un fichier JSON (tables SQLite telles quelles, photos en
   base64), restauration après vérification (tables et colonnes connues,
   chemins de photos sûrs, schéma pas plus récent).
+- Dates calendaires (début de bail, échéances, mouvements…) enregistrées
+  sans heure ni fuseau, en texte AAAA-MM-JJ (schéma 5) : une échéance du
+  15/10 reste au 15/10 sur un téléphone réglé sur un autre fuseau.
+  Horodatages (`creeLe`, `modifieLe`) inchangés.
+- Chaque version du schéma a sa référence dans `drift_schemas/` ; la mise
+  à jour de la base et la restauration d'une sauvegarde sont testées depuis
+  chacune.
 
 Version gratuite et Premium
 - Gratuit : un seul bien actif ; onboarding, fiche, bail, locataires,
@@ -168,24 +185,25 @@ Publication
   jamais promu en production ; la version publique est reconstruite sans le
   drapeau.
 
+## Décidé, à implémenter
+
+- **Notifications limitées au bien actif en version gratuite** (décidé le
+  25/10/2026). Les échéances des biens en lecture seule ne sont plus
+  notifiées (sinon on peut saisir tous ses biens pendant l'essai, résilier
+  et garder tous ses rappels gratuitement). Remplacera « Leurs échéances
+  restent affichées et notifiées » dans « Perte du Premium » une fois
+  implémenté. Questions restantes : voir les points ouverts.
+
 ## Points ouverts (à trancher par l'utilisateur)
 
-- **Décidé le 25/10/2026, à implémenter : notifications limitées au bien
-  actif en version gratuite.** Les échéances des biens en lecture seule ne
-  sont plus notifiées (sinon on peut saisir tous ses biens pendant l'essai,
-  résilier et garder tous ses rappels gratuitement). Remplacera « Leurs
-  échéances restent affichées et notifiées » dans « Perte du Premium » une
-  fois implémenté. À préciser : ces échéances restent-elles affichées sur
-  l'accueil ? Les échéances communes à tous les biens restent-elles
-  notifiées ?
+- Notifications limitées au bien actif : les échéances des biens en
+  lecture seule restent-elles affichées sur l'accueil ? Les échéances
+  communes à tous les biens restent-elles notifiées ?
 - Chiffrer la sauvegarde par mot de passe ? (elle contient les données des
   locataires en clair).
-- Indice retenu pour une révision demandée en retard : dernier IRL publié à
-  la date prévue (choix actuel) ou à la date de la demande ? Date de
-  publication estimée au 15 du mois qui suit le trimestre.
-- Règles marquées `aVerifier` dans `regles_legales.dart` (calcul du délai de
-  congé, gel F/G quelle que soit la date du bail, validité des anciens DPE,
-  amiante, dates fiscales).
+- Interprétations juridiques incertaines (révision demandée en retard,
+  délai de congé, gel F/G, anciens DPE, amiante, dates fiscales…) : listées
+  dans `docs/a-verifier.md` §1, à confirmer avant la production.
 - Abonnement réel : si l'expiration est constatée pendant que l'utilisateur
   est sur un autre onglet, le message de fin s'affiche par-dessus (l'accueil
   reste chargé). À décider au branchement : attendre le retour sur
@@ -196,33 +214,7 @@ Publication
 Les numéros A… renvoient à `docs/audit-2026-10-05.md`. Rayer ou retirer une
 ligne une fois faite.
 
-1. Tests manquants et documentation
-   - Migrations de la base testées depuis les schémas 1 à 3 (A1-01).
-   - Écrans de saisie : locataire, mouvement, investissement, intervention,
-     artisan, saisie manuelle d'un IRL (A1-02).
-   - Un test par règle légale : validité des diagnostics, baux saisonnier,
-     professionnel et commercial, baisse de l'indice (A2-09).
-   - Tests qui tournent sur la date réelle : onboarding, étape bien,
-     `widget_test` (A1-04).
-   - Mise à jour de ce fichier :
-     - échéances automatiques : ajouter la clause de révision aux
-       déclencheurs du recalcul (« Non » supprime le rappel de révision,
-       « Oui » ou « Je ne sais pas » le recrée) ;
-     - notifications limitées au bien actif : passer dans une rubrique
-       « Décidé, à implémenter » ; seules ses deux questions restent dans
-       les points ouverts ;
-     - données : dates calendaires sans fuseau horaire, enregistrées en
-       AAAA-MM-JJ (schéma 5) ;
-     - interface : grand texte (lignes et chiffres empilés quand un mot ne
-       tient pas, barres fixes plafonnées à 130 %), fondu sur les onglets
-       qui défilent, espaces insécables obligatoires (vérifiées par un
-       test) ;
-     - interface : bannière jaune pour « Les rappels sont désactivés »,
-       une fois ce choix confirmé ;
-     - points ouverts : remplacer « Indice retenu pour une révision
-       demandée en retard » et « Règles marquées `aVerifier` » par un renvoi
-       à `docs/a-verifier.md` §1.
-2. Ménage technique
+1. Ménage technique
    - Correctifs de dépendances (`flutter pub upgrade`) (A1-03).
    - Référence obsolète dans `pubspec.yaml` (A1-05).
    - Trois lectures directes du statut Premium à documenter ou à faire
@@ -230,16 +222,17 @@ ligne une fois faite.
    - Dimensions locales à remplacer par des tokens (A4-03).
    - Journal pouvant contenir des données personnelles (A5-05).
    - Écritures hors cas d'usage ou sans transaction (A5-06).
-3. iOS, avant sa sortie : icône, écran de lancement, langue française par
+2. iOS, avant sa sortie : icône, écran de lancement, langue française par
    défaut (A5-04).
-4. Biens vendus ou retirés de la location (voir « Décisions prises »).
-5. Notifications limitées au bien actif en version gratuite, avant la
+3. Biens vendus ou retirés de la location (voir « Décisions prises »).
+4. Notifications limitées au bien actif en version gratuite, avant la
    production. Corriger en même temps les textes qui promettent les rappels
    pour tous les biens : écran Premium (« Toujours gratuit »), message de
    fin d'abonnement, cahier des charges.
 
 En attente de l'utilisateur
-- Bannière jaune pour les rappels désactivés : à confirmer.
+- Bannière jaune pour les rappels désactivés : à confirmer, puis à inscrire
+  dans « Interface » ci-dessus.
 - Illustration de l'onboarding : « Prêt à envoyer » ou « Loyer révisé » ?
 - Coordonnées de l'éditeur, adresse de la politique de confidentialité,
   clé d'envoi (voir `docs/a-verifier.md`).

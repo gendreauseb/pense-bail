@@ -203,6 +203,97 @@ void main() {
     },
   );
 
+  group('sauvegardes de chaque schéma précédent (A1-01)', () {
+    /// Colonnes de chaque table au schéma [version], d'après sa référence
+    /// (drift_schemas/, voir migrations_test.dart).
+    Map<String, Set<String>> colonnesDuSchema(int version) {
+      final schema =
+          jsonDecode(
+                File(
+                  'drift_schemas/drift_schema_v$version.json',
+                ).readAsStringSync(),
+              )
+              as Map<String, Object?>;
+      return {
+        for (final entite in schema['entities']! as List)
+          if ((entite as Map)['type'] == 'table')
+            (entite['data'] as Map)['name'] as String: {
+              for (final colonne in (entite['data'] as Map)['columns'] as List)
+                (colonne as Map)['name'] as String,
+            },
+      };
+    }
+
+    final jour = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+
+    for (final version in [1, 2, 3, 4, 5]) {
+      test('schéma $version : restaurée à l\'identique', () async {
+        await remplir();
+        await DriftBailleurRepository(db).enregistrer(
+          Bailleur(
+            id: 'moi',
+            prenom: 'Claire',
+            nom: 'Martin',
+            rue: '3 rue des Lilas',
+            codePostal: '44000',
+            ville: 'Nantes',
+            telephone: '',
+            email: '',
+            creeLe: DateTime(2026),
+            modifieLe: DateTime(2026),
+          ),
+        );
+        await DriftRevisionRepository(db).enregistrer(
+          RevisionLoyer(
+            id: 'r1',
+            bienId: 'bien-1',
+            bailId: 'bail-1',
+            dateEffet: DateTime(2025, 9, 1),
+            ancienLoyerCentimes: 64000,
+            nouveauLoyerCentimes: 65000,
+            ancienIrlTrimestre: 2,
+            ancienIrlAnnee: 2024,
+            ancienIrlValeur: 145.17,
+            nouvelIrlTrimestre: 2,
+            nouvelIrlAnnee: 2025,
+            nouvelIrlValeur: 146.68,
+            creeLe: DateTime(2025, 8, 20),
+          ),
+        );
+        // Les colonnes ajoutées depuis gardent ici leur valeur par défaut
+        // (complément d'adresse, date prévue, clause de révision inconnus ;
+        // courrier inclus) : la restauration doit les retrouver.
+        final avant = await tables();
+
+        // Fichier écrit par cette version : ses colonnes seulement et, avant
+        // le schéma 5, des dates calendaires avec heure et décalage.
+        final json =
+            jsonDecode(utf8.decode(await service.exporter()))
+                as Map<String, Object?>;
+        json['schema'] = version;
+        final colonnes = colonnesDuSchema(version);
+        for (final MapEntry(key: table, value: lignes)
+            in (json['tables']! as Map<String, Object?>).entries) {
+          for (final ligne in (lignes! as List).cast<Map<String, Object?>>()) {
+            ligne.removeWhere((c, _) => !colonnes[table]!.contains(c));
+            if (version < 5) {
+              ligne.updateAll(
+                (_, v) => v is String && jour.hasMatch(v)
+                    ? '${v}T00:00:00.000+14:00'
+                    : v,
+              );
+            }
+          }
+        }
+
+        await service.effacerTout();
+        await service.restaurer(service.lire(utf8.encode(jsonEncode(json))));
+
+        expect(await tables(), avant);
+      });
+    }
+  });
+
   group('mode Premium simulé : propre au téléphone', () {
     late DriftReglagesRepository reglages;
     setUp(() => reglages = DriftReglagesRepository(db));

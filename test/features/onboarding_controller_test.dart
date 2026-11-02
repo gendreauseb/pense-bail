@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/base_memoire.dart';
+import '../helpers/lanceur_app.dart' show AujourdhuiFixe;
 import 'brouillon_onboarding_test.dart' show bienComplet;
 
 void main() {
@@ -26,6 +27,9 @@ void main() {
         databaseProvider.overrideWithValue(db),
         dossierDocumentsProvider.overrideWithValue(Directory.systemTemp),
         onboardingTermineAuDemarrageProvider.overrideWithValue(false),
+        aujourdhuiProvider.overrideWith(
+          () => AujourdhuiFixe(DateTime(2026, 9, 25)),
+        ),
       ],
     );
     container.listen(onboardingControllerProvider, (_, _) {});

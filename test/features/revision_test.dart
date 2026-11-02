@@ -103,13 +103,14 @@ void main() {
     WidgetTester tester,
     String chemin, {
     Droits droits = Droits.premium,
+    DateTime? le,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     await preparer(tester);
     await tester.pumpWidget(
-      appDeTest(db: db, aujourdhui: aujourdhui, droits: droits),
+      appDeTest(db: db, aujourdhui: le ?? aujourdhui, droits: droits),
     );
     await tester.pumpAndSettle();
     GoRouter.of(tester.element(find.byType(AccueilPage))).push(chemin);
@@ -208,6 +209,45 @@ void main() {
     expect(find.textContaining('L\'INSEE publiera l\'IRL'), findsOneWidget);
     await fermer(tester);
   });
+
+  testWidgets(
+    "indice saisi à la main, en baisse : loyer diminué, avec une note (A2-09)",
+    (tester) async {
+      // En août 2027, l'IRL du 2e trimestre 2027 devrait être publié mais
+      // manque dans l'application (réseau indisponible) : saisie manuelle.
+      await ouvrir(tester, Routes.revision('studio'), le: DateTime(2027, 8, 10));
+      await tester.tap(find.text('J\'ai déjà révisé le loyer au 01/09/2026'));
+      await tester.pumpAndSettle();
+      await suivant(tester, 'Continuer');
+      await attendre(tester);
+
+      await tester.tap(find.text('Saisir l\'indice vous-même'));
+      await tester.pumpAndSettle();
+      expect(find.text('IRL du 2e trimestre 2027'), findsOneWidget);
+      final champ = find.byType(TextField).last;
+
+      // Valeur obligatoire.
+      await tester.tap(find.text('Enregistrer l\'indice'));
+      await tester.pumpAndSettle();
+      expect(find.text('Saisir l\'indice'), findsOneWidget);
+
+      // Valeur FICTIVE, inférieure à celle du 2e trimestre 2026 (148,37).
+      await tester.enterText(champ, '146,00');
+      await tester.tap(find.text('Enregistrer l\'indice'));
+      await attendre(tester);
+      final saisi = await tester.runAsync(
+        () => DriftIndiceIrlRepository(db).trouver(annee: 2027, trimestre: 2),
+      );
+      expect((saisi!.valeur, saisi.source), (146.0, SourceIndice.manuel));
+
+      await suivant(tester, 'Calculer le nouveau loyer');
+      // 650 × 146 / 148,37 = 639,6171... → 639,62
+      expect(find.text('639,62$e€ / mois'), findsOneWidget);
+      expect(find.text('−10,38$e€'), findsOneWidget);
+      expect(find.textContaining('L\'indice a baissé'), findsOneWidget);
+      await fermer(tester);
+    },
+  );
 
   group('clause de révision inconnue', () {
     FilledButton bouton(WidgetTester tester, String libelle) =>
