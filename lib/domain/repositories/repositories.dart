@@ -51,8 +51,9 @@ abstract interface class EcheanceRepository {
   Stream<List<Echeance>> surveillerAFaire({String? bienId});
   Future<List<Echeance>> aFaire();
 
-  /// Toutes les échéances d'un bien (faites comprises).
+  /// Toutes les échéances d'un bien (faites et arrêtées comprises).
   Stream<List<Echeance>> surveillerParBien(String bienId);
+  Future<List<Echeance>> parBien(String bienId);
   Future<Echeance?> parId(String id);
   Future<void> enregistrer(Echeance echeance);
   Future<void> enregistrerTout(List<Echeance> echeances);

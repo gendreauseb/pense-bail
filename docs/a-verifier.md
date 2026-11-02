@@ -65,6 +65,14 @@ mention contraire.
 - [ ] **Logements G** : interdits à la location en nouveau bail depuis 2025
   (critère de décence, calendrier F en 2028, E en 2034 à vérifier).
   L'application ne le signale pas : décider s'il faut une alerte.
+- [ ] **Bien vendu** : la taxe foncière de l'année de la vente reste au
+  vendeur (propriétaire au 1er janvier, CGI art. 1415 ; remboursement au
+  prorata souvent prévu dans l'acte) ; régularisation des charges gardée si
+  le logement était libre, arrêtée s'il était loué (l'acquéreur reprend le
+  bail). Assurance PNO, chaudière, diagnostics arrêtés.
+- [ ] **Bien qui n'est plus loué** : seules révision, fin de bail et congé
+  sont arrêtées ; régularisation, assurance, chaudière, diagnostics et taxe
+  foncière continuent.
 
 ### 1.2 Valeurs à confirmer
 
@@ -104,6 +112,8 @@ mention contraire.
 - [ ] Courrier de révision complet (`courrier_revision.dart`), sur un
   courrier réel généré par l'application.
 - [ ] Écran de révision : textes des étapes 1 à 3.
+- [ ] Vente et retrait d'un bien : choix, formulaire, confirmations, bilan
+  de la vente (lib/features/biens/sortie/, entabilite/bilan_vente.dart).
 - [ ] Mentions légales de l'application et politique de confidentialité
   (`docs/publication/politique-confidentialite.html`).
 
@@ -118,6 +128,8 @@ mention contraire.
   dialogues système de l'émulateur sont en anglais).
 - [ ] **Android à navigation à 3 boutons.**
 - [ ] **Accueil sans aucun bien** (après suppression du dernier).
+- [ ] **Bien vendu puis vente annulée** : les rappels arrêtés reprennent
+  (notifications reprogrammées).
 - [ ] **Message « … est faite. Annuler »** : durée d'affichage acceptable ?
 - [ ] **Sauvegarde Google** : installer l'application sur un second
   téléphone avec le même compte, vérifier que les biens et les photos

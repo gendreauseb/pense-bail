@@ -24,6 +24,14 @@ class BiensPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final biens = ref.watch(biensFluxProvider).value ?? const <Bien>[];
+    final enCours = [
+      for (final b in biens)
+        if (!b.vendu) b,
+    ];
+    final vendus = [
+      for (final b in biens)
+        if (b.vendu) b,
+    ];
     final echeances = ref.watch(echeancesAFaireFluxProvider).value ?? const [];
     final prochaines = TableauDeBord.prochaineParBien(echeances);
     final aujourdhui = ref.watch(aujourdhuiProvider);
@@ -44,15 +52,18 @@ class BiensPage extends ConsumerWidget {
               child: Text('Mes biens', style: context.textes.headline),
             ),
             const SizedBox(height: AppSpacing.section),
-            if (biens.isNotEmpty)
+            if (enCours.isNotEmpty)
               CarteListe(
                 enfants: [
-                  for (final bien in biens)
+                  for (final bien in enCours)
                     _LigneBien(
                       bien: bien,
                       prochaine: prochaines[bien.id],
                       aujourdhui: aujourdhui,
-                      verrouille: ref.watch(bienVerrouilleProvider(bien.id)),
+                      mention: MentionLectureSeule.pour(
+                        bien,
+                        verrouille: ref.watch(bienVerrouilleProvider(bien.id)),
+                      ),
                     ),
                 ],
               ),
@@ -61,6 +72,20 @@ class BiensPage extends ConsumerWidget {
               libelle: 'Ajouter un bien',
               onPressed: () => ouvrirAjoutBien(context, ref),
             ),
+            if (vendus.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.section),
+              _BiensVendus(
+                enfants: [
+                  for (final bien in vendus)
+                    _LigneBien(
+                      bien: bien,
+                      prochaine: prochaines[bien.id],
+                      aujourdhui: aujourdhui,
+                      mention: 'Vendu le ${Formats.date(bien.venduLe!)}',
+                    ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -73,28 +98,29 @@ class _LigneBien extends StatelessWidget {
     required this.bien,
     required this.prochaine,
     required this.aujourdhui,
-    required this.verrouille,
+    required this.mention,
   });
 
   final Bien bien;
   final Echeance? prochaine;
   final DateTime aujourdhui;
 
-  /// Lecture seule (version gratuite).
-  final bool verrouille;
+  /// « Lecture seule », « Vendu le … »… ; `null` si le bien est modifiable.
+  final String? mention;
 
   @override
   Widget build(BuildContext context) {
     final t = context.textes;
     final prochaine = this.prochaine;
+    final mention = this.mention;
     void ouvrir() => context.push(Routes.ficheBien(bien.id));
     return SemantiqueLigne(
       libelle: [
         bien.nom,
         '${bien.typeLogement.libelle}, '
             '${bien.typeLocation.libelle.toLowerCase()}',
-        Formats.parMois(bien.loyerHcCentimes),
-        if (verrouille) MentionLectureSeule.libelle.toLowerCase(),
+        if (!bien.vendu) Formats.parMois(bien.loyerHcCentimes),
+        if (mention != null) mention.toLowerCase(),
         if (prochaine != null)
           '${prochaine.titre} : ${textePastille(prochaine.date, aujourdhui: aujourdhui, dense: false)}',
       ].join(', '),
@@ -125,13 +151,14 @@ class _LigneBien extends StatelessWidget {
                       '${bien.typeLocation.libelle.toLowerCase()}',
                       style: t.secondary,
                     ),
-                    Text(
-                      Formats.parMois(bien.loyerHcCentimes),
-                      style: t.secondary,
-                    ),
-                    if (verrouille) ...[
+                    if (!bien.vendu)
+                      Text(
+                        Formats.parMois(bien.loyerHcCentimes),
+                        style: t.secondary,
+                      ),
+                    if (mention != null) ...[
                       const SizedBox(height: AppSpacing.xxs),
-                      const MentionLectureSeule(),
+                      MentionLectureSeule(libelle: mention),
                     ],
                     if (prochaine != null) ...[
                       const SizedBox(height: AppSpacing.xs),
@@ -163,6 +190,57 @@ class _LigneBien extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Biens vendus : section repliée sous la liste, ouverte à la demande.
+class _BiensVendus extends StatefulWidget {
+  const _BiensVendus({required this.enfants});
+  final List<Widget> enfants;
+
+  @override
+  State<_BiensVendus> createState() => _BiensVendusState();
+}
+
+class _BiensVendusState extends State<_BiensVendus> {
+  bool _ouvert = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final titre = 'Biens vendus (${widget.enfants.length})';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          button: true,
+          expanded: _ouvert,
+          label: titre,
+          excludeSemantics: true,
+          child: InkWell(
+            onTap: () => setState(() => _ouvert = !_ouvert),
+            borderRadius: AppRadius.arrondi(AppRadius.bouton),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: AppSizes.zoneTactile,
+              ),
+              child: Row(
+                children: [
+                  Expanded(child: Text(titre, style: context.textes.title)),
+                  Icon(
+                    _ouvert ? AppIcons.replier : AppIcons.deplier,
+                    color: context.couleurs.textSecondary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (_ouvert) ...[
+          const SizedBox(height: AppSpacing.s),
+          CarteListe(enfants: widget.enfants),
+        ],
+      ],
     );
   }
 }

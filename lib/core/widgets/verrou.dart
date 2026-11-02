@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/design/design.dart';
+import '../../domain/entities/entities.dart';
 import '../../domain/services/acces_biens.dart';
 import 'composants.dart';
 
@@ -112,11 +113,23 @@ class PageVerrouillee extends StatelessWidget {
   );
 }
 
-/// Mention « Lecture seule » d'un bien verrouillé (cadenas et texte).
+/// Mention d'un bien qu'on ne modifie pas (cadenas et texte) : « Lecture
+/// seule » (version gratuite), « Vendu » ou « Plus en location ».
 class MentionLectureSeule extends StatelessWidget {
-  const MentionLectureSeule({super.key});
+  const MentionLectureSeule({super.key, this.libelle = lectureSeule});
 
-  static const libelle = 'Lecture seule';
+  static const lectureSeule = 'Lecture seule';
+
+  final String libelle;
+
+  /// Mention de [bien], ou `null` s'il est modifiable.
+  static String? pour(Bien bien, {required bool verrouille}) => bien.vendu
+      ? 'Vendu'
+      : bien.retire
+      ? 'Plus en location'
+      : verrouille
+      ? lectureSeule
+      : null;
 
   @override
   Widget build(BuildContext context) {

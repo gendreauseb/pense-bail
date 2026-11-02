@@ -120,6 +120,15 @@ void main() {
     );
     // Colonnes ajoutées après le schéma 4.
     await v4.customStatement('ALTER TABLE baux DROP COLUMN clause_revision');
+    for (final colonne in [
+      'vendu_le',
+      'prix_vente_centimes',
+      'frais_vente_centimes',
+      'vendu_loue',
+      'retire_le',
+    ]) {
+      await v4.customStatement('ALTER TABLE biens DROP COLUMN $colonne');
+    }
     await v4.customStatement('PRAGMA user_version = 4');
     await v4.close();
 

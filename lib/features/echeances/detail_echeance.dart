@@ -207,7 +207,8 @@ class _PanneauEcheance extends ConsumerWidget {
       echeance,
       aujourdhui: ref.read(aujourdhuiProvider),
     );
-    final message = suivante == null
+    // Suivante arrêtée (bien vendu) : pas de « Prochaine le ».
+    final message = suivante == null || !suivante.estAFaire
         ? '« ${echeance.titre} » est marquée comme faite.'
         : '« ${echeance.titre} » est faite. Prochaine le '
               '${Formats.date(suivante.date)}.';

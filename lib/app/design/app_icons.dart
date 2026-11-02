@@ -17,6 +17,11 @@ abstract final class AppIcons {
   static const retour = LucideIcons.arrowLeft;
   static const retirer = LucideIcons.minus;
   static const suivant = LucideIcons.chevronRight;
+  static const deplier = LucideIcons.chevronDown;
+  static const replier = LucideIcons.chevronUp;
+  static const vente = LucideIcons.handshake;
+  static const plusLoue = LucideIcons.doorClosed;
+  static const annuler = LucideIcons.undo2;
   static const selectionne = LucideIcons.circleCheck;
   static const appareilPhoto = LucideIcons.camera;
   static const galerie = LucideIcons.images;

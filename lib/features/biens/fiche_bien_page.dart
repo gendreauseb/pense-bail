@@ -21,6 +21,7 @@ import 'onglets/onglet_bail.dart';
 import 'onglets/onglet_echeances.dart';
 import 'onglets/onglet_infos.dart';
 import 'onglets/onglet_rentabilite.dart';
+import 'sortie/sortie_bien.dart';
 
 /// Fiche d'un bien (design-system.md §7) : visuel, panneau superposé, chiffres
 /// clés, onglets, barre « Réviser le loyer » en longue durée.
@@ -81,7 +82,7 @@ class _FicheBienPageState extends ConsumerState<FicheBienPage>
     final echeances =
         ref.watch(echeancesBienFluxProvider(bien.id)).value ?? const [];
     final revision = echeances
-        .where((e) => e.type == TypeEcheance.revisionLoyer && !e.estFaite)
+        .where((e) => e.type == TypeEcheance.revisionLoyer && e.estAFaire)
         .firstOrNull;
     final longueDuree = bien.typeLocation.revisionDisponible;
     final dpeGel = ReglesLegales.classesDpeSansRevision.contains(
@@ -129,7 +130,7 @@ class _FicheBienPageState extends ConsumerState<FicheBienPage>
             ),
           ],
         ),
-        bottomNavigationBar: longueDuree
+        bottomNavigationBar: longueDuree && bien.enLocation
             ? BarreActionFixe(
                 libelle: 'Réviser le loyer',
                 onPressed: () => context.push(Routes.revision(bien.id)),
@@ -367,7 +368,10 @@ class _Panneau extends ConsumerWidget {
                 ),
             ],
           ),
-          if (verrouille) ...[
+          if (!bien.enLocation) ...[
+            const SizedBox(height: AppSpacing.section),
+            _BandeauSortie(bien: bien),
+          ] else if (verrouille) ...[
             const SizedBox(height: AppSpacing.section),
             BandeauVerrou(
               texte:
@@ -382,7 +386,8 @@ class _Panneau extends ConsumerWidget {
             loyer: bien.loyerHcCentimes,
             charges: bien.chargesCentimes,
             revision: revision,
-            revisionPossible: bien.typeLocation.revisionDisponible,
+            revisionPossible:
+                bien.typeLocation.revisionDisponible && bien.enLocation,
           ),
           const SizedBox(height: AppSpacing.sectionSerree),
           // Onglets plus larges que l'écran : un fondu à droite montre qu'il
@@ -424,6 +429,68 @@ class _Panneau extends ConsumerWidget {
             _ => OngletArtisans(bien: bien),
           },
         ],
+      ),
+    );
+  }
+}
+
+/// Bien vendu ou retiré : ce qui s'est passé, et le moyen de revenir en
+/// arrière. L'information passe par le texte et l'icône.
+class _BandeauSortie extends ConsumerWidget {
+  const _BandeauSortie({required this.bien});
+  final Bien bien;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.textes;
+    final venduLe = bien.venduLe;
+    final texte = venduLe != null
+        ? 'Vendu le ${Formats.date(venduLe)}. Ce bien reste consultable, '
+              'avec son historique, mais ne se modifie plus.'
+        : 'Plus en location depuis le ${Formats.date(bien.retireLe!)}. Ce '
+              'bien reste consultable mais ne se modifie plus.';
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.ligne,
+          AppSpacing.ligne,
+          AppSpacing.ligne,
+          AppSpacing.xs,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TuileIcone(
+              icone: venduLe != null ? AppIcons.vente : AppIcons.plusLoue,
+            ),
+            const SizedBox(width: AppSpacing.bloc),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(texte, style: t.body),
+                  TextButton(
+                    onPressed: () => venduLe != null
+                        ? annulerVente(context, ref, bien)
+                        : remettreEnLocation(context, ref, bien),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(
+                        AppSizes.zoneTactile,
+                        AppSizes.zoneTactile,
+                      ),
+                    ),
+                    child: Text(
+                      venduLe != null
+                          ? 'Annuler la vente'
+                          : 'Remettre en location',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

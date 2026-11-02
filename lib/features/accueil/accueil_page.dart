@@ -180,7 +180,7 @@ class _Contenu extends ConsumerWidget {
         const SizedBox(height: AppSpacing.sectionLarge),
         const TitreSection('Mes biens'),
         CartesBiens(
-          biens: donnees.biens,
+          biens: donnees.biensAffiches,
           prochaineParBien: donnees.prochaineParBien,
         ),
       ],

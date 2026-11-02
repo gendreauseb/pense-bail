@@ -29,7 +29,7 @@ class OngletEcheances extends ConsumerWidget {
     final aujourdhui = ref.watch(aujourdhuiProvider);
     final toutes =
         ref.watch(echeancesBienFluxProvider(bien.id)).value ?? const [];
-    final aFaire = toutes.where((e) => !e.estFaite).toList();
+    final aFaire = toutes.where((e) => e.estAFaire).toList();
     final verrouille = ref.watch(bienVerrouilleProvider(bien.id));
     final faites = toutes.where((e) => e.estFaite).toList().reversed.toList();
 

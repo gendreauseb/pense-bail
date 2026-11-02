@@ -78,7 +78,15 @@ enum TypeEcheance {
   final String libelle;
 }
 
-enum StatutEcheance { aFaire, faite }
+enum StatutEcheance {
+  aFaire,
+  faite,
+
+  /// Bien vendu ou retiré de la location : échéance masquée et jamais
+  /// notifiée, mais conservée (rétablie si la vente est annulée ou le bien
+  /// remis en location).
+  arretee,
+}
 
 enum TypeDiagnostic {
   dpe('DPE (performance énergétique)'),

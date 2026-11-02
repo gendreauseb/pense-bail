@@ -48,6 +48,7 @@ class Echeance {
   final DateTime modifieLe;
 
   bool get estFaite => statut == StatutEcheance.faite;
+  bool get estAFaire => statut == StatutEcheance.aFaire;
   bool get estReportee => dateInitiale != null;
 
   Echeance copyWith({

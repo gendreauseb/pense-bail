@@ -41,7 +41,10 @@ class CartesBiens extends ConsumerWidget {
                 bien: bien,
                 prochaine: prochaineParBien[bien.id],
                 aujourdhui: aujourdhui,
-                verrouille: ref.watch(bienVerrouilleProvider(bien.id)),
+                mention: MentionLectureSeule.pour(
+                  bien,
+                  verrouille: ref.watch(bienVerrouilleProvider(bien.id)),
+                ),
               ),
             ],
           ],
@@ -56,20 +59,21 @@ class _CarteBien extends StatelessWidget {
     required this.bien,
     required this.prochaine,
     required this.aujourdhui,
-    required this.verrouille,
+    required this.mention,
   });
 
   final Bien bien;
   final Echeance? prochaine;
   final DateTime aujourdhui;
 
-  /// Lecture seule (version gratuite).
-  final bool verrouille;
+  /// « Lecture seule » ou « Plus en location » ; nul si modifiable.
+  final String? mention;
 
   @override
   Widget build(BuildContext context) {
     final t = context.textes;
     final prochaine = this.prochaine;
+    final mention = this.mention;
     void ouvrir() => context.push(Routes.ficheBien(bien.id));
     return SizedBox(
       width: AppSizes.carteBienLargeur,
@@ -80,7 +84,7 @@ class _CarteBien extends StatelessWidget {
             bien.nom,
             bien.typeLogement.libelle,
             Formats.parMois(bien.loyerHcCentimes),
-            if (verrouille) MentionLectureSeule.libelle.toLowerCase(),
+            if (mention != null) mention.toLowerCase(),
             if (prochaine != null)
               '${prochaine.titre} : ${textePastille(prochaine.date, aujourdhui: aujourdhui, dense: false)}',
           ].join(', '),
@@ -115,9 +119,9 @@ class _CarteBien extends StatelessWidget {
                         Formats.parMois(bien.loyerHcCentimes),
                         style: t.secondary,
                       ),
-                      if (verrouille) ...[
+                      if (mention != null) ...[
                         const SizedBox(height: AppSpacing.xxs),
-                        const MentionLectureSeule(),
+                        MentionLectureSeule(libelle: mention),
                       ],
                       if (prochaine != null) ...[
                         const SizedBox(height: AppSpacing.s),

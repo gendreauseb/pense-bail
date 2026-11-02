@@ -226,7 +226,7 @@ void main() {
 
     final jour = RegExp(r'^\d{4}-\d{2}-\d{2}$');
 
-    for (final version in [1, 2, 3, 4, 5]) {
+    for (final version in [1, 2, 3, 4, 5, 6]) {
       test('schéma $version : restaurée à l\'identique', () async {
         await remplir();
         await DriftBailleurRepository(db).enregistrer(

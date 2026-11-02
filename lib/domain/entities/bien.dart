@@ -31,6 +31,11 @@ class Bien {
     this.assuranceCentimes,
     this.chargesNonRecuperablesCentimes,
     this.fraisDiversCentimes,
+    this.venduLe,
+    this.prixVenteCentimes,
+    this.fraisVenteCentimes,
+    this.venduLoue,
+    this.retireLe,
     required this.ordre,
     required this.creeLe,
     required this.modifieLe,
@@ -77,12 +82,34 @@ class Bien {
   final int? chargesNonRecuperablesCentimes;
   final int? fraisDiversCentimes;
 
+  // Sortie de la location : lecture seule, hors limite de la version
+  // gratuite. Une vente l'emporte sur un retrait ; annuler la vente rend le
+  // bien à l'état « retiré » s'il l'était.
+
+  /// Date de la vente.
+  final DateTime? venduLe;
+  final int? prixVenteCentimes;
+  final int? fraisVenteCentimes;
+
+  /// Le logement était-il loué au moment de la vente ?
+  final bool? venduLoue;
+
+  /// Date du retrait de la location (« Je ne le loue plus »).
+  final DateTime? retireLe;
+
   /// Ordre d'affichage dans les listes.
   final int ordre;
   final DateTime creeLe;
   final DateTime modifieLe;
 
   int get totalMensuelCentimes => loyerHcCentimes + chargesCentimes;
+
+  bool get vendu => venduLe != null;
+  bool get retire => !vendu && retireLe != null;
+
+  /// Ni vendu ni retiré : seuls ces biens comptent dans la limite de la
+  /// version gratuite et peuvent être modifiés.
+  bool get enLocation => !vendu && retireLe == null;
 
   /// Sur une ligne : « 12 rue Gambetta, Résidence Les Pins, 75020 Paris ».
   String get adresseComplete => formaterAdresseSurUneLigne(
@@ -123,6 +150,11 @@ class Bien {
     Object? assuranceCentimes = inchange,
     Object? chargesNonRecuperablesCentimes = inchange,
     Object? fraisDiversCentimes = inchange,
+    Object? venduLe = inchange,
+    Object? prixVenteCentimes = inchange,
+    Object? fraisVenteCentimes = inchange,
+    Object? venduLoue = inchange,
+    Object? retireLe = inchange,
     int? ordre,
     DateTime? modifieLe,
   }) => Bien(
@@ -164,6 +196,11 @@ class Bien {
       this.chargesNonRecuperablesCentimes,
     ),
     fraisDiversCentimes: choisir(fraisDiversCentimes, this.fraisDiversCentimes),
+    venduLe: choisir(venduLe, this.venduLe),
+    prixVenteCentimes: choisir(prixVenteCentimes, this.prixVenteCentimes),
+    fraisVenteCentimes: choisir(fraisVenteCentimes, this.fraisVenteCentimes),
+    venduLoue: choisir(venduLoue, this.venduLoue),
+    retireLe: choisir(retireLe, this.retireLe),
     ordre: ordre ?? this.ordre,
     creeLe: creeLe,
     modifieLe: modifieLe ?? DateTime.now(),

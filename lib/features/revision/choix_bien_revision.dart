@@ -40,11 +40,13 @@ class _ChoixBien extends ConsumerWidget {
           const SizedBox(height: AppSpacing.bloc),
           CarteListe(
             enfants: [
-              for (final bien in biens)
+              // Les biens vendus n'y figurent plus ; un bien retiré apparaît
+              // grisé, avec la raison.
+              for (final bien in biens.where((b) => !b.vendu))
                 _LigneBien(
                   bien: bien,
                   opaciteIndisponible: AppOpacites.indisponible,
-                  onTap: bien.typeLocation.revisionDisponible
+                  onTap: bien.typeLocation.revisionDisponible && bien.enLocation
                       ? () {
                           final routeur = GoRouter.of(context);
                           Navigator.of(context).pop();
@@ -106,7 +108,9 @@ class _LigneBien extends StatelessWidget {
                         disponible
                             ? '${bien.typeLocation.libelle}, '
                                   '${Formats.parMois(bien.loyerHcCentimes)}'
-                            : BlocageRevision.pasLongueDuree.message,
+                            : bien.enLocation
+                            ? BlocageRevision.pasLongueDuree.message
+                            : BlocageRevision.horsLocation.message,
                         style: t.secondary,
                       ),
                     ],

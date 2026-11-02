@@ -7,6 +7,10 @@ import 'calculateur_bail.dart';
 
 /// Raisons pour lesquelles la révision de loyer n'est pas possible.
 enum BlocageRevision {
+  horsLocation(
+    'Ce bien est vendu ou n\'est plus en location : son loyer ne se révise '
+    'plus.',
+  ),
   pasLongueDuree(
     'Révision disponible uniquement pour les locations longue durée.',
   ),
@@ -116,6 +120,7 @@ abstract final class CalculateurRevision {
 
   /// Liste vide : la révision est possible.
   static List<BlocageRevision> blocages(Bien bien, Bail? bail) => [
+    if (!bien.enLocation) BlocageRevision.horsLocation,
     if (!bien.typeLocation.revisionDisponible) BlocageRevision.pasLongueDuree,
     if (bail == null) BlocageRevision.pasDeBail,
     if (bail != null && !bail.regle.revisionIrlAutorisee)

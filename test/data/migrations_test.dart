@@ -16,7 +16,7 @@ import 'migrations/schemas/schema.dart';
 void main() {
   setUpAll(() => driftRuntimeOptions.dontWarnAboutMultipleDatabases = true);
   final verifier = SchemaVerifier(GeneratedHelper());
-  const anciennes = [1, 2, 3, 4, 5];
+  const anciennes = [1, 2, 3, 4, 5, 6];
 
   test('le schéma actuel a sa référence dans drift_schemas/', () async {
     final db = AppDatabase(NativeDatabase.memory());

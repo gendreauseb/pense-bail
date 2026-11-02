@@ -28,6 +28,7 @@ abstract final class Routes {
   static String investissement(String bienId) =>
       '${ficheBien(bienId)}/investissement';
   static String mouvement(String bienId) => '${ficheBien(bienId)}/mouvement';
+  static String vente(String bienId) => '${ficheBien(bienId)}/vente';
   static String intervention(String bienId) =>
       '${ficheBien(bienId)}/intervention';
   static String recapitulatif(String bienId, int annee) =>

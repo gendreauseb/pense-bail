@@ -4,6 +4,7 @@ import '../entities/entities.dart';
 import '../repositories/repositories.dart';
 import '../services/acces_biens.dart';
 import '../services/generateur_echeances.dart';
+import '../services/sortie_bien.dart';
 import 'verrou_biens.dart';
 
 /// Création, modification et suppression d'un bien et de son bail. Les
@@ -131,6 +132,68 @@ class GestionBiens {
     await _verrou.verifierModifiable(bienId);
     await baux.supprimerLocataire(locataireId);
   });
+
+  /// Déclare la vente du bien : il passe en lecture seule dans toutes les
+  /// versions et ne compte plus dans la limite de la version gratuite. Les
+  /// échéances concernées sont arrêtées (voir SortieBien) ; rien n'est
+  /// effacé. Toujours permis, comme la suppression.
+  Future<void> declarerVente({
+    required String bienId,
+    required DateTime date,
+    int? prixCentimes,
+    int? fraisCentimes,
+    required bool loue,
+  }) => _changerEtat(
+    bienId,
+    (b) => b.copyWith(
+      venduLe: date,
+      prixVenteCentimes: prixCentimes,
+      fraisVenteCentimes: fraisCentimes,
+      venduLoue: loue,
+    ),
+  );
+
+  /// Annule la vente : le bien redevient tel qu'il était (en location, ou
+  /// retiré s'il l'était) et ses échéances arrêtées sont rétablies.
+  Future<void> annulerVente(String bienId) => _changerEtat(
+    bienId,
+    (b) => b.copyWith(
+      venduLe: null,
+      prixVenteCentimes: null,
+      fraisVenteCentimes: null,
+      venduLoue: null,
+    ),
+  );
+
+  /// « Je ne le loue plus » : lecture seule, hors limite de la version
+  /// gratuite ; seules les échéances du bail sont arrêtées.
+  Future<void> retirerDeLaLocation({
+    required String bienId,
+    required DateTime date,
+  }) => _changerEtat(bienId, (b) => b.copyWith(retireLe: date));
+
+  /// Remet en location un bien retiré : ses échéances arrêtées sont
+  /// rétablies. En version gratuite, il peut redevenir le bien actif à la
+  /// place d'un autre (voir AccesBiens.perdraientAcces).
+  Future<void> remettreEnLocation(String bienId) =>
+      _changerEtat(bienId, (b) => b.copyWith(retireLe: null));
+
+  /// Change l'état du bien puis met le statut de chaque échéance non faite
+  /// en accord : arrêtée ou à faire.
+  Future<void> _changerEtat(String bienId, Bien Function(Bien) changer) =>
+      transactions.executer(() async {
+        final bien = await biens.parId(bienId);
+        if (bien == null) return;
+        final modifie = changer(bien);
+        await biens.enregistrer(modifie);
+        for (final e in await echeances.parBien(bienId)) {
+          if (e.estFaite) continue;
+          final statut = SortieBien.statut(e, modifie);
+          if (statut != e.statut) {
+            await echeances.enregistrer(e.copyWith(statut: statut));
+          }
+        }
+      });
 
   /// Supprime le bien et tout ce qui s'y rattache (suppression en cascade).
   /// Toujours permis, même pour un bien en lecture seule : c'est

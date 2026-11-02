@@ -32,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
   static const nomFichier = 'bailleur';
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -58,6 +58,14 @@ class AppDatabase extends _$AppDatabase {
       if (de < 5) await normaliserJours();
       // Version 6 : le bail prévoit-il la révision du loyer ?
       if (de < 6) await m.addColumn(baux, baux.clauseRevision);
+      // Version 7 : bien vendu ou retiré de la location.
+      if (de < 7) {
+        await m.addColumn(biens, biens.venduLe);
+        await m.addColumn(biens, biens.prixVenteCentimes);
+        await m.addColumn(biens, biens.fraisVenteCentimes);
+        await m.addColumn(biens, biens.venduLoue);
+        await m.addColumn(biens, biens.retireLe);
+      }
     },
     beforeOpen: (details) async {
       // Indispensable pour les suppressions en cascade.
@@ -71,11 +79,21 @@ class AppDatabase extends _$AppDatabase {
   /// jour du schéma et à la restauration d'une ancienne sauvegarde.
   Future<void> normaliserJours() async {
     for (final table in allTables) {
+      // Pendant une mise à jour, les colonnes ajoutées par un schéma plus
+      // récent n'existent pas encore (et n'ont pas d'ancien format).
+      final existantes = {
+        for (final ligne in await customSelect(
+          'SELECT name FROM pragma_table_info(?)',
+          variables: [Variable.withString(table.actualTableName)],
+        ).get())
+          ligne.read<String>('name'),
+      };
       for (final colonne in table.$columns) {
         // Seules les dates calendaires sont des DateTime convertis
         // (ConvertisseurJour) ; creeLe et modifieLe restent des instants.
         if (colonne is! GeneratedColumnWithTypeConverter ||
-            colonne.converter is! TypeConverter<DateTime?, String?>) {
+            colonne.converter is! TypeConverter<DateTime?, String?> ||
+            !existantes.contains(colonne.name)) {
           continue;
         }
         final nom = '"${colonne.name}"';

@@ -14,11 +14,18 @@ class VerrouBiens {
   /// Droits actuels.
   final Future<Droits> Function() droits;
 
-  /// Lève [BienVerrouille] si le bien est en lecture seule. Une échéance
-  /// commune à tous les biens ([bienId] nul) est toujours modifiable.
+  /// Lève [BienHorsLocation] si le bien est vendu ou n'est plus loué,
+  /// [BienVerrouille] s'il est en lecture seule dans la version gratuite.
+  /// Une échéance commune à tous les biens ([bienId] nul) est toujours
+  /// modifiable.
   Future<void> verifierModifiable(String? bienId) async {
     if (bienId == null) return;
-    final actifs = AccesBiens.actifs(await biens.tous(), await droits());
+    final tous = await biens.tous();
+    final bien = tous.where((b) => b.id == bienId).firstOrNull;
+    if (bien != null && !bien.enLocation) {
+      throw BienHorsLocation(vendu: bien.vendu);
+    }
+    final actifs = AccesBiens.actifs(tous, await droits());
     if (!actifs.contains(bienId)) throw const BienVerrouille();
   }
 

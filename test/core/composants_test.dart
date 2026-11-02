@@ -1,5 +1,6 @@
 import 'package:pense_bail/app/design/design.dart';
 import 'package:pense_bail/core/widgets/composants.dart';
+import 'package:pense_bail/core/widgets/formulaires.dart';
 import 'package:pense_bail/core/widgets/listes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -154,5 +155,37 @@ void main() {
     expect(coin('Charges').dx, coin('Loyer hors charges').dx);
     expect(coin('Charges').dy, greaterThan(coin('Loyer hors charges').dy));
     expect(coin('Prochaine révision').dy, greaterThan(coin('Charges').dy));
+  });
+
+  testWidgets('champ date : date choisie après une validation', (tester) async {
+    final cle = GlobalKey<FormState>();
+    DateTime? date;
+    await tester.pumpWidget(
+      page(
+        Form(
+          key: cle,
+          child: StatefulBuilder(
+            builder: (context, setState) => ChampDate(
+              libelle: 'Date',
+              date: date,
+              premiere: DateTime(2000),
+              derniere: DateTime(2026, 9, 25),
+              onChanged: (d) => setState(() => date = d),
+            ),
+          ),
+        ),
+      ),
+    );
+    // Formulaire validé une première fois : le champ affiche son erreur.
+    cle.currentState!.validate();
+    await tester.pump();
+    expect(find.text('Choisissez une date.'), findsOneWidget);
+
+    await tester.tap(find.byType(TextFormField));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Choisir cette date'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('25/09/2026'), findsOneWidget);
   });
 }

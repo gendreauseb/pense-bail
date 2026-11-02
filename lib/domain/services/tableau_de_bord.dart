@@ -30,11 +30,16 @@ class Invitation {
 
 /// Logique du tableau de bord (fonctions pures).
 abstract final class TableauDeBord {
-  static Synthese synthese(List<Bien> biens) => Synthese(
-    nombreBiens: biens.length,
-    loyersCentimes: biens.fold(0, (s, b) => s + b.loyerHcCentimes),
-    chargesCentimes: biens.fold(0, (s, b) => s + b.chargesCentimes),
-  );
+  /// Biens en location seulement : un bien vendu ou retiré ne rapporte
+  /// plus de loyer.
+  static Synthese synthese(List<Bien> biens) {
+    final loues = biens.where((b) => b.enLocation);
+    return Synthese(
+      nombreBiens: loues.length,
+      loyersCentimes: loues.fold(0, (s, b) => s + b.loyerHcCentimes),
+      chargesCentimes: loues.fold(0, (s, b) => s + b.chargesCentimes),
+    );
+  }
 
   static List<Invitation> invitations(List<Bien> biens, List<Bail> baux) {
     final bailParBien = {for (final b in baux) b.bienId: b};

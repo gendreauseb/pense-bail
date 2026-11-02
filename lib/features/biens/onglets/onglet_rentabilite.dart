@@ -13,6 +13,7 @@ import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
 import '../../../domain/services/rentabilite.dart';
 import '../../premium/premium_page.dart';
+import '../rentabilite/bilan_vente.dart';
 
 class OngletRentabilite extends ConsumerStatefulWidget {
   const OngletRentabilite({super.key, required this.bien});
@@ -44,9 +45,20 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
       fonctionnaliteDisponibleProvider(Fonctionnalite.rentabilite),
     );
     if (disponible) {
-      return _contenu(
+      final modifiable = !ref.watch(bienVerrouilleProvider(bien.id));
+      final contenu = _contenu(
         context,
-        modifiable: !ref.watch(bienVerrouilleProvider(bien.id)),
+        modifiable: modifiable,
+        exportable: modifiable || bien.vendu,
+      );
+      if (!bien.vendu) return contenu;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BilanVenteCarte(bien: bien),
+          const SizedBox(height: AppSpacing.sectionLarge),
+          contenu,
+        ],
       );
     }
 
@@ -58,7 +70,10 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
         (ref.watch(encaissementsBienFluxProvider(bien.id)).value ?? const [])
             .any((e) => e.recu);
     final bandeau = BandeauVerrou(
-      texte: aDesDonnees
+      texte: bien.vendu
+          ? 'Le bilan de la vente (plus-value, loyers encaissés, dépenses) '
+                'est inclus dans Pense-Bail Premium.'
+          : aDesDonnees
           ? 'Le suivi de la rentabilité est inclus dans Pense-Bail '
                 'Premium. Ce que vous avez déjà saisi reste consultable.'
           : 'Rendement, journal des dépenses, loyers reçus et '
@@ -78,7 +93,15 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
   }
 
   /// [modifiable] faux : lecture seule (ni saisie, ni cases, ni export).
-  Widget _contenu(BuildContext context, {required bool modifiable}) {
+  ///
+  /// [exportable] : récapitulatif PDF proposé (aussi pour un bien vendu,
+  /// utile pour la déclaration de l'année de la vente).
+  Widget _contenu(
+    BuildContext context, {
+    required bool modifiable,
+    bool? exportable,
+  }) {
+    final exporter = exportable ?? modifiable;
     final bien = widget.bien;
     final t = context.textes;
     final aujourdhui = ref.watch(aujourdhuiProvider);
@@ -112,7 +135,10 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (modifiable)
+        // Bien vendu : le bilan de la vente remplace ces projections.
+        if (bien.vendu)
+          const SizedBox.shrink()
+        else if (modifiable)
           EnTeteSection(
             titre: 'Ce que le bien rapporte',
             action: 'Compléter',
@@ -120,8 +146,10 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
           )
         else
           const EnTeteSection(titre: 'Ce que le bien rapporte'),
-        _Indicateurs(indicateurs: indicateurs, modifiable: modifiable),
-        const SizedBox(height: AppSpacing.sectionLarge),
+        if (!bien.vendu) ...[
+          _Indicateurs(indicateurs: indicateurs, modifiable: modifiable),
+          const SizedBox(height: AppSpacing.sectionLarge),
+        ],
         _SelecteurAnnee(
           annee: _annee,
           max: aujourdhui.year,
@@ -175,7 +203,7 @@ class _OngletRentabiliteState extends ConsumerState<OngletRentabilite> {
           'Loyers des mois cochés, au montant en vigueur chaque mois.',
           style: t.caption,
         ),
-        if (modifiable) ...[
+        if (exporter) ...[
           const SizedBox(height: AppSpacing.bloc),
           OutlinedButton.icon(
             onPressed: () =>

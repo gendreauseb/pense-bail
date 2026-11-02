@@ -21,7 +21,9 @@ class TextesFinAbonnement {
   TextesFinAbonnement(List<Bien> biens) {
     final actifs = AccesBiens.actifs(biens, Droits.gratuit);
     bienActif = biens.where((b) => actifs.contains(b.id)).firstOrNull?.nom;
-    autres = biens.length - actifs.length;
+    // Les biens vendus ou retirés ne passent pas « en lecture seule » du
+    // fait de l'abonnement : ils l'étaient déjà.
+    autres = biens.where((b) => b.enLocation).length - actifs.length;
   }
 
   late final String? bienActif;

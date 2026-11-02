@@ -2,6 +2,7 @@ import '../../core/utils/dates.dart';
 import '../../core/utils/identifiants.dart';
 import '../entities/entities.dart';
 import '../repositories/repositories.dart';
+import '../services/sortie_bien.dart';
 import 'verrou_biens.dart';
 
 /// Actions sur une échéance : marquer comme faite, reporter, enregistrer.
@@ -64,13 +65,19 @@ class GestionEcheances {
           modifieLe: t,
         ),
       );
-      if (suivante != null) {
-        await echeances.enregistrer(suivante);
-        await echeances.definirRappels(suivante.id, [
-          for (final r in rappels) r.joursAvant,
-        ]);
-      }
-      return suivante;
+      if (suivante == null) return null;
+      // Bien vendu ou retiré : l'occurrence suivante peut être arrêtée
+      // (taxe foncière de l'année d'après une vente, par exemple).
+      final bienId = suivante.bienId;
+      final bien = bienId == null ? null : await verrou.biens.parId(bienId);
+      final creee = bien == null
+          ? suivante
+          : suivante.copyWith(statut: SortieBien.statut(suivante, bien));
+      await echeances.enregistrer(creee);
+      await echeances.definirRappels(creee.id, [
+        for (final r in rappels) r.joursAvant,
+      ]);
+      return creee;
     });
   }
 

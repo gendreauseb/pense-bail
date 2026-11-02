@@ -54,7 +54,97 @@ class BilanAnnuel {
   int get resultat => loyersPercus + autresRecettes - depenses;
 }
 
+/// Bilan d'un bien vendu, de l'achat à la vente, hors impôt sur la
+/// plus-value et hors crédit. Jamais les charges estimées de la fiche :
+/// seulement ce qui a été saisi (cases « Loyer reçu », journal).
+class BilanVente {
+  const BilanVente({
+    required this.prixVente,
+    required this.fraisVente,
+    required this.coutAchat,
+    required this.travauxInitiaux,
+    required this.loyersEncaisses,
+    required this.autresRecettes,
+    required this.travauxJournal,
+    required this.autresDepenses,
+  });
+
+  final int prixVente;
+  final int fraisVente;
+
+  /// Prix d'achat et frais de notaire.
+  final int coutAchat;
+
+  /// Travaux avant la première location (fiche du bien).
+  final int travauxInitiaux;
+
+  /// Mois cochés « reçu », au loyer en vigueur chaque mois.
+  final int loyersEncaisses;
+  final int autresRecettes;
+
+  /// Travaux du journal, depuis l'ajout du bien.
+  final int travauxJournal;
+
+  /// Autres dépenses du journal, hors crédit.
+  final int autresDepenses;
+
+  /// Prix de vente − frais de vente − (achat + notaire + travaux initiaux).
+  int get plusValueBrute =>
+      prixVente - fraisVente - coutAchat - travauxInitiaux;
+
+  int get resultat =>
+      plusValueBrute +
+      loyersEncaisses +
+      autresRecettes -
+      travauxJournal -
+      autresDepenses;
+}
+
 abstract final class Rentabilite {
+  /// Bilan de la vente de [bien]. `null` si le prix de vente ou le prix
+  /// d'achat n'est pas renseigné.
+  static BilanVente? bilanVente({
+    required Bien bien,
+    required List<EncaissementLoyer> encaissements,
+    required List<MouvementFinancier> mouvements,
+    List<RevisionLoyer> revisions = const [],
+  }) {
+    final prixVente = bien.prixVenteCentimes;
+    final prixAchat = bien.prixAchatCentimes;
+    if (prixVente == null || prixAchat == null) return null;
+    var autresRecettes = 0;
+    var travaux = 0;
+    var autresDepenses = 0;
+    for (final m in mouvements) {
+      if (m.sens == SensMouvement.recette) {
+        autresRecettes += m.montantCentimes;
+      } else if (m.categorie == CategorieMouvement.travaux) {
+        travaux += m.montantCentimes;
+      } else if (m.categorie != CategorieMouvement.credit) {
+        autresDepenses += m.montantCentimes;
+      }
+    }
+    return BilanVente(
+      prixVente: prixVente,
+      fraisVente: bien.fraisVenteCentimes ?? 0,
+      coutAchat: prixAchat + (bien.fraisNotaireCentimes ?? 0),
+      travauxInitiaux: bien.travauxInitiauxCentimes ?? 0,
+      loyersEncaisses: [
+        for (final e in encaissements)
+          if (e.recu)
+            loyerDuMois(
+              bien: bien,
+              revisions: revisions,
+              annee: e.annee,
+              mois: e.mois,
+            ),
+      ].fold(0, (total, loyer) => total + loyer),
+      autresRecettes: autresRecettes,
+      travauxJournal: travaux,
+      autresDepenses: autresDepenses,
+    );
+  }
+
   static IndicateursRentabilite indicateurs(Bien b) {
     final loyersAnnuels = b.loyerHcCentimes * 12;
     final charges =

@@ -6,10 +6,10 @@ import '../../../app/design/design.dart';
 import '../../../app/routes.dart';
 import '../../../core/format/formats.dart';
 import '../../../core/widgets/composants.dart';
-import '../../../core/widgets/formulaires.dart';
 import '../../../core/widgets/listes.dart';
 import '../../../data/providers.dart';
 import '../../../domain/entities/entities.dart';
+import '../sortie/sortie_bien.dart';
 
 class OngletInfos extends ConsumerWidget {
   const OngletInfos({super.key, required this.bien});
@@ -76,7 +76,7 @@ class OngletInfos extends ConsumerWidget {
         const SizedBox(height: AppSpacing.sectionLarge),
         Center(
           child: TextButton.icon(
-            onPressed: () => _supprimer(context, ref),
+            onPressed: () => ouvrirSortieBien(context, ref, bien),
             style: TextButton.styleFrom(
               foregroundColor: context.couleurs.erreur,
             ),
@@ -85,26 +85,6 @@ class OngletInfos extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Future<void> _supprimer(BuildContext context, WidgetRef ref) async {
-    final ok = await confirmerSuppression(
-      context,
-      titre: 'Supprimer « ${bien.nom} » ?',
-      message:
-          'Le bail, les locataires, les échéances, le journal et les '
-          'interventions de ce bien seront supprimés définitivement.',
-    );
-    if (!ok || !context.mounted) return;
-    final navigateur = Navigator.of(context);
-    final messager = ScaffoldMessenger.of(context);
-    final photo = bien.photoChemin;
-    navigateur.pop();
-    await ref.read(gestionBiensProvider).supprimer(bien.id);
-    if (photo != null) await ref.read(photoServiceProvider).supprimer(photo);
-    messager.showSnackBar(
-      SnackBar(content: Text('« ${bien.nom} » a été supprimé.')),
     );
   }
 }

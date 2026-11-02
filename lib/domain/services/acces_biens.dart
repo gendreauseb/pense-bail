@@ -7,19 +7,44 @@ import '../entities/entities.dart';
 /// ont la même date de création). Jamais l'ordre d'affichage seul, qui est
 /// modifiable. Les autres biens restent consultables, en lecture seule ;
 /// aucune donnée n'est supprimée ni modifiée par un changement de droits.
+///
+/// Un bien vendu ou retiré de la location n'est jamais actif, quels que
+/// soient les droits, et ne compte pas dans la limite.
 abstract final class AccesBiens {
   /// Identifiants des biens actifs.
   static Set<String> actifs(List<Bien> biens, Droits droits) {
+    final enLocation = [
+      for (final b in biens)
+        if (b.enLocation) b,
+    ];
     final max = droits.maxBiensActifs;
-    if (max == null) return {for (final b in biens) b.id};
-    final tries = [...biens]..sort(_parAnciennete);
+    if (max == null) return {for (final b in enLocation) b.id};
+    final tries = enLocation..sort(_parAnciennete);
     return {for (final b in tries.take(max)) b.id};
   }
 
   /// Un nouveau bien peut-il être ajouté ?
   static bool peutAjouter(List<Bien> biens, Droits droits) {
     final max = droits.maxBiensActifs;
-    return max == null || biens.length < max;
+    return max == null || biens.where((b) => b.enLocation).length < max;
+  }
+
+  /// Biens actifs aujourd'hui qui passeraient en lecture seule si [bien]
+  /// était remis en location (version gratuite : il est plus ancien).
+  static List<Bien> perdraientAcces(
+    List<Bien> biens,
+    Bien bien,
+    Droits droits,
+  ) {
+    final avant = actifs(biens, droits);
+    final remis = bien.copyWith(venduLe: null, retireLe: null);
+    final apres = actifs([
+      for (final b in biens) b.id == bien.id ? remis : b,
+    ], droits);
+    return [
+      for (final b in biens)
+        if (avant.contains(b.id) && !apres.contains(b.id)) b,
+    ];
   }
 
   static int _parAnciennete(Bien a, Bien b) {
@@ -65,6 +90,21 @@ class BienVerrouille extends AccesRefuse {
   String get message =>
       'Ce bien est en lecture seule dans la version gratuite. '
       'Pense-Bail Premium permet de le modifier.';
+}
+
+/// Modification refusée : le bien est vendu ou n'est plus loué (dans toutes
+/// les versions).
+class BienHorsLocation extends AccesRefuse {
+  const BienHorsLocation({required this.vendu});
+
+  final bool vendu;
+
+  @override
+  String get message => vendu
+      ? 'Ce bien est vendu : il reste consultable mais ne se modifie plus. '
+            'Annulez la vente pour le modifier.'
+      : "Ce bien n'est plus en location : il reste consultable mais ne se "
+            'modifie plus. Remettez-le en location pour le modifier.';
 }
 
 /// Action refusée : la fonctionnalité est réservée à Pense-Bail Premium.

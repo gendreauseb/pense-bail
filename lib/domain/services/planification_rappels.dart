@@ -41,7 +41,7 @@ abstract final class PlanificationRappels {
     for (final rappel in rappels) {
       final echeance = parId[rappel.echeanceId];
       if (echeance == null ||
-          echeance.estFaite ||
+          !echeance.estAFaire ||
           typesSansRappel.contains(echeance.type)) {
         continue;
       }

@@ -6,6 +6,7 @@ import '../../app/design/design.dart';
 import '../../app/routes.dart';
 import '../../core/widgets/composants.dart';
 import '../../core/widgets/listes.dart';
+import '../../core/widgets/verrou.dart';
 import '../../data/providers.dart';
 import '../../domain/entities/entities.dart';
 import '../echeances/textes_echeances.dart';
@@ -112,9 +113,15 @@ class ReglagesPage extends ConsumerWidget {
                       LigneNavigation(
                         icone: AppIcons.typeLogement(bien.typeLogement),
                         titre: bien.nom,
-                        sousTitre: ref.watch(bienVerrouilleProvider(bien.id))
-                            ? '${bien.typeLocation.libelle}, lecture seule'
-                            : bien.typeLocation.libelle,
+                        sousTitre: [
+                          bien.typeLocation.libelle,
+                          ?MentionLectureSeule.pour(
+                            bien,
+                            verrouille: ref.watch(
+                              bienVerrouilleProvider(bien.id),
+                            ),
+                          )?.toLowerCase(),
+                        ].join(', '),
                         onTap: () => context.push(Routes.ficheBien(bien.id)),
                       ),
                   ],

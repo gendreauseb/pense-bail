@@ -21,6 +21,7 @@ import '../features/reglages/mentions_legales_page.dart';
 import '../features/reglages/rappels_page.dart';
 import '../features/reglages/reglages_page.dart';
 import '../features/biens/rentabilite/recapitulatif_page.dart';
+import '../features/biens/sortie/sortie_bien.dart';
 import '../features/revision/courrier/courrier_revision_page.dart';
 import '../features/revision/revision_page.dart';
 import 'etat_app.dart';
@@ -128,6 +129,11 @@ final routeurProvider = Provider<GoRouter>((ref) {
               bienId: state.pathParameters['id']!,
               mouvementId: state.uri.queryParameters['mouvement'],
             ),
+          ),
+          GoRoute(
+            path: 'vente',
+            builder: (context, state) =>
+                DeclarationVentePage(bienId: state.pathParameters['id']!),
           ),
           GoRoute(
             path: 'recapitulatif/:annee',

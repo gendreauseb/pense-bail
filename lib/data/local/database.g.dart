@@ -730,6 +730,59 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  @override
+  late final GeneratedColumnWithTypeConverter<DateTime?, String> venduLe =
+      GeneratedColumn<String>(
+        'vendu_le',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($BiensTable.$convertervenduLen);
+  static const VerificationMeta _prixVenteCentimesMeta = const VerificationMeta(
+    'prixVenteCentimes',
+  );
+  @override
+  late final GeneratedColumn<int> prixVenteCentimes = GeneratedColumn<int>(
+    'prix_vente_centimes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fraisVenteCentimesMeta =
+      const VerificationMeta('fraisVenteCentimes');
+  @override
+  late final GeneratedColumn<int> fraisVenteCentimes = GeneratedColumn<int>(
+    'frais_vente_centimes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _venduLoueMeta = const VerificationMeta(
+    'venduLoue',
+  );
+  @override
+  late final GeneratedColumn<bool> venduLoue = GeneratedColumn<bool>(
+    'vendu_loue',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("vendu_loue" IN (0, 1))',
+    ),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<DateTime?, String> retireLe =
+      GeneratedColumn<String>(
+        'retire_le',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<DateTime?>($BiensTable.$converterretireLen);
   static const VerificationMeta _ordreMeta = const VerificationMeta('ordre');
   @override
   late final GeneratedColumn<int> ordre = GeneratedColumn<int>(
@@ -784,6 +837,11 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
     assuranceCentimes,
     chargesNonRecuperablesCentimes,
     fraisDiversCentimes,
+    venduLe,
+    prixVenteCentimes,
+    fraisVenteCentimes,
+    venduLoue,
+    retireLe,
     ordre,
     creeLe,
     modifieLe,
@@ -961,6 +1019,30 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
         ),
       );
     }
+    if (data.containsKey('prix_vente_centimes')) {
+      context.handle(
+        _prixVenteCentimesMeta,
+        prixVenteCentimes.isAcceptableOrUnknown(
+          data['prix_vente_centimes']!,
+          _prixVenteCentimesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('frais_vente_centimes')) {
+      context.handle(
+        _fraisVenteCentimesMeta,
+        fraisVenteCentimes.isAcceptableOrUnknown(
+          data['frais_vente_centimes']!,
+          _fraisVenteCentimesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('vendu_loue')) {
+      context.handle(
+        _venduLoueMeta,
+        venduLoue.isAcceptableOrUnknown(data['vendu_loue']!, _venduLoueMeta),
+      );
+    }
     if (data.containsKey('ordre')) {
       context.handle(
         _ordreMeta,
@@ -1094,6 +1176,30 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
         DriftSqlType.int,
         data['${effectivePrefix}frais_divers_centimes'],
       ),
+      venduLe: $BiensTable.$convertervenduLen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}vendu_le'],
+        ),
+      ),
+      prixVenteCentimes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}prix_vente_centimes'],
+      ),
+      fraisVenteCentimes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}frais_vente_centimes'],
+      ),
+      venduLoue: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}vendu_loue'],
+      ),
+      retireLe: $BiensTable.$converterretireLen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}retire_le'],
+        ),
+      ),
       ordre: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}ordre'],
@@ -1130,6 +1236,14 @@ class $BiensTable extends Biens with TableInfo<$BiensTable, Bien> {
       const ConvertisseurJour();
   static TypeConverter<DateTime?, String?> $converterdateDpen =
       NullAwareTypeConverter.wrap($converterdateDpe);
+  static TypeConverter<DateTime, String> $convertervenduLe =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $convertervenduLen =
+      NullAwareTypeConverter.wrap($convertervenduLe);
+  static TypeConverter<DateTime, String> $converterretireLe =
+      const ConvertisseurJour();
+  static TypeConverter<DateTime?, String?> $converterretireLen =
+      NullAwareTypeConverter.wrap($converterretireLe);
 }
 
 class BiensCompanion extends UpdateCompanion<Bien> {
@@ -1156,6 +1270,11 @@ class BiensCompanion extends UpdateCompanion<Bien> {
   final Value<int?> assuranceCentimes;
   final Value<int?> chargesNonRecuperablesCentimes;
   final Value<int?> fraisDiversCentimes;
+  final Value<DateTime?> venduLe;
+  final Value<int?> prixVenteCentimes;
+  final Value<int?> fraisVenteCentimes;
+  final Value<bool?> venduLoue;
+  final Value<DateTime?> retireLe;
   final Value<int> ordre;
   final Value<DateTime> creeLe;
   final Value<DateTime> modifieLe;
@@ -1184,6 +1303,11 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     this.assuranceCentimes = const Value.absent(),
     this.chargesNonRecuperablesCentimes = const Value.absent(),
     this.fraisDiversCentimes = const Value.absent(),
+    this.venduLe = const Value.absent(),
+    this.prixVenteCentimes = const Value.absent(),
+    this.fraisVenteCentimes = const Value.absent(),
+    this.venduLoue = const Value.absent(),
+    this.retireLe = const Value.absent(),
     this.ordre = const Value.absent(),
     this.creeLe = const Value.absent(),
     this.modifieLe = const Value.absent(),
@@ -1213,6 +1337,11 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     this.assuranceCentimes = const Value.absent(),
     this.chargesNonRecuperablesCentimes = const Value.absent(),
     this.fraisDiversCentimes = const Value.absent(),
+    this.venduLe = const Value.absent(),
+    this.prixVenteCentimes = const Value.absent(),
+    this.fraisVenteCentimes = const Value.absent(),
+    this.venduLoue = const Value.absent(),
+    this.retireLe = const Value.absent(),
     required int ordre,
     required DateTime creeLe,
     required DateTime modifieLe,
@@ -1253,6 +1382,11 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     Expression<int>? assuranceCentimes,
     Expression<int>? chargesNonRecuperablesCentimes,
     Expression<int>? fraisDiversCentimes,
+    Expression<String>? venduLe,
+    Expression<int>? prixVenteCentimes,
+    Expression<int>? fraisVenteCentimes,
+    Expression<bool>? venduLoue,
+    Expression<String>? retireLe,
     Expression<int>? ordre,
     Expression<DateTime>? creeLe,
     Expression<DateTime>? modifieLe,
@@ -1288,6 +1422,12 @@ class BiensCompanion extends UpdateCompanion<Bien> {
         'charges_non_recuperables_centimes': chargesNonRecuperablesCentimes,
       if (fraisDiversCentimes != null)
         'frais_divers_centimes': fraisDiversCentimes,
+      if (venduLe != null) 'vendu_le': venduLe,
+      if (prixVenteCentimes != null) 'prix_vente_centimes': prixVenteCentimes,
+      if (fraisVenteCentimes != null)
+        'frais_vente_centimes': fraisVenteCentimes,
+      if (venduLoue != null) 'vendu_loue': venduLoue,
+      if (retireLe != null) 'retire_le': retireLe,
       if (ordre != null) 'ordre': ordre,
       if (creeLe != null) 'cree_le': creeLe,
       if (modifieLe != null) 'modifie_le': modifieLe,
@@ -1319,6 +1459,11 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     Value<int?>? assuranceCentimes,
     Value<int?>? chargesNonRecuperablesCentimes,
     Value<int?>? fraisDiversCentimes,
+    Value<DateTime?>? venduLe,
+    Value<int?>? prixVenteCentimes,
+    Value<int?>? fraisVenteCentimes,
+    Value<bool?>? venduLoue,
+    Value<DateTime?>? retireLe,
     Value<int>? ordre,
     Value<DateTime>? creeLe,
     Value<DateTime>? modifieLe,
@@ -1351,6 +1496,11 @@ class BiensCompanion extends UpdateCompanion<Bien> {
       chargesNonRecuperablesCentimes:
           chargesNonRecuperablesCentimes ?? this.chargesNonRecuperablesCentimes,
       fraisDiversCentimes: fraisDiversCentimes ?? this.fraisDiversCentimes,
+      venduLe: venduLe ?? this.venduLe,
+      prixVenteCentimes: prixVenteCentimes ?? this.prixVenteCentimes,
+      fraisVenteCentimes: fraisVenteCentimes ?? this.fraisVenteCentimes,
+      venduLoue: venduLoue ?? this.venduLoue,
+      retireLe: retireLe ?? this.retireLe,
       ordre: ordre ?? this.ordre,
       creeLe: creeLe ?? this.creeLe,
       modifieLe: modifieLe ?? this.modifieLe,
@@ -1444,6 +1594,25 @@ class BiensCompanion extends UpdateCompanion<Bien> {
     if (fraisDiversCentimes.present) {
       map['frais_divers_centimes'] = Variable<int>(fraisDiversCentimes.value);
     }
+    if (venduLe.present) {
+      map['vendu_le'] = Variable<String>(
+        $BiensTable.$convertervenduLen.toSql(venduLe.value),
+      );
+    }
+    if (prixVenteCentimes.present) {
+      map['prix_vente_centimes'] = Variable<int>(prixVenteCentimes.value);
+    }
+    if (fraisVenteCentimes.present) {
+      map['frais_vente_centimes'] = Variable<int>(fraisVenteCentimes.value);
+    }
+    if (venduLoue.present) {
+      map['vendu_loue'] = Variable<bool>(venduLoue.value);
+    }
+    if (retireLe.present) {
+      map['retire_le'] = Variable<String>(
+        $BiensTable.$converterretireLen.toSql(retireLe.value),
+      );
+    }
     if (ordre.present) {
       map['ordre'] = Variable<int>(ordre.value);
     }
@@ -1487,6 +1656,11 @@ class BiensCompanion extends UpdateCompanion<Bien> {
             'chargesNonRecuperablesCentimes: $chargesNonRecuperablesCentimes, ',
           )
           ..write('fraisDiversCentimes: $fraisDiversCentimes, ')
+          ..write('venduLe: $venduLe, ')
+          ..write('prixVenteCentimes: $prixVenteCentimes, ')
+          ..write('fraisVenteCentimes: $fraisVenteCentimes, ')
+          ..write('venduLoue: $venduLoue, ')
+          ..write('retireLe: $retireLe, ')
           ..write('ordre: $ordre, ')
           ..write('creeLe: $creeLe, ')
           ..write('modifieLe: $modifieLe, ')
@@ -1527,6 +1701,11 @@ class _$BienInsertable implements Insertable<Bien> {
         _object.chargesNonRecuperablesCentimes,
       ),
       fraisDiversCentimes: Value(_object.fraisDiversCentimes),
+      venduLe: Value(_object.venduLe),
+      prixVenteCentimes: Value(_object.prixVenteCentimes),
+      fraisVenteCentimes: Value(_object.fraisVenteCentimes),
+      venduLoue: Value(_object.venduLoue),
+      retireLe: Value(_object.retireLe),
       ordre: Value(_object.ordre),
       creeLe: Value(_object.creeLe),
       modifieLe: Value(_object.modifieLe),
@@ -6407,6 +6586,11 @@ typedef $$BiensTableCreateCompanionBuilder =
       Value<int?> assuranceCentimes,
       Value<int?> chargesNonRecuperablesCentimes,
       Value<int?> fraisDiversCentimes,
+      Value<DateTime?> venduLe,
+      Value<int?> prixVenteCentimes,
+      Value<int?> fraisVenteCentimes,
+      Value<bool?> venduLoue,
+      Value<DateTime?> retireLe,
       required int ordre,
       required DateTime creeLe,
       required DateTime modifieLe,
@@ -6437,6 +6621,11 @@ typedef $$BiensTableUpdateCompanionBuilder =
       Value<int?> assuranceCentimes,
       Value<int?> chargesNonRecuperablesCentimes,
       Value<int?> fraisDiversCentimes,
+      Value<DateTime?> venduLe,
+      Value<int?> prixVenteCentimes,
+      Value<int?> fraisVenteCentimes,
+      Value<bool?> venduLoue,
+      Value<DateTime?> retireLe,
       Value<int> ordre,
       Value<DateTime> creeLe,
       Value<DateTime> modifieLe,
@@ -6695,6 +6884,33 @@ class $$BiensTableFilterComposer extends Composer<_$AppDatabase, $BiensTable> {
     column: $table.fraisDiversCentimes,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String> get venduLe =>
+      $composableBuilder(
+        column: $table.venduLe,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<int> get prixVenteCentimes => $composableBuilder(
+    column: $table.prixVenteCentimes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fraisVenteCentimes => $composableBuilder(
+    column: $table.fraisVenteCentimes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get venduLoue => $composableBuilder(
+    column: $table.venduLoue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, String> get retireLe =>
+      $composableBuilder(
+        column: $table.retireLe,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<int> get ordre => $composableBuilder(
     column: $table.ordre,
@@ -6986,6 +7202,31 @@ class $$BiensTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get venduLe => $composableBuilder(
+    column: $table.venduLe,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get prixVenteCentimes => $composableBuilder(
+    column: $table.prixVenteCentimes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fraisVenteCentimes => $composableBuilder(
+    column: $table.fraisVenteCentimes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get venduLoue => $composableBuilder(
+    column: $table.venduLoue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get retireLe => $composableBuilder(
+    column: $table.retireLe,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get ordre => $composableBuilder(
     column: $table.ordre,
     builder: (column) => ColumnOrderings(column),
@@ -7113,6 +7354,25 @@ class $$BiensTableAnnotationComposer
     column: $table.fraisDiversCentimes,
     builder: (column) => column,
   );
+
+  GeneratedColumnWithTypeConverter<DateTime?, String> get venduLe =>
+      $composableBuilder(column: $table.venduLe, builder: (column) => column);
+
+  GeneratedColumn<int> get prixVenteCentimes => $composableBuilder(
+    column: $table.prixVenteCentimes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fraisVenteCentimes => $composableBuilder(
+    column: $table.fraisVenteCentimes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get venduLoue =>
+      $composableBuilder(column: $table.venduLoue, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<DateTime?, String> get retireLe =>
+      $composableBuilder(column: $table.retireLe, builder: (column) => column);
 
   GeneratedColumn<int> get ordre =>
       $composableBuilder(column: $table.ordre, builder: (column) => column);
@@ -7335,6 +7595,11 @@ class $$BiensTableTableManager
                 Value<int?> chargesNonRecuperablesCentimes =
                     const Value.absent(),
                 Value<int?> fraisDiversCentimes = const Value.absent(),
+                Value<DateTime?> venduLe = const Value.absent(),
+                Value<int?> prixVenteCentimes = const Value.absent(),
+                Value<int?> fraisVenteCentimes = const Value.absent(),
+                Value<bool?> venduLoue = const Value.absent(),
+                Value<DateTime?> retireLe = const Value.absent(),
                 Value<int> ordre = const Value.absent(),
                 Value<DateTime> creeLe = const Value.absent(),
                 Value<DateTime> modifieLe = const Value.absent(),
@@ -7363,6 +7628,11 @@ class $$BiensTableTableManager
                 assuranceCentimes: assuranceCentimes,
                 chargesNonRecuperablesCentimes: chargesNonRecuperablesCentimes,
                 fraisDiversCentimes: fraisDiversCentimes,
+                venduLe: venduLe,
+                prixVenteCentimes: prixVenteCentimes,
+                fraisVenteCentimes: fraisVenteCentimes,
+                venduLoue: venduLoue,
+                retireLe: retireLe,
                 ordre: ordre,
                 creeLe: creeLe,
                 modifieLe: modifieLe,
@@ -7394,6 +7664,11 @@ class $$BiensTableTableManager
                 Value<int?> chargesNonRecuperablesCentimes =
                     const Value.absent(),
                 Value<int?> fraisDiversCentimes = const Value.absent(),
+                Value<DateTime?> venduLe = const Value.absent(),
+                Value<int?> prixVenteCentimes = const Value.absent(),
+                Value<int?> fraisVenteCentimes = const Value.absent(),
+                Value<bool?> venduLoue = const Value.absent(),
+                Value<DateTime?> retireLe = const Value.absent(),
                 required int ordre,
                 required DateTime creeLe,
                 required DateTime modifieLe,
@@ -7422,6 +7697,11 @@ class $$BiensTableTableManager
                 assuranceCentimes: assuranceCentimes,
                 chargesNonRecuperablesCentimes: chargesNonRecuperablesCentimes,
                 fraisDiversCentimes: fraisDiversCentimes,
+                venduLe: venduLe,
+                prixVenteCentimes: prixVenteCentimes,
+                fraisVenteCentimes: fraisVenteCentimes,
+                venduLoue: venduLoue,
+                retireLe: retireLe,
                 ordre: ordre,
                 creeLe: creeLe,
                 modifieLe: modifieLe,

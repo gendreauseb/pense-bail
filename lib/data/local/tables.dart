@@ -60,6 +60,12 @@ class Biens extends Table {
   IntColumn get assuranceCentimes => integer().nullable()();
   IntColumn get chargesNonRecuperablesCentimes => integer().nullable()();
   IntColumn get fraisDiversCentimes => integer().nullable()();
+  // Ajoutées en version 7 du schéma : vente ou retrait de la location.
+  TextColumn get venduLe => text().nullable().map(const ConvertisseurJour())();
+  IntColumn get prixVenteCentimes => integer().nullable()();
+  IntColumn get fraisVenteCentimes => integer().nullable()();
+  BoolColumn get venduLoue => boolean().nullable()();
+  TextColumn get retireLe => text().nullable().map(const ConvertisseurJour())();
   IntColumn get ordre => integer()();
   DateTimeColumn get creeLe => dateTime()();
   DateTimeColumn get modifieLe => dateTime()();

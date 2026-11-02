@@ -365,6 +365,50 @@ abstract final class ReglesLegales {
   static const int periodiciteEntretienChaudiereMois = 12;
 
   // --------------------------------------------------------------------------
+  // Bien vendu ou retiré de la location
+  // --------------------------------------------------------------------------
+
+  /// Échéances arrêtées à la vente (masquées, rétablies si la vente est
+  /// annulée). Deux cas à part :
+  ///  - taxe foncière : due par le propriétaire au 1er janvier (code général
+  ///    des impôts, art. 1415) ; celle de l'année de la vente reste à la
+  ///    charge du vendeur, seules les suivantes sont arrêtées ;
+  ///  - régularisation des charges : arrêtée si le logement était loué (le
+  ///    bail passe à l'acquéreur), gardée s'il était libre (le vendeur la
+  ///    doit à son ancien locataire).
+  /// Les rappels personnels sont gardés ; la déclaration des revenus
+  /// fonciers, commune à tous les biens, n'est pas concernée.
+  static const Set<TypeEcheance> arreteesALaVente = {
+    TypeEcheance.revisionLoyer,
+    TypeEcheance.finBail,
+    TypeEcheance.dateLimiteConge,
+    TypeEcheance.assurancePno,
+    TypeEcheance.entretienChaudiere,
+    TypeEcheance.diagnostic,
+  };
+
+  static const String aVerifierVente =
+      'Taxe foncière de l\'année de la vente laissée au vendeur (un '
+      'remboursement au prorata est souvent prévu dans l\'acte) ; '
+      'régularisation des charges gardée seulement si le logement était '
+      'libre.';
+
+  /// Échéances arrêtées quand le bien n'est plus loué : celles qui
+  /// découlent du bail en cours. La régularisation des charges est gardée
+  /// (dernier décompte avec l'ancien locataire) ; l'assurance, l'entretien,
+  /// les diagnostics et la taxe foncière continuent.
+  static const Set<TypeEcheance> arreteesAuRetrait = {
+    TypeEcheance.revisionLoyer,
+    TypeEcheance.finBail,
+    TypeEcheance.dateLimiteConge,
+  };
+
+  static const String aVerifierRetrait =
+      'Bien plus loué : seules révision, fin de bail et congé sont arrêtées. '
+      'Diagnostics et entretien de la chaudière gardés (utiles pour une '
+      'prochaine location).';
+
+  // --------------------------------------------------------------------------
   // Diagnostics (validité dans le cadre d'une LOCATION)
   // --------------------------------------------------------------------------
 

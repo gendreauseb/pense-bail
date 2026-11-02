@@ -144,22 +144,35 @@ Version gratuite et Premium
   bêta, message de fin à annoncer) : jamais exportés, ignorés dans une
   sauvegarde restaurée, conservés par « Tout effacer ».
 
-Biens vendus ou retirés de la location (étape après la monétisation)
+Biens vendus ou retirés de la location (schéma 7)
 - « Supprimer ce bien » propose : « Je l'ai vendu », « Je ne le loue plus »
   (réversible : « Remettre en location »), « Supprimer définitivement ».
-- Vendu : date (obligatoire), prix de vente, frais de vente facultatifs.
-  Lecture seule dans les deux modes, section « Biens vendus » repliée ;
-  « Annuler la vente » possible sans limite de temps.
+- Vendu : date (obligatoire), prix et frais de vente facultatifs (décidé le
+  02/11/2026), « Le logement était-il loué au moment de la vente ? » (oui /
+  non, obligatoire). Lecture seule dans les deux modes, section « Biens
+  vendus » repliée sous la liste ; « Annuler la vente » possible sans limite
+  de temps (le bien redevient « plus en location » s'il l'était) ; vente
+  modifiable (« Modifier la vente »).
+- Retiré (« Je ne le loue plus ») : lecture seule aussi (décidé le
+  02/11/2026), mention « Plus en location », date du retrait = jour de la
+  déclaration. Reste dans la liste des biens.
+- Ni vendus ni retirés : pas de révision, pas de « Réviser le loyer ». Accueil
+  et synthèse : biens vendus absents des cartes et des filtres (leurs
+  échéances gardées restent listées avec leur nom) ; la synthèse ne compte
+  que les biens loués.
 - Les biens vendus ou retirés ne comptent pas dans la limite du gratuit.
   Contournement accepté (déclarer vendu le plus ancien pour activer le
   suivant). Remettre en location un bien plus ancien que le bien actif :
   avertissement (« ce bien redeviendra votre bien actif, X passera en
   lecture seule »).
-- Échéances : arrêtées (masquées, pas effacées) selon le cas, liste
-  montrée avant de confirmer. Vente : révision, fin de bail, congé, PNO,
+- Échéances : arrêtées (statut « arrêtée » : masquées, jamais notifiées,
+  pas effacées, rétablies si la vente est annulée ou le bien remis en
+  location), liste montrée avant de confirmer. Vente : révision, fin de bail, congé, PNO,
   chaudière, diagnostics, taxes foncières suivantes arrêtées ; taxe
   foncière de l'année gardée ; régularisation des charges gardée si vendu
-  libre. Retrait : seules les échéances du bail s'arrêtent (régularisation
+  libre (arrêtée si loué : l'acquéreur reprend le bail). Une occurrence
+  suivante créée après la vente (taxe foncière de l'année faite) naît
+  arrêtée. Retrait : seules les échéances du bail s'arrêtent (régularisation
   gardée). Règles dans `regles_legales.dart`, marquées `aVerifier`. La
   déclaration des revenus fonciers est générale et n'est pas touchée.
 - Bilan de vente (Premium ; déclarer une vente ou un retrait est gratuit) :
@@ -168,7 +181,11 @@ Biens vendus ou retirés de la location (étape après la monétisation)
   dépenses du journal hors catégorie « Crédit ». Jamais les charges
   estimées de la fiche. Travaux initiaux et travaux du journal affichés sur
   deux lignes (aide : « avant la première location » / « depuis »).
-  Mention « hors impôt sur la plus-value et crédit ».
+  Mention « hors impôt sur la plus-value et crédit ». Affiché en tête de
+  l'onglet Rentabilité du bien vendu, à la place de « Ce que le bien
+  rapporte » ; les autres recettes du journal y sont comptées (ligne
+  séparée). Récapitulatif PDF de l'année toujours exportable. Sans prix de
+  vente ou d'achat : pas de bilan, invitation à compléter.
 
 Publication
 - Distribution de la bêta par le test fermé de la Play Console (lien
@@ -216,8 +233,7 @@ ligne une fois faite.
 
 1. iOS, avant sa sortie : icône, écran de lancement, langue française par
    défaut (A5-04).
-2. Biens vendus ou retirés de la location (voir « Décisions prises »).
-3. Notifications limitées au bien actif en version gratuite, avant la
+2. Notifications limitées au bien actif en version gratuite, avant la
    production. Corriger en même temps les textes qui promettent les rappels
    pour tous les biens : écran Premium (« Toujours gratuit »), message de
    fin d'abonnement, cahier des charges.

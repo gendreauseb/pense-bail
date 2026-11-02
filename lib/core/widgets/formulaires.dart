@@ -153,7 +153,12 @@ class _ChampDateState extends State<ChampDate> {
   @override
   void didUpdateWidget(ChampDate ancien) {
     super.didUpdateWidget(ancien);
-    if (ancien.date != widget.date) _controleur.text = _texte(widget.date);
+    if (ancien.date == widget.date) return;
+    // Après la construction : modifier le texte prévient le formulaire, qui
+    // ne peut pas se reconstruire pendant qu'il se construit.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _controleur.text = _texte(widget.date);
+    });
   }
 
   @override

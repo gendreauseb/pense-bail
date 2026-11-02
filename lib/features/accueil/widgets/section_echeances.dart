@@ -40,8 +40,8 @@ class _SectionEcheancesState extends ConsumerState<SectionEcheances> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const TitreSection('Prochaines échéances'),
-        if (donnees.biens.length > 1) ...[
-          _Filtres(biens: donnees.biens, filtre: filtre),
+        if (donnees.biensAffiches.length > 1) ...[
+          _Filtres(biens: donnees.biensAffiches, filtre: filtre),
           const SizedBox(height: AppSpacing.bloc),
         ],
         if (echeances.isEmpty)

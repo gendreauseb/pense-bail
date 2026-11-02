@@ -18,7 +18,16 @@ class DonneesAccueil {
   });
 
   final String prenom;
+
+  /// Tous les biens (noms des échéances, même d'un bien vendu).
   final List<Bien> biens;
+
+  /// Biens présentés sur l'accueil (cartes, filtres) : les biens vendus
+  /// restent dans l'onglet Biens.
+  List<Bien> get biensAffiches => [
+    for (final b in biens)
+      if (!b.vendu) b,
+  ];
 
   /// Échéances à faire, triées par date.
   final List<Echeance> echeances;
