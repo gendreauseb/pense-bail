@@ -38,7 +38,6 @@ abstract final class AppIcons {
   static const precedent = LucideIcons.chevronLeft;
 
   // Contenus
-  static const logo = LucideIcons.calendarCheck;
   static const echeance = LucideIcons.calendarClock;
   static const rappel = LucideIcons.bellRing;
   static const courrier = LucideIcons.mail;

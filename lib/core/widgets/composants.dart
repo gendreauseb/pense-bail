@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import '../../app/design/design.dart';
 import 'mesure_texte.dart';
 
-/// Logo Pense-Bail : tuile d'icône + nom en Fraunces.
+/// Logo Pense-Bail : tuile (post-it en forme de maison, comme l'icône de
+/// l'application) + nom en Fraunces.
 class LogoPenseBail extends StatelessWidget {
   const LogoPenseBail({super.key});
 
@@ -25,10 +26,12 @@ class LogoPenseBail extends StatelessWidget {
               color: c.primary,
               borderRadius: AppRadius.arrondi(AppRadius.tuile),
             ),
-            child: Icon(
-              AppIcons.logo,
-              color: c.onPrimary,
-              size: AppSizes.icone,
+            child: CustomPaint(
+              painter: _PostItMaison(
+                note: c.logoNote,
+                pli: c.logoPli,
+                coche: c.primary,
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.blocSerre),
@@ -37,6 +40,78 @@ class LogoPenseBail extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Post-it en forme de maison, coin plié et coche. Tracé dans une tuile de
+/// 100 unités, le même que celui des icônes (Android :
+/// drawable/ic_launcher_foreground.xml).
+class _PostItMaison extends CustomPainter {
+  const _PostItMaison({
+    required this.note,
+    required this.pli,
+    required this.coche,
+  });
+
+  final Color note;
+  final Color pli;
+  final Color coche;
+
+  static Path _trace(List<Offset> points, {bool ferme = true}) =>
+      Path()..addPolygon(points, ferme);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.scale(size.width / 100, size.height / 100);
+    void dessiner(
+      Path trace,
+      Color couleur,
+      double trait, {
+      bool plein = true,
+    }) {
+      final pinceau = Paint()
+        ..color = couleur
+        ..strokeWidth = trait
+        ..strokeJoin = StrokeJoin.round
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke;
+      if (plein) {
+        canvas.drawPath(trace, Paint()..color = couleur);
+      }
+      canvas.drawPath(trace, pinceau);
+    }
+
+    dessiner(
+      _trace(const [
+        Offset(50, 16),
+        Offset(82, 44),
+        Offset(82, 70),
+        Offset(68, 84),
+        Offset(18, 84),
+        Offset(18, 44),
+      ]),
+      note,
+      4,
+    );
+    dessiner(
+      _trace(const [Offset(82, 70), Offset(68, 70), Offset(68, 84)]),
+      pli,
+      3,
+    );
+    dessiner(
+      _trace(const [
+        Offset(35, 63),
+        Offset(45, 72),
+        Offset(64, 53),
+      ], ferme: false),
+      coche,
+      7,
+      plein: false,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_PostItMaison ancien) =>
+      ancien.note != note || ancien.pli != pli || ancien.coche != coche;
 }
 
 /// Tuile d'icône 44 × 44 sur fond bleu canard pâle.

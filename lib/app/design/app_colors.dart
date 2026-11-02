@@ -31,6 +31,8 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.dotInactive,
     required this.sand,
     required this.sandIcon,
+    required this.logoNote,
+    required this.logoPli,
     required this.notification,
     required this.banniereFond,
     required this.banniereTexte,
@@ -56,6 +58,11 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color dotInactive;
   final Color sand;
   final Color sandIcon;
+
+  /// Logo : post-it jaune en forme de maison et son coin plié (réservés au
+  /// logo, comme l'icône de l'application).
+  final Color logoNote;
+  final Color logoPli;
 
   /// Pastille de notification non lue.
   final Color notification;
@@ -93,6 +100,8 @@ class AppColors extends ThemeExtension<AppColors> {
     dotInactive: Color(0xFFCFC8BA),
     sand: Color(0xFFEFE9DE),
     sandIcon: Color(0xFF6B5530),
+    logoNote: Color(0xFFFFD95A),
+    logoPli: Color(0xFFE3B530),
     notification: Color(0xFFC2530F),
     banniereFond: Color(0xFFFAEFD2),
     banniereTexte: Color(0xFF5A3D00),

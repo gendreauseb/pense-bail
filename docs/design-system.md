@@ -29,6 +29,8 @@ Toutes ces valeurs doivent être centralisées dans des fichiers de tokens (AppC
 | dotInactive | #CFC8BA | Points de pagination inactifs |
 | sand | #EFE9DE | Illustration par défaut des maisons |
 | sandIcon | #6B5530 | Pictogramme sur fond sand |
+| logoNote | #FFD95A | Logo seulement : post-it jaune en forme de maison (sur tuile primary, coche primary) |
+| logoPli | #E3B530 | Logo seulement : coin plié du post-it |
 
 ### Statuts des échéances (règle stricte)
 | Statut | Condition | Fond | Texte |

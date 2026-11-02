@@ -7,6 +7,8 @@ Fichiers de ce dossier :
 
 - `icone-512.png` : icône de la fiche Store (512 × 512).
 - `banniere-1024x500.png` : bannière de la fiche Store.
+  Ces deux images, comme les icônes Android et iOS, sont générées par
+  `python outils/generer_icones.py` (voir le script).
 - `politique-confidentialite.html` : page à publier sur le site de
   l'éditeur ; son adresse va dans la Play Console.
 

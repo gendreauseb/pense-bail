@@ -2,8 +2,11 @@
 <!-- Couleurs du design system (docs/design-system.md) utilisées avant le
      démarrage de Flutter. -->
 <resources>
-    <!-- primary : fond de l'icône. -->
+    <!-- primary : fond de l'icône et coche du post-it. -->
     <color name="ic_launcher_background">#0E4F58</color>
+    <!-- logoNote et logoPli : post-it du logo et son coin plié. -->
+    <color name="logo_note">#FFD95A</color>
+    <color name="logo_pli">#E3B530</color>
     <!-- background : fond ivoire de l'écran de lancement (aussi en mode
          sombre, l'application restant claire). -->
     <color name="fond_lancement">#F5F3EE</color>

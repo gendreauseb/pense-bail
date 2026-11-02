@@ -253,7 +253,7 @@ class IllustrationCourrier extends StatelessWidget {
               trait(140),
               const SizedBox(height: AppSpacing.bloc),
               const PastilleStatut(
-                texte: 'Prêt à envoyer',
+                texte: 'Loyer révisé',
                 proximite: Proximite.aVenir,
               ),
             ],

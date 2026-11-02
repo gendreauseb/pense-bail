@@ -127,6 +127,10 @@ mention contraire.
 - [ ] **Texte agrandi** (200 %) et **téléphone en français** (les
   dialogues système de l'émulateur sont en anglais).
 - [ ] **Android à navigation à 3 boutons.**
+- [ ] **Nouvelle icône** (post-it en maison) sur un vrai téléphone : écran
+  d'accueil, icônes à thème d'Android 13 et plus (version au trait),
+  petite icône d'une notification, écran de lancement. La faire voir aux
+  personnes qui avaient critiqué l'ancienne.
 - [ ] **Accueil sans aucun bien** (après suppression du dernier).
 - [ ] **Bien vendu puis vente annulée** : les rappels arrêtés reprennent
   (notifications reprogrammées).
@@ -175,8 +179,7 @@ Procédure détaillée : `docs/publication/README.md`.
   lancement, français par défaut, iOS 15 minimum, iPhone seulement,
   portrait, rappels affichés aussi application ouverte. Compilation sur un
   Mac de GitHub (onglet « Actions » du dépôt, workflow « iOS ») :
-  - vérifier que le workflow « iOS » passe (le lancer à la main la
-    première fois : « Run workflow ») ;
+  - [x] le workflow « iOS » passe (première compilation le 02/11/2026) ;
   - compte Apple Developer (99 €/an), puis signature et envoi vers
     TestFlight depuis le workflow (à préparer à ce moment-là : certificat,
     profil et clé d'API App Store Connect en secrets du dépôt, jamais dans

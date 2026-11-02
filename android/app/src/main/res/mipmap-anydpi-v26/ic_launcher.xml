@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Icône adaptative (Android 8 et plus) : logo blanc sur bleu canard.
-     Android 7 utilise les PNG de mipmap-*dpi. -->
+<!-- Icône adaptative (Android 8 et plus) : post-it jaune en maison sur bleu
+     canard ; version au trait pour les icônes à thème. Android 7 utilise les
+     PNG de mipmap-*dpi. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_background" />
     <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
 </adaptive-icon>

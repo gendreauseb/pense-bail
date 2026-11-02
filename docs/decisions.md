@@ -26,6 +26,12 @@ Interface
   y en a d'autres.
 - Typographie française : espace insécable avant « : ; ? ! » » et après
   « « » dans toutes les chaînes, vérifiée par un test.
+- Notifications refusées sur le téléphone : bannière jaune « Les rappels
+  sont désactivés sur ce téléphone. » avec « Activer », dans le panneau des
+  notifications (bannière réservée aux données manquantes et aux réglages
+  à activer) ; confirmé le 02/11/2026.
+- Écran de bienvenue, carte du courrier : pastille « Loyer révisé »
+  (02/11/2026).
 
 Échéances et rappels
 - Rappels J-30, J-7, J-1 par défaut, modifiables dans les réglages ; envoi
@@ -197,10 +203,15 @@ Biens vendus ou retirés de la location (schéma 7)
 Publication
 - Distribution de la bêta par le test fermé de la Play Console (lien
   d'inscription, installation depuis le Play Store), pas par un APK.
-- Icône : le logo de l'application (calendrier coché blanc sur bleu canard),
-  remplaçable plus tard par une icône de graphiste. Écran de lancement
-  ivoire avec ce logo, clair aussi en mode sombre. Mêmes images sur iOS
-  (tracé identique, icône sans transparence).
+- Icône et logo (02/11/2026, après des retours de personnes à qui
+  l'application a été montrée : le calendrier coché ne parlait pas) :
+  post-it jaune en forme de maison, coin plié, coche bleu canard, sur une
+  tuile bleu canard. Même dessin partout : icône Android (au trait pour les
+  icônes à thème et la petite icône des notifications), icône iOS, icône
+  et bannière du Play Store, écrans de lancement, logo des écrans de
+  bienvenue. Jaune réservé au logo (`logoNote`, `logoPli`). Écran de
+  lancement ivoire, clair aussi en mode sombre ; icône iOS sans
+  transparence. Remplaçable plus tard par une icône de graphiste.
 - iOS : français par défaut (`CFBundleDevelopmentRegion`,
   `CFBundleLocalizations`), iOS 15 minimum (exigé par image_picker),
   iPhone seulement (sur iPad, l'application tourne au format téléphone ;
@@ -242,13 +253,10 @@ Publication
 Les numéros A… renvoient à `docs/audit-2026-10-05.md`. Rayer ou retirer une
 ligne une fois faite.
 
-Rien côté code. iOS est préparé mais jamais compilé : voir
+Rien côté code. iOS se compile sur GitHub Actions, sans signature : voir
 `docs/a-verifier.md` §4.
 
 En attente de l'utilisateur
-- Bannière jaune pour les rappels désactivés : à confirmer, puis à inscrire
-  dans « Interface » ci-dessus.
-- Illustration de l'onboarding : « Prêt à envoyer » ou « Loyer révisé » ?
 - Coordonnées de l'éditeur, adresse de la politique de confidentialité,
   clé d'envoi (voir `docs/a-verifier.md`).
 
